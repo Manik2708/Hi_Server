@@ -1,7 +1,7 @@
 import { QueueNames } from "../APIs/queues_redis";
 import { User } from "./Models/user";
 import { ConfessionModel } from "../Models/confession";
-import { createChannel } from "../queues/base";
+import { createChannel } from "../Queues/base";
 import amqp from 'amqplib/callback_api'
 
 export const saveConfessionToDb=async(CrushId: string,confession: ConfessionModel):Promise<boolean>=>{
