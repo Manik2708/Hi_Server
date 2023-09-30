@@ -7,10 +7,10 @@ import { socketfotApis } from "../Websockets/base";
 import * as EventNames from "../event_names"
 import { QueueNames, RedisNames } from "./queues_redis";
 import { saveConfessionToDb } from "../Database/saving_confession_to_db";
-import { getFirebaseToken } from "../functions/get_firebase_token";
-import { sendNotification } from "../functions/send_notification";
+import { getFirebaseToken } from "../Functions/get_firebase_token";
+import { sendNotification } from "../Functions/send_notification";
 import amqp from 'amqplib/callback_api'
-import { createChannel } from "../queues/base";
+import { createChannel } from "../Queues/base";
 const sendConfession=express.Router();
 
 sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
