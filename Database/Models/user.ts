@@ -1,7 +1,6 @@
 import mongoose, {Schema, model} from 'mongoose';
 import { confessionSchema } from './confession';
 import { UserModel } from '../../Models/user';
-import { recieveConfession } from '../../event_names';
 const userSchema=new Schema<UserModel>({
     name:{
         type: String,
