@@ -9,8 +9,8 @@ verifyOTP.post('/verify-email', authMiddlewre, async(req, res)=>{
     const {otp, otptoken}=req.body;
     const isVerified=verifyOtp(parseInt(otp), otptoken, 'emailotp');
     if(isVerified){
-        await User.findByIdAndUpdate(res.locals.id, {isEmailVerified: true}, {new: true});
-        res.json(true);
+        const user=await User.findByIdAndUpdate(res.locals.id, {isEmailVerified: true}, {new: true});
+        
     }
     else{
         res.status(400).json({'msg': "Verification failed"});
