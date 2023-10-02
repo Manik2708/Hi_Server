@@ -15,14 +15,16 @@ const sendConfession=express.Router();
 
 sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
     try{
-        const {SenderId, SenderAnonymousId, CrushId, Confession,  Time}=req.body;
+        const {SenderId, SenderAnonymousId, CrushId, Confession,  Time, crushName}=req.body;
+        console.log(crushName);
         let confession=new ConfessionDb({
         SenderId: SenderId,
         SenderAnonymousId: SenderAnonymousId,
         CrushId: CrushId,
         Confession: Confession,
         Time: Time,
-        status: 'Sending'
+        status: 'Sending',
+        crushName: crushName
     });
     confession= await confession.save();
     const ifSaved=await saveConfessionToDb(confession.CrushId, confession)
@@ -45,8 +47,8 @@ sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
                     sendingChannelForOfflineUser.assertQueue(QueueNames.OfflineConfessionQueue+confession.CrushId, {durable: true});
                     sendingChannelForOfflineUser.sendToQueue(QueueNames.OfflineConfessionQueue+confession.CrushId, Buffer.from(JSON.stringify(confession)));
                 })
-               sendNotification(firebaseToken, confession);
-                return res.status(200).json(confession);
+               sendNotification(firebaseToken, confession);   
+            return res.status(200).json(confession);
             }
                 }}
     // if there is some error in saving confession we will request the sender to re-send confession            
