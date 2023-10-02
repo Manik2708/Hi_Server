@@ -35,7 +35,7 @@ const server=http.createServer(app);
 
 mongoose.connect(Db).then(()=>{console.log('Connected to Database')}).catch((e)=>console.log(e.message));
 
-server.listen(3000,'192.168.152.182',()=>{
+server.listen(3000,'192.168.3.182',()=>{
     console.log('Connected!');
 })
 const client = createClient();

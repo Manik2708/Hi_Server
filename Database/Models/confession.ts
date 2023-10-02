@@ -27,6 +27,10 @@ export const confessionSchema=new Schema<ConfessionModel>(
        status:{
         required: true,
         type: String
+       },
+       crushName:{
+        required: true,
+        type: String
        }
     }
 )

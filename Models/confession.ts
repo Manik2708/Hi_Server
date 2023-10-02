@@ -6,5 +6,6 @@ export interface ConfessionModel extends mongoose.Document{
     CrushId: string;
     Confession: string;
     Time: string;
-    status: string
+    status: string;
+    crushName: string;
 }
