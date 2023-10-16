@@ -1,7 +1,7 @@
 import { client } from "..";
-import { RedisNames } from "../APIs/queues_redis";
+import { RedisNames } from "../Constants/queues_redis";
 import { socketfotApis } from "../Websockets/base";
-import { tokenLost } from "../event_names";
+import { tokenLost } from "../Constants/event_names";
 export const getFirebaseToken=async(CrushId: string): Promise<string>=>{
     try{
         var firebaseToken=await client.hGet(RedisNames.OnlineUserMap+CrushId,RedisNames.FirebaseToken);

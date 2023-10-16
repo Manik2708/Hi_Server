@@ -1,0 +1,1 @@
+export const confessionMessageType: number=1;

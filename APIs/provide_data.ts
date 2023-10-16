@@ -10,5 +10,4 @@ getData.get('/get-user-data', authMiddlewre, async(req, res)=>{
     const recievedConfessions=await ConfessionDb.find({_id:{$in: user?.recievedConfessions}});
     res.json({token: res.locals.token,sentConfessionsList:sentConfessions,recievedConfessionsList: recievedConfessions, ...user?._doc});
 })
-
 export {getData};

@@ -1,7 +1,7 @@
 import express from 'express'
 import { authMiddlewre } from '../Middlewares/user';
 import {client} from '..';
-import { RedisNames } from './queues_redis';
+import { RedisNames } from '../Constants/queues_redis';
  const saveFirebaseToken=express.Router();
 
 saveFirebaseToken.post('/firebase-token',authMiddlewre, async(req, res)=>{

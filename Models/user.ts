@@ -11,5 +11,5 @@ export interface UserModel extends mongoose.Document{
     anonymousId: String,
     _doc?: any,
     sentConfessions: ConfessionModel[],
-    recievedConfessions: ConfessionModel[] 
+    recievedConfessions: ConfessionModel[]
 }
