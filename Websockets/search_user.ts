@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import * as EventNames from '../event_names';
+import * as EventNames from '../Constants/event_names';
 import { User } from "../Database/Models/user";
 
 export const searchUser=(socket: Socket)=>{

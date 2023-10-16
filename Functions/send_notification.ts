@@ -5,7 +5,7 @@ export const sendNotification=(firebaseToken: string, confession: ConfessionMode
     const message = {
         data: {
           title: 'Hi, You have a confession',
-          content: confession.Confession.length>=20?confession.Confession.substring(0, 20)+'...':confession.Confession.substring(0, confession.Confession.length-1)+'...'
+          content: confession.confession.length>=20?confession.confession.substring(0, 20)+'...':confession.confession.substring(0, confession.confession.length-1)+'...'
         },
         token: firebaseToken
       };

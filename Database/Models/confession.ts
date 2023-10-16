@@ -1,26 +1,26 @@
-import mongoose, {Schema, model} from 'mongoose';
+import {Schema, model} from 'mongoose';
 
 import { ConfessionModel } from '../../Models/confession';
 
 export const confessionSchema=new Schema<ConfessionModel>(
     {
-      SenderId:{
+      senderId:{
         required: true,
         type: String
       }, 
-      SenderAnonymousId:{
+      senderAnonymousId:{
         required: true,
         type: String
       },
-       CrushId:{
+       crushId:{
         required: true,
         type: String
        },
-       Confession:{
+       confession:{
         required: true,
         type: String
        },
-       Time: {
+       time: {
         required: true,
         type: String
        },

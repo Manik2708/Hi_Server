@@ -15,6 +15,7 @@ import { createClient } from 'redis';
 import { sendConfession } from './APIs/send_confession';
 import { saveFirebaseToken } from './APIs/firebase_token';
 import admin from 'firebase-admin';
+import { requestUnreadRecievedConfessions } from './APIs/request_recieved_confessions';
 const conf=require('./hichat-1c68d-firebase-adminsdk-ov8j7-a516f3c87f.json');
 const Db="mongodb+srv://mehtamanik96:Dmanika2727@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority";
 
@@ -30,12 +31,13 @@ app.use(changeEmail);
 app.use(changePassword);
 app.use(sendConfession);
 app.use(saveFirebaseToken);
+app.use(requestUnreadRecievedConfessions)
 
 const server=http.createServer(app);
 
 mongoose.connect(Db).then(()=>{console.log('Connected to Database')}).catch((e)=>console.log(e.message));
 
-server.listen(3000,'192.168.3.182',()=>{
+server.listen(3000,'192.168.0.103',()=>{
     console.log('Connected!');
 })
 const client = createClient();

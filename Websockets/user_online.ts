@@ -1,6 +1,6 @@
 import {Socket} from 'socket.io';
 import { UserOnline } from '../OnlineUsers/set_user_online';
-import * as EventNames from '../event_names';
+import * as EventNames from '../Constants/event_names';
 import jwt from 'jwt-simple'
 import { User } from '../Database/Models/user';
 
@@ -12,7 +12,7 @@ export const onlineUsers=(socket: Socket)=>{
         else{
         const verify=jwt.decode(data, 'token');
         if(!verify){
-            socket.emit(EventNames.invalidToken)
+            socket.emit(EventNames.invalidToken);
         }
         else{
         const user=await User.findById(verify.id);
