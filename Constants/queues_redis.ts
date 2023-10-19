@@ -16,6 +16,7 @@ export class RedisNames{
 }
 
 export class QueueNames{
-    static ConfessionQueue: string='Confession'
+    static CommonConfessionSavingQueue: string='Common1'
     static OfflineQueue: string='Offline'
+    static CommonConfessionReadingQueue: string='Common2'
 }

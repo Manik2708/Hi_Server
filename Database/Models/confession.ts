@@ -31,6 +31,9 @@ export const confessionSchema=new Schema<ConfessionModel>(
        crushName:{
         required: true,
         type: String
+       },
+       lastUpdate:{
+        type:String
        }
     }
 )

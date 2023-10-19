@@ -5,6 +5,7 @@ import jwt from 'jwt-simple'
 import { User } from '../Database/Models/user';
 
 export const onlineUsers=(socket: Socket)=>{
+   try{
     socket.on(EventNames.onlineUsers,async(data: string)=>{
         if(data.trim().length==0){
           socket.emit(EventNames.noToken)  
@@ -26,4 +27,7 @@ export const onlineUsers=(socket: Socket)=>{
         }
 
         })
+   }catch(e: any){
+    console.log(e.toString())
+   }
 }

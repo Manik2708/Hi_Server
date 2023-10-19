@@ -8,4 +8,5 @@ export interface ConfessionModel extends mongoose.Document{
     time: string;
     status: string;
     crushName: string;
+    lastUpdate:string;
 }

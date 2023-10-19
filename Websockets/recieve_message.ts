@@ -7,16 +7,13 @@ import { MessageHandler } from "../Models/message_handler";
 import { confessionMessageType } from "../Constants/messasge_type";
 export const recieveAllMessages=(socket: Socket)=>{
     socket.on(EventNames.recieveAllMessages, (data)=>{
-        console.log('Inside recieve message');
         createChannel((recievingChannelForOfflineUser: amqp.Channel)=>{
             recievingChannelForOfflineUser.assertQueue(QueueNames.OfflineQueue+data.id, {durable: true});
             recievingChannelForOfflineUser.consume(QueueNames.OfflineQueue+data.id, (msg)=>{
                 if(msg==null){
-                    console.log('null');
                     return;
                 }
                 const recievedMessage: MessageHandler=JSON.parse(msg.content.toString()!);
-                console.log(msg.content.toString());
                 if(recievedMessage.messageType==confessionMessageType){
                     socket.emit(EventNames.recieveConfession, recievedMessage);
                     recievingChannelForOfflineUser.ack(msg);
