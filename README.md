@@ -6,7 +6,8 @@ Required skills are:
 3) Mongo-DB
 4) Redis
 5) RabbitMQ
-6) Firebase Cloud Services
+6) Socket.io
+7) Firebase Cloud Services
 
 # Overview of This Repository
 This repository is all about the Rest APIs and Websocket Connections. All the responses are handled in Json. 
