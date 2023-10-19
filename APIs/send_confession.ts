@@ -13,6 +13,7 @@ const sendConfession=express.Router();
 sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
     try{
         const {senderId, senderAnonymousId, crushId, confession,  time, crushName}=req.body;
+        console.log('api called')
         let confessionDb=new ConfessionDb({
         senderId: senderId,
         senderAnonymousId: senderAnonymousId,

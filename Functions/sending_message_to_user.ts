@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 import { client } from "..";
 import { QueueNames, RedisNames } from "../Constants/queues_redis";
 import { MessageHandler } from "../Models/message_handler";
-import { ifUserIsOnline } from "../OnlineUsers/if_user_online";
+import { ifUserIsOnline } from "./if_user_online";
 import { createChannel } from "../Queues/base";
 import amqp from 'amqplib/callback_api'
 export const sendMessageToUser=async(

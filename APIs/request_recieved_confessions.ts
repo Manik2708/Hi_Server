@@ -15,16 +15,13 @@ requestUnreadRecievedConfessions.get('/get-unread-recieved-confessions', authMid
     const tryRetrivingFromRedis=await client.get(RedisNames.LastRecievedConfession+res.locals.id)
     if(lastConfessionId=='first-page'){
         if(tryRetrivingFromRedis==null){
-            console.log('here1')
             return res.status(200).json({"list": JSON.stringify(list)});
         }
         else{
-            console.log('here2')
             lastConfessionId=tryRetrivingFromRedis;
         }
     }
     for(var i=0;i<30;i++){
-        console.log('hello'+i);
         const getNextConfessionId:string|undefined =await client.hGet(RedisNames.RecievedConfessions+lastConfessionId, RedisNames.ConfessionLlnextConfessionId)
         
         if(getNextConfessionId==null||getNextConfessionId==undefined){
