@@ -1,5 +1,6 @@
-import { confessionMessageType } from "../Constants/messasge_type";
+import * as MessageTypes from "../Constants/messasge_type";
 import { ConfessionModel } from "./confession";
+import { UpdateConfessionStatus } from "./update_status_of_confession";
 
 export interface MessageHandler{
     messageType: number;
@@ -10,10 +11,12 @@ export interface MessageHandler{
     time?: string;
     status?: string;
     crushName?: string;
+    confessionId?: string;
+    confessionUpdatedStatus?: string;
 }
 export const covertConfessionToCommonMessage=(confession: ConfessionModel):MessageHandler=>{
     return{
-            messageType:confessionMessageType,
+            messageType:MessageTypes.confessionMessageType,
             senderId: confession.senderId,
             senderAnonymousId:confession.senderAnonymousId,
             crushId: confession.crushId,
@@ -23,4 +26,10 @@ export const covertConfessionToCommonMessage=(confession: ConfessionModel):Messa
             crushName: confession.crushName 
     }
 }
-
+export const convertUpdateConfessionStatusToCommonMessage=(updatedConfession: UpdateConfessionStatus):MessageHandler=>{
+    return {
+           messageType:MessageTypes.updateConfessionStatusMessageType,
+           confessionId: updatedConfession.confessionId,
+           confessionUpdatedStatus:updatedConfession.updatedStatus 
+    }
+}

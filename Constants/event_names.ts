@@ -12,3 +12,4 @@ export const updateFirebaseConfession: string='update-Firebase-Confession';
 export const tokenLost: string='token-lost';
 export const recieveAllMessages: string='recieve-all-messages';
 export const appIsClosed: string='app-is-closed';
+export const updateConfssionStatus: string='update-status'

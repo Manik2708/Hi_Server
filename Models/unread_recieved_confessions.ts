@@ -3,5 +3,5 @@ export interface UnreadRecievedConfessions{
     confession:string,
     senderAnonymousId:string,
     time:string,
-    senderId:string
+    senderId:string,
 }
