@@ -16,6 +16,7 @@ import { sendConfession } from './APIs/send_confession';
 import { saveFirebaseToken } from './APIs/firebase_token';
 import admin from 'firebase-admin';
 import { requestUnreadRecievedConfessions } from './APIs/request_recieved_confessions';
+import { rejectConfession } from './APIs/reject_confession';
 const conf=require('./hichat-1c68d-firebase-adminsdk-ov8j7-a516f3c87f.json');
 const Db="mongodb+srv://mehtamanik96:Dmanika2727@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority";
 
@@ -32,6 +33,7 @@ app.use(changePassword);
 app.use(sendConfession);
 app.use(saveFirebaseToken);
 app.use(requestUnreadRecievedConfessions)
+app.use(rejectConfession)
 
 const server=http.createServer(app);
 

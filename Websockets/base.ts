@@ -1,10 +1,11 @@
-import { ioServer } from "..";
+import {  ioServer } from "..";
 import { onlineUsers } from "./user_online";
 import { searchUser } from "./search_user";
-
+import { client } from "..";
 import { Socket } from "socket.io";
 import { recieveAllMessages } from "./recieve_message";
 import { appIsClosed } from "./app_is_closed";
+import { RedisNames } from "../Constants/queues_redis";
 
 var socketfotApis: Socket;
 function connectToSocket(){

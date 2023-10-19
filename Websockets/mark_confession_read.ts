@@ -18,7 +18,10 @@ export const markConfessionAsRead=(socket: Socket)=>{
         })
         createChannel((recievingChannel: amqp.Channel)=>{
             recievingChannel.consume(QueueNames.CommonConfessionSavingQueue, async(msg)=>{
-                const localData:localRecievedData=JSON.parse(msg?.content.toString()!);
+                if(msg==null){
+                    return;
+                }
+                const localData:localRecievedData=JSON.parse(msg.content.toString()!);
                 const previousConfessionId=await client.hGet(RedisNames.RecievedConfessions+localData.confessionId, RedisNames.ConfessionLlpreviousConfessionId);
                 const nextConfessionId=await client.hGet(RedisNames.RecievedConfessions+localData.confessionId, RedisNames.ConfessionLlnextConfessionId);
                 // if a middle confession is read
@@ -51,7 +54,8 @@ export const markConfessionAsRead=(socket: Socket)=>{
                 await User.findByIdAndUpdate(localData.userId, {$push:{recievedConfessions:confessionPointer}})
                 const toNotifySender:UpdateConfessionStatus={
                     confessionId: localData.confessionId,
-                    updatedStatus:'Read'
+                    updatedStatus:'Read', 
+                    time: localData.time
                 }
                 await sendMessageToUser(
                     confessionPointer?.senderId!,

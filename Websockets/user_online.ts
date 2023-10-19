@@ -1,5 +1,5 @@
 import {Socket} from 'socket.io';
-import { UserOnline } from '../OnlineUsers/set_user_online';
+import { UserOnline } from '../Functions/set_user_online';
 import * as EventNames from '../Constants/event_names';
 import jwt from 'jwt-simple'
 import { User } from '../Database/Models/user';
@@ -7,6 +7,7 @@ import { User } from '../Database/Models/user';
 export const onlineUsers=(socket: Socket)=>{
    try{
     socket.on(EventNames.onlineUsers,async(data: string)=>{
+        console.log('event called')
         if(data.trim().length==0){
           socket.emit(EventNames.noToken)  
         }
