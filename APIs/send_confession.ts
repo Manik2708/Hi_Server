@@ -26,7 +26,7 @@ sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
     confessionDb= await confessionDb.save();
     const ifSaved=await saveConfessionToDb(confessionDb)
     if(ifSaved){
-        const ifMessageIsSent=await sendMessageToUser(
+        await sendMessageToUser(
             crushId,
             false,
             EventNames.recieveConfession,
@@ -43,13 +43,8 @@ sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
                 // }
             }
         )
-        if(ifMessageIsSent==true){
             await ConfessionDb.updateOne({_id: confessionDb._id}, {status: 'Sent'})
-            return res.status(200).json(confessionDb)
-        }
-        else{
-            return res.status(500).json({'msg': 'Confession Not sent!'})
-        }        
+            return res.status(200).json(confessionDb)     
     }
     else{
         return res.status(500).json({"msg": 'Confession Not sent!'}); 

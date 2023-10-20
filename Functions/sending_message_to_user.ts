@@ -12,7 +12,7 @@ export const sendMessageToUser=async(
     messageForOnlineUser: any,
     commonMessage: MessageHandler, 
     socket: Socket, 
-    sendNotificationFunction:()=>void):Promise<boolean>=>
+    sendNotificationFunction:()=>void):Promise<void>=>
     {
     try{
     const userIsOnline=await ifUserIsOnline(userId);
@@ -30,7 +30,6 @@ export const sendMessageToUser=async(
         }
 
     }
-    return true;
     }catch(e:any){
         console.log(e.toString());
         return sendMessageToUser(

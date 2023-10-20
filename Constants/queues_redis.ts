@@ -19,4 +19,5 @@ export class QueueNames{
     static CommonConfessionSavingQueue: string='Common1'
     static OfflineQueue: string='Offline'
     static CommonConfessionReadingQueue: string='Common2'
+    static CommonMessageSavingQueue: string='Common3'
 }
