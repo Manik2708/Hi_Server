@@ -1,6 +1,7 @@
-import mongoose, {Schema, model} from 'mongoose';
+import {Schema, model} from 'mongoose';
 import { confessionSchema } from './confession';
 import { UserModel } from '../../Models/user';
+import { chatModelSchema } from './chat';
 const userSchema=new Schema<UserModel>({
     name:{
         type: String,
@@ -39,6 +40,11 @@ const userSchema=new Schema<UserModel>({
         {
             confessions: confessionSchema
         },
+    ],
+    chats:[
+        {
+            chats: chatModelSchema
+        }
     ]
 });
 const User=model('User', userSchema);

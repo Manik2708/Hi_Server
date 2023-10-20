@@ -18,7 +18,7 @@ rejectConfession.post('/reject-confession', authMiddlewre, async(req, res)=>{
         updatedStatus:'Rejected',
         time:time
     }
-    sendMessageToUser(
+    await sendMessageToUser(
         confession?.senderId!,
         true,
         EventNames.updateConfssionStatus,

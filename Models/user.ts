@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { ConfessionModel } from "./confession";
+import { ChatModel } from "./chat_model";
 
 export interface UserModel extends mongoose.Document{
     name: String,
@@ -11,5 +12,6 @@ export interface UserModel extends mongoose.Document{
     anonymousId: String,
     _doc?: any,
     sentConfessions: ConfessionModel[],
-    recievedConfessions: ConfessionModel[]
+    recievedConfessions: ConfessionModel[],
+    chats:ChatModel[]
 }
