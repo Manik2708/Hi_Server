@@ -17,8 +17,9 @@ import { saveFirebaseToken } from './APIs/firebase_token';
 import admin from 'firebase-admin';
 import { requestUnreadRecievedConfessions } from './APIs/request_recieved_confessions';
 import { rejectConfession } from './APIs/reject_confession';
-const conf=require('./hichat-1c68d-firebase-adminsdk-ov8j7-a516f3c87f.json');
-const Db="mongodb+srv://mehtamanik96:Dmanika2727@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority";
+import { DatabaseUrl, FirebasePath, IP } from './enviornment_variables';
+const conf=require(FirebasePath);
+const Db=DatabaseUrl;
 
 const app=express();
 app.use(express.json());
@@ -39,7 +40,7 @@ const server=http.createServer(app);
 
 mongoose.connect(Db).then(()=>{console.log('Connected to Database')}).catch((e)=>console.log(e.message));
 
-server.listen(3000,'192.168.0.111',()=>{
+server.listen(3000,IP,()=>{
     console.log('Connected!');
 })
 const client = createClient();
