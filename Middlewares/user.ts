@@ -12,8 +12,8 @@ const authMiddlewre=async(req: express.Request, res: express.Response, next: exp
     res.locals.id=user.id;
     res.locals.token=token;
     next();
- }catch(e: any){
-    res.status(500).json({"msg": e.message});
+ } catch(e: any){
+    return res.status(500).json({"msg": e.message});
  }
 }
 export {authMiddlewre};
