@@ -4,10 +4,9 @@ import { User } from '../Database/Models/user';
 const authMiddlewre=async(req: express.Request, res: express.Response, next: express.NextFunction)=>{
  try{
     const token: any=req.header('token');
-   //  if(token==null||undefined||token.toString().trim().length==0){
-   //    return res.status(400).json({"msg": "Token not found"});
-   //  }
-   console.log('token is '+token)
+    if(token==null||token==undefined||token.toString().trim().length==0){
+      return res.status(400).json({"msg": "Token not found"});
+    }
     if(token.toString().includes(' ')){
       return res.status(400).json({"msg": "Invalid Token"});
     }
