@@ -5,6 +5,7 @@ import { User } from '../Database/Models/user';
 import {generateOtp} from 'otp-generator-ts';
 const sendOTP=express.Router();
 import sendmail from 'nodemailer';
+import { NodemailerSenderEmail, NodemailerSenderPassword, NodemailerService } from '../enviornment_variables';
 
 sendOTP.post('/send-otp', authMiddlewre, async(req, res)=>{
     try{
@@ -13,15 +14,15 @@ sendOTP.post('/send-otp', authMiddlewre, async(req, res)=>{
     const otp= generateOtp(6, '10m', 'emailotp');
     let transporter=sendmail.createTransport(
         {
-            service: 'gmail',
+            service: NodemailerService,
             auth:{
-                user: 'mehtamanik96@gmail.com',
-                pass: 'odaejpdmyojhzwkr'
+                user: NodemailerSenderEmail,
+                pass: NodemailerSenderPassword
             }
         }
     )
     transporter.sendMail({
-        from: 'mehtamanik96@gmail.com',
+        from: NodemailerSenderEmail,
         to: email,
         subject: 'Verify Your Email Address',
         text: 'Your OTP is '+otp.otp+'. Please see that this OTP is valid only for 10 Minutes'
