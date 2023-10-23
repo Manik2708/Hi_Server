@@ -8,11 +8,15 @@ const changeEmail=express.Router();
 changeEmail.post('/change-email',authMiddlewre, async(req, res)=>{
     try{
         const {password, email}=req.body;
-        const user=await User.findById(res.locals.id);
-        if(user==null){
-            return res.status(400).json({'msg': 'No user found'});
+        if(password==undefined||null||email==undefined||null){
+            return res.status(400).json({'msg': 'Please enter email/password'});
         }
-        const ifCorrectPassword=await bcrypt.compare(password, user.password.toString());
+        const emailRegex:RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if(!emailRegex.test(email)){
+            return res.status(400).json({'msg': 'Invalid email'});
+        }
+        const user=await User.findById(res.locals.id);
+        const ifCorrectPassword=await bcrypt.compare(password, user!.password.toString());
         if(!ifCorrectPassword){
             return res.status(400).json({'msg': 'Wrong Password'});
         }
