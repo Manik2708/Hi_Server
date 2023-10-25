@@ -3,8 +3,9 @@ import { UserOnline } from '../Functions/set_user_online';
 import * as EventNames from '../Constants/event_names';
 import jwt from 'jwt-simple'
 import { User } from '../Database/Models/user';
+import { RedisClientType } from '../Tests/Helpers/redis_db_instance';
 
-export const onlineUsers=(socket: Socket)=>{
+export const onlineUsers=(socket: Socket, client:RedisClientType)=>{
    try{
     socket.on(EventNames.onlineUsers,async(data: string)=>{
         console.log('event called')
@@ -22,7 +23,7 @@ export const onlineUsers=(socket: Socket)=>{
             socket.emit(EventNames.userNotFound);
         }
         else{
-           UserOnline(verify.id, socket);
+           UserOnline(verify.id, socket,client );
         }
 }
         }

@@ -1,6 +1,7 @@
-import {client} from '..';
+import { RedisClientType } from "../Tests/Helpers/redis_db_instance";
 
-export const ifUserIsOnline=async(userId: string): Promise<boolean>=>{
+
+export const ifUserIsOnline=async(userId: string, client:RedisClientType): Promise<boolean>=>{
    try{
     return client.sIsMember('online-users', userId);
    }

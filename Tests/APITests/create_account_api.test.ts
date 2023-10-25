@@ -14,7 +14,7 @@ describe('API test for Creating New Account', ()=>{
     let serverInstance: ServerProperties;
     beforeAll(async()=>{
         mongooseInstance=await createMongoInstance();
-        serverInstance=getTestServerInsatnce();
+        serverInstance=getTestServerInsatnce()!;
         serverInstance.app.use(createAccount)
     })
     afterAll(async()=>{

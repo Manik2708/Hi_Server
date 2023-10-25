@@ -18,6 +18,7 @@ import admin from 'firebase-admin';
 import { requestUnreadRecievedConfessions } from './APIs/request_recieved_confessions';
 import { rejectConfession } from './APIs/reject_confession';
 import { DatabaseUrl, FirebasePath, IP } from './enviornment_variables';
+import { RedisClientType } from './Tests/Helpers/redis_db_instance';
 const conf=require(FirebasePath);
 const Db=DatabaseUrl;
 
@@ -56,4 +57,4 @@ admin.initializeApp({
 });
 
 
-export {ioServer, client};
+export {ioServer,client };

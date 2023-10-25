@@ -15,7 +15,7 @@ describe('API test for login API', ()=>{
     let user:UserModel
     beforeAll(async()=>{
         mongooseInstance=await createMongoInstance();
-        serverInstance=getTestServerInsatnce();
+        serverInstance=getTestServerInsatnce()!;
         serverInstance.app.use(login);
         user=await createTestUser()
     })
