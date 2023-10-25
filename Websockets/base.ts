@@ -13,10 +13,10 @@ try{
 ioServer.on('connection', (socket)=>{
     socketfotApis=socket;
     console.log('Connection To Sockets Successful '+socket.id);
-    onlineUsers(socket);
+    onlineUsers(socket, client);
     searchUser(socket);
     recieveAllMessages(socket);
-    appIsClosed(socket);
+    appIsClosed(socket, client);
 });
 }catch(e: any){
     console.log(e);

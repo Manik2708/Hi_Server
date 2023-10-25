@@ -1,5 +1,4 @@
 import { Socket } from "socket.io";
-import { client } from "..";
 import { QueueNames, RedisNames } from "../Constants/queues_redis";
 import { ConfessionDb } from "../Database/Models/confession";
 import { User } from "../Database/Models/user";
@@ -9,7 +8,8 @@ import { sendMessageToUser } from "../Functions/sending_message_to_user";
 import * as EventNames from "../Constants/event_names"
 import { UpdateConfessionStatus } from "../Models/update_status_of_confession";
 import { convertUpdateConfessionStatusToCommonMessage } from "../Models/message_handler";
-export const markConfessionAsRead=(socket: Socket)=>{
+import { RedisClientType } from "../Tests/Helpers/redis_db_instance";
+export const markConfessionAsRead=(socket: Socket,client:RedisClientType )=>{
    try{
     socket.on('mark-confession-read', async(data)=>{
         createChannel((sendingChannel: amqp.Channel)=>{
@@ -64,6 +64,7 @@ export const markConfessionAsRead=(socket: Socket)=>{
                     toNotifySender,
                     convertUpdateConfessionStatusToCommonMessage(toNotifySender),
                     socket,
+                    client,
                     ()=>{} 
                 )
             }

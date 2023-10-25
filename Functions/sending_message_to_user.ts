@@ -1,10 +1,10 @@
 import { Socket } from "socket.io";
-import { client } from "..";
 import { QueueNames, RedisNames } from "../Constants/queues_redis";
 import { MessageHandler } from "../Models/message_handler";
 import { ifUserIsOnline } from "./if_user_online";
 import { createChannel } from "../Queues/base";
 import amqp from 'amqplib/callback_api'
+import { RedisClientType } from "../Tests/Helpers/redis_db_instance";
 export const sendMessageToUser=async(
     userId: string, 
     wantTosendNotification:boolean, 
@@ -12,10 +12,11 @@ export const sendMessageToUser=async(
     messageForOnlineUser: any,
     commonMessage: MessageHandler, 
     socket: Socket, 
+    client:RedisClientType,
     sendNotificationFunction:()=>void):Promise<void>=>
     {
     try{
-    const userIsOnline=await ifUserIsOnline(userId);
+    const userIsOnline=await ifUserIsOnline(userId, client);
     if(userIsOnline){
         const socketid=await client.hGet(RedisNames.OnlineUserMap+userId,RedisNames.SocketId);
         socket.to(socketid!).emit(userIsOnlineEvent, messageForOnlineUser);
@@ -39,6 +40,7 @@ export const sendMessageToUser=async(
             messageForOnlineUser,
             commonMessage,
             socket,
+            client,
             sendNotificationFunction
         )
     }

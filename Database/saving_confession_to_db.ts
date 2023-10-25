@@ -3,9 +3,9 @@ import { User } from "./Models/user";
 import { ConfessionModel } from "../Models/confession";
 import { createChannel } from "../Queues/base";
 import amqp from 'amqplib/callback_api'
-import { client } from "..";
+import { RedisClientType } from "../Tests/Helpers/redis_db_instance";
 
-export const saveConfessionToDb=async(confession: ConfessionModel):Promise<boolean>=>{
+export const saveConfessionToDb=async(confession: ConfessionModel, client:RedisClientType):Promise<boolean>=>{
     try{
         createChannel((sendingChannel: amqp.Channel)=>{
         sendingChannel.assertQueue(QueueNames.CommonConfessionSavingQueue);
