@@ -25,9 +25,7 @@ This repository is all about the Rest APIs and Websocket Connections. All the re
 
 4) Make sure you have installed Android Studio in your machine. We prefer Android Studio over VS Code because it's exclusively for Android Apps but it will not matter if you will code in any other IDE also.
 5) Learn typescript from [here](https://www.typescriptlang.org/docs/)
-6) Create an account on MongoDB and paste the link in index.ts file in 'Db' variable.
-7) Change the IP Address to your IP Address in 'uri' variable present in global_variables file.
-8) While connecting to server make sure you Mobile phone and Machine are connected to same Internet.
+   
 # What this App meant for users?
 This app provides users with the feature to confess anything to a registered user. If the confession is accepted, they can have a chat with that person. Users can create an account or log in if they are already registered. Upon registration, they will receive an anonymous ID, which will be used for sending and receiving messages.
 
@@ -37,19 +35,19 @@ In addition to these features, the app provides Anonymous Chats and Confessions.
 # Setting Up .env file
 After sucessful installation, create a .env file and copy the content of .env.sample file and paste it in .env file. Fill the empty spaces by following the later instructions
 
-**DATABASE_URL**
-Create an account on MongoDb and paste the connection string in this variable. The connection string would be of this type: mongodb+srv://<username>:<password>@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority
+**DATABASE_URL**: 
+Create an account on MongoDb and paste the connection string in this variable. The connection string would be of this type: mongodb+srv://<username>:<password>@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority.
 
-**IP_ADDRESS**
-Fill it as 0.0.0.0 if you want to run only server but if you want to connect this server to the Flutter Mobile Application then connect your mobile device to same internet as your PC and paste your IP Address in this variable. (For ubuntu users 'ifconfig' is the command to get IP Address)
+**IP_ADDRESS**: 
+Fill it as 0.0.0.0 if you want to run only server but if you want to connect this server to the Flutter Mobile Application then connect your mobile device to same internet as your PC and paste your IP Address in this variable. (For ubuntu users 'ifconfig' is the command to get IP Address).
 
-**NODEMAILER_SENDER_EMAIL**
+**NODEMAILER_SENDER_EMAIL**:  
 Type your email address through which you want to send email to verify email address user by the user.
 
-**NODEMAILER_SENDER_PASSWORD**
+**NODEMAILER_SENDER_PASSWORD**:
 Go to your google account and search "App Passwords", type an app name and click on create, copy the generated password and paste in this variable by removing all the spaces. Note that your 2-Step verification must be on. Also, this is the procedure when you are using gmail SMTP service, manage yourself with any other SMTP service by reading Nodemailer documentaiions.
 
-**NODEMAILER_SPMTP_SERVICE**
+**NODEMAILER_SPMTP_SERVICE**:
 Type 'gmail' or any other SMTP service you are using, be careful here, as these inputs are case-sensitive!
 
 # Workflow of Program
