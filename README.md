@@ -26,6 +26,10 @@ This repository is all about the Rest APIs and Websocket Connections. All the re
 
 5) Make sure you have installed Android Studio in your machine. We prefer Android Studio over VS Code because it's exclusively for Android Apps but it will not matter if you will code in any other IDE also.
 6) Learn typescript from [here](https://www.typescriptlang.org/docs/)
+7) Follow the rest of the ReadMe file and conme back to this point, start the server by using this command in the root directiory:
+   	```console
+ 	ts-node index.ts
+ 	``` 
    
 # What this App meant for users?
 This app provides users with the feature to confess anything to a registered user. If the confession is accepted, they can have a chat with that person. Users can create an account or log in if they are already registered. Upon registration, they will receive an anonymous ID, which will be used for sending and receiving messages.
