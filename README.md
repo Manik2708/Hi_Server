@@ -26,7 +26,7 @@ This repository is all about the Rest APIs and Websocket Connections. All the re
 
 5) Make sure you have installed Android Studio in your machine. We prefer Android Studio over VS Code because it's exclusively for Android Apps but it will not matter if you will code in any other IDE also.
 6) Learn typescript from [here](https://www.typescriptlang.org/docs/)
-7) Follow the rest of the ReadMe file and conme back to this point, start the server by using this command in the root directiory:
+7) Follow the rest of the ReadMe file and come back to this point, start the server by using this command in the root directiory:
    	```console
  	ts-node index.ts
  	``` 
