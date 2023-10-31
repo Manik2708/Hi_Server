@@ -21,7 +21,6 @@ This repository is all about the Rest APIs and Websocket Connections. All the re
 	
 	```console
  	npm install
-	tsc --init
  	``` 
 
 4) Make sure you have installed Android Studio in your machine. We prefer Android Studio over VS Code because it's exclusively for Android Apps but it will not matter if you will code in any other IDE also.
@@ -36,5 +35,5 @@ This repository is all about the Rest APIs and Websocket Connections. All the re
 4) Confession is saved in Mobile's local storage also but MongoDb ensures that if user uninstall the app, still 
 every confession is saved and hence retrieved suring login.
 5) Confession getting saved in Redis Database is because Unread Confessions are not saved in Mobile's local storage, they are only stored in local storage only when they are opened by User, therefore user may request the Unread Confessions very frequently leading to the need of Caching. Note that Confessions are **not** saved in **Standard Linked Lists** given by Redis because deleting a Confession from a linked list was still giving **O(N)** complexity, hence Linked Lists are **customized** by saving previous and next confession id in database also which reduces the time complexity of deleting of confession to **O(1)**.
-6) Requesting Recieved Confessions is also a O(1) complexity which is caused by using **Pagination** both in Server and Client Side. Only 30 confessions are sent initially, rest of the confessions are sent only if user demands for it, that too in chunk of 30 confessions. This also reduces the probability of **large sized APIs** and probability of data getting lost if a user recieves very high number of confessions.
+6) Requesting Recieved Confessions is also a O(1) complexity which is caused by using **Pagination** both in Server and Client Side. Only 30 confessions are sent initially, rest of the confessions are sent only if user demands for it, that too in chunk of 30 confessions. This also reduces the probability of **large sized APIs** and data getting lost if a user recieves very high number of confessions.
 7) Notifications are also sent **Firebase Cloud Services** if the user is offline.
