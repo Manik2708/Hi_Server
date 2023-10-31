@@ -17,14 +17,15 @@ This repository is all about the Rest APIs and Websocket Connections. All the re
 2) Download Node js from [here](https://nodejs.org/en/download) and install it by following the installation guide.
 3) Install Redis from [here](https://redis.io/docs/getting-started/installation/).
 4) Install RabbitMQ server from [here](https://www.rabbitmq.com/download.html)
-3) Now clone the flutter [repo](https://github.com/Manik2708/Hi) and travel to the directory of this clonned repo. Open terminal in the directory and use the following command:
+3) Now clone the flutter [repo](https://github.com/Manik2708/Hi)
+4) Navigate to the main directory of this repository and run this command
 	
 	```console
  	npm install
  	``` 
 
-4) Make sure you have installed Android Studio in your machine. We prefer Android Studio over VS Code because it's exclusively for Android Apps but it will not matter if you will code in any other IDE also.
-5) Learn typescript from [here](https://www.typescriptlang.org/docs/)
+5) Make sure you have installed Android Studio in your machine. We prefer Android Studio over VS Code because it's exclusively for Android Apps but it will not matter if you will code in any other IDE also.
+6) Learn typescript from [here](https://www.typescriptlang.org/docs/)
    
 # What this App meant for users?
 This app provides users with the feature to confess anything to a registered user. If the confession is accepted, they can have a chat with that person. Users can create an account or log in if they are already registered. Upon registration, they will receive an anonymous ID, which will be used for sending and receiving messages.
