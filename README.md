@@ -28,12 +28,41 @@ This repository is all about the Rest APIs and Websocket Connections. All the re
 6) Create an account on MongoDB and paste the link in index.ts file in 'Db' variable.
 7) Change the IP Address to your IP Address in 'uri' variable present in global_variables file.
 8) While connecting to server make sure you Mobile phone and Machine are connected to same Internet.
+# What this App meant for users?
+This app provides users with the feature to confess anything to a registered user. If the confession is accepted, they can have a chat with that person. Users can create an account or log in if they are already registered. Upon registration, they will receive an anonymous ID, which will be used for sending and receiving messages.
+
+This app allows for sending and receiving messages to both online and offline users. Overall, this app aims to combine the features of **WhatsApp, Instagram, and Telegram**. It offers private chats like WhatsApp, the ability to connect with global users like Instagram, and the capability to retrieve messages without the need for backups, similar to Telegram.
+
+In addition to these features, the app provides Anonymous Chats and Confessions. **The app's unique feature is that at least one of the users remains anonymous, setting it apart from the services mentioned above.**
+# Setting Up .env file
+After sucessful installation, create a .env file and copy the content of .env.sample file and paste it in .env file. Fill the empty spaces by following the later instructions
+
+**DATABASE_URL**
+Create an account on MongoDb and paste the connection string in this variable. The connection string would be of this type: mongodb+srv://<username>:<password>@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority
+
+**IP_ADDRESS**
+Fill it as 0.0.0.0 if you want to run only server but if you want to connect this server to the Flutter Mobile Application then connect your mobile device to same internet as your PC and paste your IP Address in this variable. (For ubuntu users 'ifconfig' is the command to get IP Address)
+
+**NODEMAILER_SENDER_EMAIL**
+Type your email address through which you want to send email to verify email address user by the user.
+
+**NODEMAILER_SENDER_PASSWORD**
+Go to your google account and search "App Passwords", type an app name and click on create, copy the generated password and paste in this variable by removing all the spaces. Note that your 2-Step verification must be on. Also, this is the procedure when you are using gmail SMTP service, manage yourself with any other SMTP service by reading Nodemailer documentaiions.
+
+**NODEMAILER_SPMTP_SERVICE**
+Type 'gmail' or any other SMTP service you are using, be careful here, as these inputs are case-sensitive!
+
 # Workflow of Program
-1) User creates account, all the data is saved in **MongoDb** database and in local storage of Mobile (so as not to call APIs very frequently. If user choose login then the user details are matched with the data stored in database and then retrieving of Sent and Read Confessions take place which requires time according to the amount of confessions. This retrieving of Confessions follow O(N) complexity. At this point **Socket.io** Client tries to connect with Socket.io server, when connected successfully socket id is saved corresponding to user id in **redis** database and user is set online.
-2) The search bar again uses Socket.io connection so as to make it dynamic, any change made to keyboard is emitted as an event to the server, in response a list of Users is sent so as to display them.
-3) The user can use the Send Confession to any of the registered user. Whenever a confession is made, confession is pushed in a **RabbitMQ** queue, on being consumed, the confession is saved in MongoDb and Redis database. Confession is pushed in the array of 'sentConfessions' of sender document of MongoDb, this same confession is saved in Redis Database of Recievers Hash.
-4) Confession is saved in Mobile's local storage also but MongoDb ensures that if user uninstall the app, still 
-every confession is saved and hence retrieved suring login.
-5) Confession getting saved in Redis Database is because Unread Confessions are not saved in Mobile's local storage, they are only stored in local storage only when they are opened by User, therefore user may request the Unread Confessions very frequently leading to the need of Caching. Note that Confessions are **not** saved in **Standard Linked Lists** given by Redis because deleting a Confession from a linked list was still giving **O(N)** complexity, hence Linked Lists are **customized** by saving previous and next confession id in database also which reduces the time complexity of deleting of confession to **O(1)**.
-6) Requesting Recieved Confessions is also a O(1) complexity which is caused by using **Pagination** both in Server and Client Side. Only 30 confessions are sent initially, rest of the confessions are sent only if user demands for it, that too in chunk of 30 confessions. This also reduces the probability of **large sized APIs** and data getting lost if a user recieves very high number of confessions.
-7) Notifications are also sent **Firebase Cloud Services** if the user is offline.
+1) When a user creates an account, all their data is saved in a MongoDB database as well as in the local storage of their mobile device. This helps reduce the frequency of API calls. If a user chooses to log in, their details are matched with the data stored in the database, and the retrieval of sent and read confessions takes place. The time required for this retrieval depends on the number of confessions, and it follows an O(N) complexity. At this point, the Socket.io client attempts to connect to the Socket.io server. Upon successful connection, the socket ID is associated with the user ID in the Redis database, and the user is set as online.
+
+2) The search bar also utilizes the Socket.io connection to make it dynamic. Any changes made to the keyboard are emitted as an event to the server, and in response, a list of users is sent for display.
+
+3) Users can send confessions to any registered user. When a confession is made, it is placed in a RabbitMQ queue. Once consumed, the confession is saved in both the MongoDB and Redis databases. The confession is added to the "sentConfessions" array of the sender's document in MongoDB. The same confession is also saved in the Redis database under the receiver's hash.
+
+4) Confessions are also saved in the local storage of the user's mobile device. MongoDB ensures that even if a user uninstalls the app, all their confessions are still saved and can be retrieved during login.
+
+5) Confessions are stored in the Redis database because unread confessions are not saved in the mobile device's local storage. They are only stored locally once they are opened by the user. This is why users may request unread confessions frequently, necessitating caching. Note that confessions are not stored in standard linked lists provided by Redis because deleting a confession from a linked list still resulted in an O(N) complexity. Customized linked lists are used, where the previous and next confession IDs are also saved in the database, reducing the time complexity of deleting a confession to O(1).
+
+6) Requesting received confessions also has an O(1) complexity thanks to the use of pagination both on the server and client sides. Initially, only 30 confessions are sent, and the rest are sent in chunks of 30 confessions when the user requests them. This also reduces the likelihood of large-sized APIs and data loss when a user receives a high number of confessions.
+
+7) Notifications are sent using Firebase Cloud Services if the user is offline.
