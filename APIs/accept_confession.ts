@@ -7,7 +7,9 @@ import { UpdateConfessionStatus } from '../Models/update_status_of_confession';
 import * as EventNames from '../Constants/event_names'
 import { convertCreateChatMessageToCommonMessage, convertUpdateConfessionStatusToCommonMessage } from '../Models/message_handler';
 import { socketfotApis } from '../Websockets/base';
+import { client } from '..';
 const acceptConfession=express.Router()
+
 
 acceptConfession.post('/accept-confession',authMiddlewre, async(req, res)=>{
    try{
@@ -36,6 +38,7 @@ acceptConfession.post('/accept-confession',authMiddlewre, async(req, res)=>{
         updateConfssionStatus,
         convertUpdateConfessionStatusToCommonMessage(updateConfssionStatus),
         socketfotApis,
+        client,
         ()=>{}
     )
     await sendMessageToUser(
@@ -45,6 +48,7 @@ acceptConfession.post('/accept-confession',authMiddlewre, async(req, res)=>{
         savedChat.toJSON(),
         convertCreateChatMessageToCommonMessage(savedChat),
         socketfotApis,
+        client,
         ()=>{}
     )
     return res.status(200).json(savedChat)
