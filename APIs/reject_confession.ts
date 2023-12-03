@@ -6,7 +6,7 @@ import * as EventNames from '../Constants/event_names'
 import { UpdateConfessionStatus } from '../Models/update_status_of_confession';
 import { convertUpdateConfessionStatusToCommonMessage } from '../Models/message_handler';
 import { socketfotApis } from '../Websockets/base';
-
+import { client } from '..';
 const rejectConfession=express.Router();
 
 rejectConfession.post('/reject-confession', authMiddlewre, async(req, res)=>{
@@ -25,6 +25,7 @@ rejectConfession.post('/reject-confession', authMiddlewre, async(req, res)=>{
         updateConfssionStatus,
         convertUpdateConfessionStatusToCommonMessage(updateConfssionStatus),
         socketfotApis,
+        client,
         ()=>{}
     )
     res.status(200).json(true);

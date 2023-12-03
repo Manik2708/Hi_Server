@@ -8,7 +8,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "vitest"
+    "start-testing-redis":"redis-server --port 6300",
+    "prepare-server":"wait-on tcp:localhost:6300 && vitest",
+    "test": "npm run start-testing-redis & npm run prepare-server"
   },
   "keywords": [],
   "author": "",
@@ -43,6 +45,7 @@
     "vitest": "^0.34.6"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "wait-on": "^7.2.0"
   }
 }
