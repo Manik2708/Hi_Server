@@ -17,8 +17,7 @@ import { saveFirebaseToken } from './APIs/firebase_token';
 import admin from 'firebase-admin';
 import { requestUnreadRecievedConfessions } from './APIs/request_recieved_confessions';
 import { rejectConfession } from './APIs/reject_confession';
-import { DatabaseUrl, FirebasePath, IP } from './enviornment_variables';
-import { RedisClientType } from './Tests/Helpers/redis_db_instance';
+import { DatabaseUrl, FirebasePath, IP, IfRunningOnDocker } from './enviornment_variables';
 const conf=require(FirebasePath);
 const Db=DatabaseUrl;
 
@@ -44,7 +43,10 @@ mongoose.connect(Db).then(()=>{console.log('Connected to Database')}).catch((e)=
 server.listen(3000,IP,()=>{
     console.log('Connected!');
 })
-const client = createClient();
+
+const client = IfRunningOnDocker=='true'?createClient({
+    url:'redis://localhost:6300'
+}):createClient();
 const connect=async()=>{
     await client.connect();
 }

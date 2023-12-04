@@ -30,5 +30,5 @@ app.*.map.json
 
 # Android Studio will place build artifacts here
 /node_modules
-/hichat-1c68d-firebase-adminsdk-ov8j7-a516f3c87f.json
+/hichat-1c68d-firebase-adminsdk-ov8j7-cc2ec0906b.json
 /.env

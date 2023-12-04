@@ -8,6 +8,7 @@ import { getFirebaseToken } from "../Functions/get_firebase_token";
 import { sendNotification } from "../Functions/send_notification";
 import { covertConfessionToCommonMessage} from "../Models/message_handler";
 import { sendMessageToUser } from "../Functions/sending_message_to_user";
+import { client } from '..';
 const sendConfession=express.Router();
 
 sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
@@ -24,7 +25,7 @@ sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
         crushName: crushName
     });
     confessionDb= await confessionDb.save();
-    const ifSaved=await saveConfessionToDb(confessionDb)
+    const ifSaved=await saveConfessionToDb(confessionDb, client)
     if(ifSaved){
         await sendMessageToUser(
             crushId,
@@ -33,6 +34,7 @@ sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
             confessionDb,
             covertConfessionToCommonMessage(confessionDb),
             socketfotApis,
+            client,
             async()=>{
                 // const firebaseToken=await getFirebaseToken(confessionDb.crushId)
                 // if(firebaseToken=='false'){
