@@ -4,7 +4,7 @@ export type RedisClientType = typeof typeClient
 export const createRedisInstance=async():Promise<RedisClientType|null>=>{
   try{
         const testingClient=createClient({
-        url:'redis://localhost:6300'
+        url:'redis://client-testing:6379'
     })
         await testingClient.connect()
         console.log('Redis running')
