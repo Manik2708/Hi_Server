@@ -9,9 +9,7 @@
   },
   "scripts": {
     "start": "ts-node index.ts",
-    "start-testing-redis": "redis-server --port 6300",
-    "prepare-server": "wait-on tcp:localhost:6300 && vitest",
-    "test": "npm run start-testing-redis & npm run prepare-server"
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
