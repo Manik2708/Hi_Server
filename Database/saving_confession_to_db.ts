@@ -19,7 +19,7 @@ export const saveConfessionToDb=async(confession: ConfessionModel, client:RedisC
                 const recievedConfession: ConfessionModel=JSON.parse(msg!.content.toString());
                 // await User.updateOne({_id: recievedConfession.senderId}, {$push:{sentConfessions: recievedConfession}});
                 const lastConfessionId: string|null=await client.get(RedisNames.LastRecievedConfession+recievedConfession.crushId);
-                console.log(await client.set(RedisNames.LastRecievedConfession+recievedConfession.crushId, recievedConfession._id));
+                await client.set(RedisNames.LastRecievedConfession+recievedConfession.crushId, recievedConfession._id);
                 // linked list is created with latest recieved confession as head and last recieved confession as tail
                 if(lastConfessionId==null){
                     // if at any point of time we need tail of Linked List

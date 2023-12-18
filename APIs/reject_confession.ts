@@ -5,7 +5,6 @@ import { sendMessageToUser } from '../Functions/sending_message_to_user';
 import * as EventNames from '../Constants/event_names'
 import { UpdateConfessionStatus } from '../Models/update_status_of_confession';
 import { convertUpdateConfessionStatusToCommonMessage } from '../Models/message_handler';
-import { socketfotApis } from '../Websockets/base';
 import { client } from '..';
 const rejectConfession=express.Router();
 
@@ -24,7 +23,7 @@ rejectConfession.post('/reject-confession', authMiddlewre, async(req, res)=>{
         EventNames.updateConfssionStatus,
         updateConfssionStatus,
         convertUpdateConfessionStatusToCommonMessage(updateConfssionStatus),
-        socketfotApis,
+        req,
         client,
         ()=>{}
     )

@@ -1,10 +1,8 @@
 import express from "express";
 import { authMiddlewre } from "../Middlewares/user";
 import { ConfessionDb } from "../Database/Models/confession";
-import { socketfotApis } from "../Websockets/base";
 import * as EventNames from "../Constants/event_names"
 import { saveConfessionToDb } from "../Database/saving_confession_to_db";
-import { getFirebaseToken } from "../Functions/get_firebase_token";
 import { sendNotification } from "../Functions/send_notification";
 import { covertConfessionToCommonMessage} from "../Models/message_handler";
 import { sendMessageToUser } from "../Functions/sending_message_to_user";
@@ -33,7 +31,7 @@ sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
             EventNames.recieveConfession,
             confessionDb,
             covertConfessionToCommonMessage(confessionDb),
-            socketfotApis,
+            req,
             client,
             async()=>{
                 // const firebaseToken=await getFirebaseToken(confessionDb.crushId)

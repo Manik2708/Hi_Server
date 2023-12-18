@@ -1,9 +1,7 @@
 import express from 'express';
 import { authMiddlewre } from '../Middlewares/user';
 import { client } from '..';
-import { RedisNames } from '../Constants/queues_redis';
 import { UnreadRecievedConfessions } from '../Models/unread_recieved_confessions';
-import { RedisFunctions } from '../Database/Redis/redis_functions';
 import { requestUnreadRecievedConfessionsFxn } from '../Functions/request_recieved_confessions_function';
 
 const requestUnreadRecievedConfessions=express.Router();
