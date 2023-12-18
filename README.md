@@ -56,16 +56,4 @@ Go to your google account and search "App Passwords", type an app name and click
 Type 'gmail' or any other SMTP service you are using, be careful here, as these inputs are case-sensitive!
 
 # Workflow of Program
-1) When a user creates an account, all their data is saved in a MongoDB database as well as in the local storage of their mobile device. This helps reduce the frequency of API calls. If a user chooses to log in, their details are matched with the data stored in the database, and the retrieval of sent and read confessions takes place. The time required for this retrieval depends on the number of confessions, and it follows an O(N) complexity. At this point, the Socket.io client attempts to connect to the Socket.io server. Upon successful connection, the socket ID is associated with the user ID in the Redis database, and the user is set as online.
-
-2) The search bar also utilizes the Socket.io connection to make it dynamic. Any changes made to the keyboard are emitted as an event to the server, and in response, a list of users is sent for display.
-
-3) Users can send confessions to any registered user. When a confession is made, it is placed in a RabbitMQ queue. Once consumed, the confession is saved in both the MongoDB and Redis databases. The confession is added to the "sentConfessions" array of the sender's document in MongoDB. The same confession is also saved in the Redis database under the receiver's hash.
-
-4) Confessions are also saved in the local storage of the user's mobile device. MongoDB ensures that even if a user uninstalls the app, all their confessions are still saved and can be retrieved during login.
-
-5) Confessions are stored in the Redis database because unread confessions are not saved in the mobile device's local storage. They are only stored locally once they are opened by the user. This is why users may request unread confessions frequently, necessitating caching. Note that confessions are not stored in standard linked lists provided by Redis because deleting a confession from a linked list still resulted in an O(N) complexity. Customized linked lists are used, where the previous and next confession IDs are also saved in the database, reducing the time complexity of deleting a confession to O(1).
-
-6) Requesting received confessions also has an O(1) complexity thanks to the use of pagination both on the server and client sides. Initially, only 30 confessions are sent, and the rest are sent in chunks of 30 confessions when the user requests them. This also reduces the likelihood of large-sized APIs and data loss when a user receives a high number of confessions.
-
-7) Notifications are sent using Firebase Cloud Services if the user is offline.
+The workflow of the program can be found at this [link](https://www.canva.com/design/DAF3HdC-U_M/TfMR5uWcUgN2vfQYUb_-cA/edit?utm_content=DAF3HdC-U_M&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton), the png file is here [file](code-flow.png)
