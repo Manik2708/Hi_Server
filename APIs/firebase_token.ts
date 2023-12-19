@@ -2,7 +2,7 @@ import express from 'express'
 import { authMiddlewre } from '../Middlewares/user';
 import {client} from '..';
 import { RedisNames } from '../Constants/queues_redis';
-import { setFirebaseToken } from '../Functions/get_firebase_token';
+
  const saveFirebaseToken=express.Router();
 
 saveFirebaseToken.post('/firebase-token',authMiddlewre, async(req, res)=>{
@@ -10,7 +10,7 @@ saveFirebaseToken.post('/firebase-token',authMiddlewre, async(req, res)=>{
     const userId=res.locals.id;
     const {token}=req.body;
    
-    setFirebaseToken(client,userId.toString(), token.toString())
+    // setFirebaseToken(client,userId.toString(), token.toString())
     res.status(200).json({'token': token});
     }catch(e: any){
         res.status(500).json({"msg": e.message});

@@ -1,4 +1,3 @@
-import { Socket } from "socket.io";
 import { QueueNames, RedisNames } from "../Constants/queues_redis";
 import { ConfessionDb } from "../Database/Models/confession";
 import { User } from "../Database/Models/user";
@@ -9,9 +8,14 @@ import * as EventNames from "../Constants/event_names"
 import { UpdateConfessionStatus } from "../Models/update_status_of_confession";
 import { convertUpdateConfessionStatusToCommonMessage } from "../Models/message_handler";
 import { RedisClientType } from "../Tests/Helpers/redis_db_instance";
-export const markConfessionAsRead=(socket: Socket,client:RedisClientType )=>{
+import { Request } from "express";
+export const markConfessionAsRead=(client:RedisClientType, req:Request, userId:string, confessionId:string, time:string)=>{
    try{
-    socket.on('mark-confession-read', async(data)=>{
+        const data:localRecievedData={
+            userId:userId,
+            confessionId:confessionId,
+            time:time
+        }
         createChannel((sendingChannel: amqp.Channel)=>{
             sendingChannel.assertQueue(QueueNames.CommonConfessionReadingQueue);
             sendingChannel.sendToQueue(QueueNames.CommonConfessionReadingQueue, Buffer.from(JSON.stringify(data)));
@@ -63,15 +67,16 @@ export const markConfessionAsRead=(socket: Socket,client:RedisClientType )=>{
                     EventNames.updateConfssionStatus,
                     toNotifySender,
                     convertUpdateConfessionStatusToCommonMessage(toNotifySender),
-                    socket,
+                    req,
                     client,
-                    ()=>{} 
+                    ()=>{},
+                    createChannel 
                 )
             }
             )
         }
         )
-    })
+    
    }catch(e: any){
     console.log(e.toString());
     // emit an event to resend the updation request

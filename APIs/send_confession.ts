@@ -3,10 +3,10 @@ import { authMiddlewre } from "../Middlewares/user";
 import { ConfessionDb } from "../Database/Models/confession";
 import * as EventNames from "../Constants/event_names"
 import { saveConfessionToDb } from "../Database/saving_confession_to_db";
-import { sendNotification } from "../Functions/send_notification";
 import { covertConfessionToCommonMessage} from "../Models/message_handler";
 import { sendMessageToUser } from "../Functions/sending_message_to_user";
 import { client } from '..';
+import { createChannel } from "../Queues/base";
 const sendConfession=express.Router();
 
 sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
@@ -33,15 +33,8 @@ sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
             covertConfessionToCommonMessage(confessionDb),
             req,
             client,
-            async()=>{
-                // const firebaseToken=await getFirebaseToken(confessionDb.crushId)
-                // if(firebaseToken=='false'){
-                //     console.log('Firebase token error');
-                // }
-                // else{
-                //     sendNotification(firebaseToken, confessionDb);   
-                // }
-            }
+            async()=>{},
+            createChannel
         )
             await ConfessionDb.updateOne({_id: confessionDb._id}, {status: 'Sent'})
             return res.status(200).json(confessionDb)     
