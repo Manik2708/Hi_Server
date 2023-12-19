@@ -13,7 +13,8 @@ export const sendMessageToUser=async(
     commonMessage: MessageHandler, 
     req:Request, 
     client:RedisClientType,
-    sendNotificationFunction:()=>void):Promise<void>=>
+    sendNotificationFunction:()=>void,
+    rabbitMQCallback:(callback:(chnl:amqp.Channel)=>void)=>void):Promise<void>=>
     {
     try{
     const userIsOnline=await ifUserIsOnline(userId, client);
@@ -22,7 +23,7 @@ export const sendMessageToUser=async(
         req.app.get('io').to(socketid!).emit(userIsOnlineEvent, messageForOnlineUser);
     }
     else{
-        createChannel((sendingChannelForOfflineUser: amqp.Channel)=>{
+        rabbitMQCallback((sendingChannelForOfflineUser: amqp.Channel)=>{
             sendingChannelForOfflineUser.assertQueue(QueueNames.OfflineQueue+userId, {durable: true});
             sendingChannelForOfflineUser.sendToQueue(QueueNames.OfflineQueue+userId, Buffer.from(JSON.stringify(commonMessage)));
         })
@@ -33,15 +34,5 @@ export const sendMessageToUser=async(
     }
     }catch(e:any){
         console.log(e.toString());
-        return sendMessageToUser(
-            userId,
-            wantTosendNotification,
-            userIsOnlineEvent,
-            messageForOnlineUser,
-            commonMessage,
-            req,
-            client,
-            sendNotificationFunction
-        )
     }
 }

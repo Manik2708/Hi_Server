@@ -47,5 +47,6 @@ const userSchema=new Schema<UserModel>({
         }
     ]
 });
+userSchema.index({name:'text', username:'text'})
 const User=model('User', userSchema);
 export {User};

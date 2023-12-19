@@ -20,6 +20,7 @@ import { rejectConfession } from './APIs/reject_confession';
 import { DatabaseUrl, FirebasePath, IP, IfRunningOnDocker } from './enviornment_variables';
 import { createChannel } from './Queues/base';
 import { RedisClientType } from './Tests/Helpers/redis_db_instance';
+import { searchUser } from './Constants/event_names';
 const conf=require(FirebasePath);
 const Db=DatabaseUrl;
 
@@ -37,6 +38,7 @@ app.use(sendConfession);
 app.use(saveFirebaseToken);
 app.use(requestUnreadRecievedConfessions)
 app.use(rejectConfession)
+app.use(searchUser)
 
 const server=http.createServer(app);
 mongoose.connect(Db).then(()=>{console.log('Connected to Database')}).catch((e)=>console.log(e.message));
