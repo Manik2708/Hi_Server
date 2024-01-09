@@ -6,7 +6,6 @@ import * as EventNames from '../Constants/event_names'
 import { UpdateConfessionStatus } from '../Models/update_status_of_confession';
 import { convertUpdateConfessionStatusToCommonMessage } from '../Models/message_handler';
 import { client } from '..';
-import { createChannel } from '../Queues/base';
 const rejectConfession=express.Router();
 
 rejectConfession.post('/reject-confession', authMiddlewre, async(req, res)=>{
@@ -27,7 +26,6 @@ rejectConfession.post('/reject-confession', authMiddlewre, async(req, res)=>{
         req,
         client,
         ()=>{},
-        createChannel
     )
     res.status(200).json(true);
    }catch(e: any){

@@ -7,7 +7,6 @@ import { UpdateConfessionStatus } from '../Models/update_status_of_confession';
 import * as EventNames from '../Constants/event_names'
 import { convertCreateChatMessageToCommonMessage, convertUpdateConfessionStatusToCommonMessage } from '../Models/message_handler';
 import { client } from '..';
-import { createChannel } from '../Queues/base';
 const acceptConfession=express.Router()
 
 
@@ -40,7 +39,6 @@ acceptConfession.post('/accept-confession',authMiddlewre, async(req, res)=>{
         req,
         client,
         ()=>{},
-        createChannel
     )
     await sendMessageToUser(
         confession.senderId!,
@@ -51,7 +49,6 @@ acceptConfession.post('/accept-confession',authMiddlewre, async(req, res)=>{
         req,
         client,
         ()=>{},
-        createChannel
     )
     return res.status(200).json(savedChat)
    }catch(e: any){

@@ -6,7 +6,7 @@ import { saveConfessionToDb } from "../Database/saving_confession_to_db";
 import { covertConfessionToCommonMessage} from "../Models/message_handler";
 import { sendMessageToUser } from "../Functions/sending_message_to_user";
 import { client } from '..';
-import { createChannel } from "../Queues/base";
+
 const sendConfession=express.Router();
 
 sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
@@ -34,7 +34,6 @@ sendConfession.post('/send-confession', authMiddlewre, async(req, res)=>{
             req,
             client,
             async()=>{},
-            createChannel
         )
             await ConfessionDb.updateOne({_id: confessionDb._id}, {status: 'Sent'})
             return res.status(200).json(confessionDb)     
