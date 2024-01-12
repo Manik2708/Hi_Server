@@ -14,3 +14,4 @@ export const recieveAllMessages: string='recieve-all-messages';
 export const appIsClosed: string='app-is-closed';
 export const updateConfssionStatus: string='update-status'
 export const createChat:string='create-chat'
+export const readConfession:string='read-confession'

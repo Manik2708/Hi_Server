@@ -1,6 +1,5 @@
 import {Schema, model} from 'mongoose';
 import { ChatModel } from '../../Models/chat_model';
-import { chatMessageSchema } from './chat_message';
 
 export const chatModelSchema=new Schema<ChatModel>(
     {

@@ -1,4 +1,3 @@
-
 import express from 'express';
 import { authMiddlewre } from '../Middlewares/user';
 import { User } from '../Database/Models/user';

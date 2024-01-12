@@ -1,5 +1,4 @@
 import {Schema, model} from 'mongoose';
-import { confessionSchema } from './confession';
 import { UserModel } from '../../Models/user';
 import { chatModelSchema } from './chat';
 const userSchema=new Schema<UserModel>({
@@ -31,16 +30,6 @@ const userSchema=new Schema<UserModel>({
         type: String,
         required: true
     },
-    sentConfessions:[
-        {
-            confessions: confessionSchema
-        },
-    ],
-    recievedConfessions:[
-        {
-            confessions: confessionSchema
-        },
-    ],
     chats:[
         {
             chats: chatModelSchema

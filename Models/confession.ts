@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-export interface ConfessionModel extends mongoose.Document{
+export interface ConfessionModel{
+    confessionId:string,
     senderId: string;
     senderAnonymousId: string;
     crushId: string;
@@ -8,5 +9,5 @@ export interface ConfessionModel extends mongoose.Document{
     time: string;
     status: string;
     crushName: string;
-    lastUpdate:string;
+    lastUpdate: string;
 }

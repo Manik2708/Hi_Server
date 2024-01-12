@@ -1,4 +1,7 @@
-export const confessionMessageType: number=1;
-export const updateConfessionStatusMessageType: number=2;
-export const createChatMessageType: number=3;
-export const sendChatMessageType: number=4;
+export enum MessageType{
+    CONFESSION_MESSAGE_TYPE,
+    READ_CONFESSION,
+    UPDATE_CONFESSION_STATUS,
+    CREATE_CHAT_MESSAGE_TYPE,
+    SEND_CHAT_MESSAGE
+}
