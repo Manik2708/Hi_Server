@@ -18,9 +18,9 @@ import admin from 'firebase-admin';
 import { requestUnreadRecievedConfessions } from './APIs/request_recieved_confessions';
 import { rejectConfession } from './APIs/reject_confession';
 import { DatabaseUrl, FirebasePath, IP, IfRunningOnDocker } from './enviornment_variables';
-import { createChannel } from './Queues/base';
 import { RedisClientType } from './Tests/Helpers/redis_db_instance';
-import { searchUser } from './Constants/event_names';
+import {Client as CasClient} from 'cassandra-driver';
+import { CassandraDatabaseQueries } from './Database/Cassandra/queries';
 const conf=require(FirebasePath);
 const Db=DatabaseUrl;
 
@@ -38,7 +38,7 @@ app.use(sendConfession);
 app.use(saveFirebaseToken);
 app.use(requestUnreadRecievedConfessions)
 app.use(rejectConfession)
-app.use(searchUser)
+
 
 const server=http.createServer(app);
 mongoose.connect(Db).then(()=>{console.log('Connected to Database')}).catch((e)=>console.log(e.message));
@@ -47,6 +47,11 @@ server.listen(3000,IP,()=>{
     console.log('Connected!');
 })
 let client:RedisClientType;
+const cassandraObject:CassandraDatabaseQueries=new CassandraDatabaseQueries(new CasClient({
+    contactPoints:['172.17.0.2'],
+    localDataCenter: 'datacenter1',
+    keyspace: 'ks1'
+}))
 if(IfRunningOnDocker=='true'){
     client =createClient({
         url:'redis://client:6379'
@@ -57,6 +62,7 @@ else{
 }
 const connect=async()=>{
     await client.connect();
+    await cassandraObject.connectAndCreateTables();
 }
 const ioServer=new Server(server);
 client.on('error', err => console.log('Redis Client Error', err));
@@ -66,10 +72,4 @@ admin.initializeApp({
     credential: admin.credential.cert(conf)
 });
 
-try{
-    createChannel((chnl)=>{})
-}
-catch(e:any){
-    console.log(e.toString())
-}
-export {ioServer,client };
+export {ioServer,client, cassandraObject};
