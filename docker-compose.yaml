@@ -12,6 +12,8 @@ services:
       - rabbitmq
       - redis-testing
       - rabbitmq-testing
+      - cassandra
+      - cassandra-testing
     networks:
       - mainnetwork
       - testingnetwork  
@@ -46,7 +48,23 @@ services:
       - "15673:15672"
     container_name: rabbit-testing  
     networks:
-      - testingnetwork 
+      - testingnetwork
+  cassandra:
+    image: cassandra:latest
+    command: []
+    ports:
+      - "9000:9042"
+    container_name: cassandra
+    networks: 
+      - mainnetwork
+  cassandra-testing:
+    image: cassandra:latest
+    command: []
+    ports:
+      - "9001:9042"
+    container_name: cassandra-testing
+    networks:
+      - testingnetwork
 networks:
   mainnetwork:
     driver: bridge

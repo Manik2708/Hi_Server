@@ -47,18 +47,23 @@ server.listen(3000,IP,()=>{
     console.log('Connected!');
 })
 let client:RedisClientType;
-const cassandraObject:CassandraDatabaseQueries=new CassandraDatabaseQueries(new CasClient({
-    contactPoints:['172.17.0.2'],
-    localDataCenter: 'datacenter1',
-    keyspace: 'ks1'
-}))
+let cassandraObject:CassandraDatabaseQueries;
 if(IfRunningOnDocker=='true'){
     client =createClient({
         url:'redis://client:6379'
     });
+    cassandraObject=new CassandraDatabaseQueries(new CasClient({
+        contactPoints:['0.0.0.0'],
+        localDataCenter: 'datacenter1',
+        
+    }))
 }
 else{
-    client =createClient({}); 
+    client =createClient({});
+    cassandraObject=new CassandraDatabaseQueries(new CasClient({
+        contactPoints:['0.0.0.0'],
+        localDataCenter: 'datacenter1',
+    }))
 }
 const connect=async()=>{
     await client.connect();
