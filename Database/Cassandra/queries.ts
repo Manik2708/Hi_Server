@@ -31,8 +31,8 @@ export class CassandraDatabaseQueries{
             status TEXT,
             crush_name TEXT,
             last_update TEXT,
-            PRIMARY KEY ((sender_id), time, confession_id)
-            )`
+            PRIMARY KEY (sender_id, time, confession_id)
+            );`
     )
     // Create Table for saving unread confessions for reciever in Database, The table constitutes of:
     // sender_id: The id of user who is sending confession
@@ -50,9 +50,9 @@ export class CassandraDatabaseQueries{
             confession TEXT,
             time TEXT,
             status TEXT,
-            anonymous_id TEXT
-            PRIMARY KEY ((crush_id), time, confession_id)
-            )`  
+            anonymous_id TEXT,
+            PRIMARY KEY (crush_id, time, confession_id)
+            );`  
     )
     // Create Table for saving read confessions for reciever in Database, The table constitutes of:
     // sender_id: The id of user who is sending confession
@@ -73,8 +73,8 @@ export class CassandraDatabaseQueries{
             status TEXT,
             anonymous_id TEXT,
             last_update TEXT,
-            PRIMARY KEY ((crush_id), last_update, confession_id)
-            )`  
+            PRIMARY KEY (crush_id, last_update, confession_id)
+            );`  
     )
    }
 
@@ -92,7 +92,7 @@ export class CassandraDatabaseQueries{
             status,
             crush_name,
             last_update TEXT  
-        )`,
+        );`,
         [
             confessionModel.senderId,
             confessionModel.crushId,
@@ -114,7 +114,7 @@ export class CassandraDatabaseQueries{
             time,
             status,
             anonymous_id, 
-        )`,
+        );`,
         [
             confessionModel.senderId,
             confessionModel.crushId,
@@ -186,7 +186,7 @@ export class CassandraDatabaseQueries{
     }
    }
 
-   
+
    acceptOrRejectConfession=(updateStatus:UpdateConfessionStatus)=>{
     this.client.execute(
         `UPDATE ${CassandraTableNames.recievedReadConfessions} SET status = ?, last_update = ? WHERE
