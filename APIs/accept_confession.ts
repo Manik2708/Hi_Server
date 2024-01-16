@@ -9,7 +9,6 @@
 // import { client } from '..';
 // const acceptConfession=express.Router()
 
-
 // acceptConfession.post('/accept-confession',authMiddlewre, async(req, res)=>{
 //    try{
 //     const {confessionId, time}=req.body;
