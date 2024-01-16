@@ -10,64 +10,30 @@ services:
     depends_on:
       - redis
       - rabbitmq
-      - redis-testing
-      - rabbitmq-testing
       - cassandra
-      - cassandra-testing
-    networks:
-      - mainnetwork
-      - testingnetwork  
   redis:
     image: redis:alpine
     container_name: client
     ports:
       - "6390:6379"
     command: ["redis-server", "--bind", "redis", "--port", "6379"]
-    networks:
-      - mainnetwork
   rabbitmq:
     image: rabbitmq
     container_name: rabbit
     ports:
       - "5674:5762"
       - "15674:15672"
-    networks:
-      - mainnetwork
-  redis-testing:
-    image: redis:alpine
-    command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
-    ports:
-      - "6392:6379"
-    container_name: client-testing
-    networks:
-      - testingnetwork
-  rabbitmq-testing:
-    image: rabbitmq
-    ports:
-      - "5673:5672"
-      - "15673:15672"
-    container_name: rabbit-testing  
-    networks:
-      - testingnetwork
   cassandra:
     image: cassandra:latest
-    command: []
     ports:
-      - "9000:9042"
+      - "7000:7000"
+      - "9042:9042"
+    restart: always
+    healthcheck:
+      test: ["CMD","nodetool", "status"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
     container_name: cassandra
-    networks: 
-      - mainnetwork
-  cassandra-testing:
-    image: cassandra:latest
-    command: []
-    ports:
-      - "9001:9042"
-    container_name: cassandra-testing
-    networks:
-      - testingnetwork
-networks:
-  mainnetwork:
-    driver: bridge
-  testingnetwork:
-    driver: bridge 
+
   

@@ -1,0 +1,19 @@
+version: "3"
+services:
+  redis-testing:
+    image: redis:alpine
+    command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
+    ports:
+      - "6392:6379"
+    container_name: client-testing
+  rabbitmq-testing:
+    image: rabbitmq
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    container_name: rabbit-testing  
+  cassandra-testing:
+    image: cassandra:latest
+    ports:
+      - "9001:9042"
+    container_name: cassandra-testing
