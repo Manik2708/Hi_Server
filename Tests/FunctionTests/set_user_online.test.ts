@@ -12,23 +12,21 @@ import {
   getTestServerInsatnce,
 } from "../Helpers/server_instance";
 import { RedisNames } from "../../Constants/queues_redis";
-import { envForTestingSocket } from "../Helpers/socket_io_testing_env";
 describe("Set user online function test", () => {
-  let redisClient: RedisClientType | null;
+  let redisClient: RedisClientType;
   let serverInstance: ServerProperties;
   beforeAll(async () => {
     redisClient = await createRedisInstance();
-    serverInstance = getTestServerInsatnce()!;
+    serverInstance = await getTestServerInsatnce()!;
   });
   it("Check if user id is set in Redis set and map or not", async () => {
     const userId = nanoid().toLowerCase();
-    envForTestingSocket(serverInstance.server, (serverSocket, clientSocket) => {
-      userOnline(userId, serverSocket.id, redisClient!);
-      expect(redisClient?.sIsMember("online-users", userId)).toBe(true);
-      expect(
-        redisClient?.hGet(RedisNames.OnlineUserMap + userId, "socketId"),
-      ).toBe(serverSocket.id.toString());
-    });
+    const socketId = nanoid().toLowerCase();
+    userOnline(userId, socketId, redisClient);
+    expect(await redisClient.sIsMember("online-users", userId)).toBe(true);
+    expect(
+      await redisClient.hGet(RedisNames.OnlineUserMap + userId, "socketId"),
+    ).toBe(socketId.toString());
   });
   afterAll(async () => {
     closeRedisServer(redisClient!);

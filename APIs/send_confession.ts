@@ -6,7 +6,7 @@ import { sendMessageToUser } from "../Functions/sending_message_to_user";
 import { cassandraObject, client } from "..";
 import { ConfessionModel } from "../Models/confession";
 import mongoose from "mongoose";
-import { createChannel } from "../Queues/base";
+import { ioServer, createQueue } from "..";
 
 const sendConfession = express.Router();
 
@@ -37,10 +37,10 @@ sendConfession.post("/send-confession", authMiddlewre, async (req, res) => {
       EventNames.recieveConfession,
       confessionDb,
       covertConfessionToCommonMessage(confessionDb),
-      req,
+      ioServer,
       client,
       async () => {},
-      createChannel,
+      createQueue,
       () => {
         cassandraObject.saveConfessionToCassandra(confessionDb);
       },

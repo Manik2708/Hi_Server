@@ -5,7 +5,7 @@ import { cassandraObject, client } from "..";
 import { sendMessageToUser } from "../Functions/sending_message_to_user";
 import { ConfessionModel } from "../Models/confession";
 import { convertUpdateConfessionStatusToCommonMessage } from "../Models/message_handler";
-import { createChannel } from "../Queues/base";
+import { ioServer, createQueue } from "..";
 import { UpdateConfessionStatusForSender } from "../Models/update_status_of_confession";
 export const readConfession = express.Router();
 
@@ -43,10 +43,10 @@ readConfession.post("/read-confession", authMiddlewre, async (req, res) => {
       EventNames.readConfession,
       updateStatusOfConfession,
       convertUpdateConfessionStatusToCommonMessage(updateStatusOfConfession),
-      req,
+      ioServer,
       client,
       () => {},
-      createChannel,
+      createQueue,
       () => {
         cassandraObject.readConfession(confessionDb);
       },

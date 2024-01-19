@@ -1,19 +1,20 @@
-import { Request } from "express";
 import { QueueNames, RedisNames } from "../Constants/queues_redis";
 import { MessageHandler } from "../Models/message_handler";
 import { ifUserIsOnline } from "./if_user_online";
 import { RedisClientType } from "..";
 import amqp from "amqplib/callback_api";
+import { Server } from "socket.io";
+import { CreateQueue } from "../Queues/base";
 export const sendMessageToUser = async (
   userId: string,
   wantTosendNotification: boolean,
   userIsOnlineEvent: string,
   messageForOnlineUser: any,
   commonMessage: MessageHandler,
-  req: Request,
+  io: Server,
   client: RedisClientType,
   sendNotificationFunction: () => void,
-  rabbitMQCallback: (callback: (chnl: amqp.Channel) => void) => void,
+  createQueue: CreateQueue,
   afterAcknowledgement?: () => void,
 ): Promise<void> => {
   try {
@@ -25,28 +26,31 @@ export const sendMessageToUser = async (
       );
       // An acknowledgement is required from client that message is delievered, only if it is delievered then message is saved to DB
       // TODO: If no ack is there then we have to think of saving this same confession somewhere else!
-      req.app
-        .get("io")
-        .to(socketid!)
-        .emit(userIsOnlineEvent, messageForOnlineUser, (ack: string) => {
+      io.to(socketid!).emit(
+        userIsOnlineEvent,
+        messageForOnlineUser,
+        (ack: string) => {
           if (afterAcknowledgement) {
             afterAcknowledgement();
           }
-        });
+        },
+      );
     } else {
       if (afterAcknowledgement) {
         afterAcknowledgement();
       }
-      rabbitMQCallback((sendingChannelForOfflineUser: amqp.Channel) => {
-        sendingChannelForOfflineUser.assertQueue(
-          QueueNames.OfflineQueue + userId,
-          { durable: true },
-        );
-        sendingChannelForOfflineUser.sendToQueue(
-          QueueNames.OfflineQueue + userId,
-          Buffer.from(JSON.stringify(commonMessage)),
-        );
-      });
+      createQueue.createChannel(
+        (sendingChannelForOfflineUser: amqp.Channel) => {
+          sendingChannelForOfflineUser.assertQueue(
+            QueueNames.OfflineQueue + userId,
+            { durable: true },
+          );
+          sendingChannelForOfflineUser.sendToQueue(
+            QueueNames.OfflineQueue + userId,
+            Buffer.from(JSON.stringify(commonMessage)),
+          );
+        },
+      );
       if (wantTosendNotification) {
         sendNotificationFunction();
       }

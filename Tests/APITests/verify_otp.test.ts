@@ -18,7 +18,7 @@ describe("Verify OTP API test", () => {
   let user: UserModel;
   beforeAll(async () => {
     mongooseInstance = await createMongoInstance();
-    serverInstance = getTestServerInsatnce()!;
+    serverInstance = await getTestServerInsatnce();
     serverInstance.app.use(verifyOTP);
     user = await createTestUser();
     const token = (Math.random() + 1).toString(36).substring(2, 5);

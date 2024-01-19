@@ -1,20 +1,21 @@
 import express from "express";
 import http from "http";
 
-export function getTestServerInsatnce(): ServerProperties | null {
-  try {
+export function getTestServerInsatnce() {
+  return new Promise<ServerProperties>((resolve, reject) => {
     const app = express();
     app.use(express.json());
     const server = http.createServer(app);
-    server.listen(3001);
-    return {
-      app: app,
-      server: server,
-    };
-  } catch (e: any) {
-    console.log("Error in main test server" + e.toString());
-    return null;
-  }
+    server.listen(3001, () => {
+      resolve({
+        server: server,
+        app: app,
+      });
+    });
+    setTimeout(() => {
+      reject(new Error("failed to connect wihtin 5 seconds."));
+    }, 5000);
+  });
 }
 
 export function closeTestServer(server: ServerProperties) {

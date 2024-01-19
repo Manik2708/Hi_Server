@@ -19,7 +19,7 @@ describe("Auth middleware test", () => {
   let mockApi: express.Router;
   beforeAll(async () => {
     mongooseInstance = await createMongoInstance();
-    serverInstance = getTestServerInsatnce()!;
+    serverInstance = await getTestServerInsatnce();
     mockApi = express.Router();
     mockApi.get("/", authMiddlewre, (req, res) => {
       try {
