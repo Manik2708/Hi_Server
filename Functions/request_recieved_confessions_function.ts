@@ -1,7 +1,7 @@
 import { UnreadRecievedConfessions } from "../Models/unread_recieved_confessions";
 import { RedisNames } from "../Constants/queues_redis";
 import { RedisFunctions } from "../Database/Redis/redis_functions";
-import { RedisClientType } from "../Tests/Helpers/redis_db_instance";
+import { RedisClientType } from "..";
 
 export const requestUnreadRecievedConfessionsFxn = async (
   client: RedisClientType,

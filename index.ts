@@ -26,6 +26,7 @@ import {
 import { Client as CasClient } from "cassandra-driver";
 import { CassandraDatabaseQueries } from "./Database/Cassandra/queries";
 import waitOn from "wait-on";
+import { CreateQueue } from "./Queues/base";
 const conf = require(FirebasePath);
 const Db = DatabaseUrl;
 
@@ -95,4 +96,5 @@ connectToSocket();
 admin.initializeApp({
   credential: admin.credential.cert(conf),
 });
+export const createQueue: CreateQueue = new CreateQueue();
 export { ioServer, client, cassandraObject };

@@ -1,59 +1,89 @@
 import { afterAll, beforeAll, describe, it, expect } from "vitest";
 import { RedisClientType } from "../..";
 import { createRedisInstance } from "../Helpers/redis_db_instance";
-import {
-  ServerProperties,
-  getTestServerInsatnce,
-} from "../Helpers/server_instance";
-import { envForTestingSocket } from "../Helpers/socket_io_testing_env";
-import express from "express";
 import { sendMessageToUser } from "../../Functions/sending_message_to_user";
-import { RedisNames } from "../../Constants/queues_redis";
+import { QueueNames, RedisNames } from "../../Constants/queues_redis";
 import { nanoid } from "nanoid";
-import { createTestingChannel } from "../Helpers/rabbitmq_testing_channel";
-import request from "supertest";
+import { Socket as ClientSocket } from "socket.io-client";
+import { ServerProperties } from "../Helpers/server_instance";
+import { getTestServerInsatnce } from "../Helpers/server_instance";
+import {
+  initClientSocket,
+  initServerSocket,
+} from "../Helpers/socket_io_testing_env";
+import { Server as IoServer } from "socket.io";
+import { CreateQueue } from "../../Queues/base";
 describe("sending_message_to_user function test", async () => {
-  let redisClient: RedisClientType | null;
+  let redisClient: RedisClientType;
   let serverInstance: ServerProperties;
+  let clientSocket: ClientSocket;
+  let socketServer: IoServer;
+  var eventTriggered: boolean = false;
+  var output: {};
+  let createTestQueue: CreateQueue;
   beforeAll(async () => {
     redisClient = await createRedisInstance();
-    serverInstance = getTestServerInsatnce()!;
+    serverInstance = await getTestServerInsatnce();
+    socketServer = initServerSocket(serverInstance.server);
+    clientSocket = await initClientSocket((socket) => {
+      socket.on("online-event", (data) => {
+        output = data;
+        eventTriggered = true;
+      });
+    });
+    createTestQueue = new CreateQueue(true);
+  });
+  afterAll(() => {
+    socketServer.close();
+    clientSocket.disconnect();
   });
   it("When user is online", async () => {
-    var eventTriggered: boolean = false;
-    envForTestingSocket(
-      serverInstance.server,
-      async (serverSocket, clientSocket) => {
-        const userId = nanoid().toLowerCase();
-        clientSocket.on("online-event", () => {
-          eventTriggered = true;
-        });
-        await redisClient!.sAdd(RedisNames.OnlineUsers, userId);
-        await redisClient!.hSet(RedisNames.OnlineUserMap + userId, {
-          socketId: clientSocket.id,
-        });
-        const mockApi = express.Router();
-        mockApi.get("/mockapi", (req, res) => {
-          sendMessageToUser(
-            userId,
-            false,
-            "online-event",
-            { msg: "hello" },
-            {
-              messageType: 1,
-            },
-            req,
-            redisClient!,
-            () => {},
-            createTestingChannel,
-          );
-          return res.status(400);
-        });
-        serverInstance.app.use(mockApi);
-        await request(serverInstance.app).post("/mockapi").send().expect(400);
-        expect(eventTriggered).toBe(true);
+    const userId = nanoid().toLowerCase();
+    await redisClient.sAdd(RedisNames.OnlineUsers, userId);
+    await redisClient.hSet(RedisNames.OnlineUserMap + userId, {
+      socketId: clientSocket.id,
+    });
+    await sendMessageToUser(
+      userId,
+      false,
+      "online-event",
+      { msg: "hello" },
+      {
+        messageType: 1,
       },
+      socketServer,
+      redisClient!,
+      () => {},
+      createTestQueue,
     );
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(eventTriggered).toBe(true);
+    expect(output).toStrictEqual({ msg: "hello" });
   });
-  it("When user is offline", async () => {});
+  it("When user is offline", async () => {
+    const userId = nanoid().toLowerCase();
+    await sendMessageToUser(
+      userId,
+      false,
+      "online-event",
+      { msg: "hello" },
+      {
+        messageType: 1,
+      },
+      socketServer,
+      redisClient!,
+      () => {},
+      createTestQueue,
+    );
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    let output: Buffer = Buffer.from("");
+    createTestQueue.createChannel((chnl) => {
+      chnl.assertQueue(QueueNames.OfflineQueue + userId);
+      chnl.consume(QueueNames.OfflineQueue + userId, (msg) => {
+        output = msg?.content!;
+      });
+    });
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(JSON.parse(output.toString())).toStrictEqual({ messageType: 1 });
+  });
 });

@@ -8,7 +8,7 @@ import {
 } from "../Models/update_status_of_confession";
 import { convertUpdateConfessionStatusToCommonMessage } from "../Models/message_handler";
 import { cassandraObject, client } from "..";
-import { createChannel } from "../Queues/base";
+import { ioServer, createQueue } from "..";
 const rejectConfession = express.Router();
 
 rejectConfession.post("/reject-confession", authMiddlewre, async (req, res) => {
@@ -44,10 +44,10 @@ rejectConfession.post("/reject-confession", authMiddlewre, async (req, res) => {
       convertUpdateConfessionStatusToCommonMessage(
         updateConfessionStatusForSender,
       ),
-      req,
+      ioServer,
       client,
       () => {},
-      createChannel,
+      createQueue,
       () => {
         cassandraObject.acceptOrRejectConfession(updateConfssionStatus);
       },
