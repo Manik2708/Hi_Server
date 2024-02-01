@@ -5,6 +5,18 @@ import { RedisClientType } from "..";
 import amqp from "amqplib/callback_api";
 import { Server } from "socket.io";
 import { CreateQueue } from "../Queues/base";
+/**
+ * @param userId : Sender id of the user to which message is to be sent
+ * @param wantTosendNotification : A boolean whether notification is to be sent to the user or not
+ * @param userIsOnlineEvent : Name of socket event which will be triggered when user is online
+ * @param messageForOnlineUser : Message for the user when it is online
+ * @param commonMessage : A common message which will be sent to Offline queue if user is offline
+ * @param io : Dependency injection of socket server
+ * @param client : Dependency injection of Redis client
+ * @param sendNotificationFunction : If notification is to be sent, then the notification function
+ * @param createQueue : Dependency injection of Create queue object which will send message to queue if user is offline
+ * @param afterAcknowledgement : An optional parameter, for the execution of a task when message is acknowledged from sockets
+ */
 export const sendMessageToUser = async (
   userId: string,
   wantTosendNotification: boolean,
