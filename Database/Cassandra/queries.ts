@@ -19,13 +19,13 @@ export class CassandraDatabaseQueries {
       await this.client.connect();
 
       // This method creates a keyspace in which our all of the data will be stored
-      this.client.execute(`
-    CREATE KEYSPACE hi_database
+      await this.client.execute(`
+    CREATE KEYSPACE IF NOT EXISTS hi_database
     WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
     `);
 
       // This method uses that keyspace to perform queries
-      this.client.execute(`USE hi_database`);
+      await this.client.execute(`USE hi_database`);
 
       // Create Table for saving confession for sender in Database, The table constitutes of:
       // sender_id: The id of user who is sending confession
@@ -35,7 +35,7 @@ export class CassandraDatabaseQueries {
       // time: Time of sending confession
       // status: Sent, Recieved, Accepted, Rejected
       // crush_name: The name which will be displayed to the sender client
-      this.client.execute(
+      await this.client.execute(
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.sentConfessions}(
             sender_id TEXT,
             crush_id TEXT,
@@ -56,7 +56,7 @@ export class CassandraDatabaseQueries {
       // time: Time of sending confession
       // status: Sent, Recieved, Accepted, Rejected
       // anonymous_id: The name which will be displayed to the reciever client
-      this.client.execute(
+      await this.client.execute(
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.recievedUnreadConfessions}(
             sender_id TEXT,
             crush_id TEXT,
@@ -77,7 +77,7 @@ export class CassandraDatabaseQueries {
       // status: Sent, Read, Accepted, Rejected
       // anonymous_id: The name which will be displayed to the reciever client
       // last_update: The time of reading confession
-      this.client.execute(
+      await this.client.execute(
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.recievedReadConfessions}(
             sender_id TEXT,
             crush_id TEXT,
@@ -95,10 +95,10 @@ export class CassandraDatabaseQueries {
     }
   };
 
-  saveConfessionToCassandra = (confessionModel: ConfessionModel) => {
+  saveConfessionToCassandra = async (confessionModel: ConfessionModel) => {
     try {
       // This function saves confession for saving it for sender
-      this.client.execute(
+      await this.client.execute(
         `INSERT INTO ${CassandraTableNames.sentConfessions}(
             sender_id,
             crush_id,
@@ -107,8 +107,8 @@ export class CassandraDatabaseQueries {
             time,
             status,
             crush_name,
-            last_update TEXT  
-        );`,
+            last_update 
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           confessionModel.senderId,
           confessionModel.crushId,
@@ -121,7 +121,7 @@ export class CassandraDatabaseQueries {
         ],
       );
       // This method saves confession for saving it for reviever
-      this.client.execute(
+      await this.client.execute(
         `INSERT INTO ${CassandraTableNames.recievedUnreadConfessions}(
             sender_id,
             crush_id,
@@ -129,8 +129,8 @@ export class CassandraDatabaseQueries {
             confession,
             time,
             status,
-            anonymous_id, 
-        );`,
+            anonymous_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           confessionModel.senderId,
           confessionModel.crushId,

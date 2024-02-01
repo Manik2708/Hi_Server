@@ -27,6 +27,7 @@ import { Client as CasClient } from "cassandra-driver";
 import { CassandraDatabaseQueries } from "./Database/Cassandra/queries";
 import waitOn from "wait-on";
 import { CreateQueue } from "./Queues/base";
+import path from "path";
 const conf = require(FirebasePath);
 const Db = DatabaseUrl;
 
@@ -44,6 +45,12 @@ app.use(sendConfession);
 app.use(saveFirebaseToken);
 app.use(requestUnreadRecievedConfessions);
 app.use(rejectConfession);
+
+app.use(express.static(path.join(__dirname, "./docs")));
+
+app.get("/", (req, res) => {
+  return res.sendFile(path.join(__dirname, "./docs", "index.html"));
+});
 
 const typeClient = createClient();
 export type RedisClientType = typeof typeClient;

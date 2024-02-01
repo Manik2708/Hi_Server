@@ -14,7 +14,8 @@
     "test": "npm run start-testing-redis & npm run prepare-server",
     "dockertest": "vitest",
     "format:fix": "prettier --write './**/*.ts'",
-    "format:check": "prettier --check './**/*.ts'"
+    "format:check": "prettier --check './**/*.ts'",
+    "docs": "typedoc"
   },
   "keywords": [],
   "author": "",
@@ -54,6 +55,7 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
-    "prettier": "^3.2.2"
+    "prettier": "^3.2.2",
+    "typedoc": "^0.25.7"
   }
 }
