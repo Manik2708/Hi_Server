@@ -1,0 +1,39 @@
+version: "3"
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    user: "node:node"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+      - rabbitmq
+      - cassandra
+  redis:
+    image: redis:alpine
+    container_name: client
+    ports:
+      - "6390:6379"
+    command: ["redis-server", "--bind", "redis", "--port", "6379"]
+  rabbitmq:
+    image: rabbitmq
+    container_name: rabbit
+    ports:
+      - "5674:5762"
+      - "15674:15672"
+  cassandra:
+    image: cassandra:latest
+    ports:
+      - "7000:7000"
+      - "9042:9042"
+    restart: always
+    healthcheck:
+      test: ["CMD","nodetool", "status"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    container_name: cassandra
+
+  
