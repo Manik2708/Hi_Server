@@ -1,20 +1,20 @@
-import { QueueNames, RedisNames } from "../Constants/queues_redis";
-import { MessageHandler } from "../Models/message_handler";
-import { ifUserIsOnline } from "./if_user_online";
-import { RedisClientType } from "..";
-import amqp from "amqplib/callback_api";
-import { Server } from "socket.io";
-import { CreateQueue } from "../Queues/base";
-import { inject, singleton } from "tsyringe";
+import { QueueNames, RedisNames } from '../Constants/queues_redis';
+import { MessageHandler } from '../Models/message_handler';
+import { ifUserIsOnline } from './if_user_online';
+import { RedisClientType } from '..';
+import amqp from 'amqplib/callback_api';
+import { Server } from 'socket.io';
+import { CreateQueue } from '../Queues/base';
+import { inject, singleton } from 'tsyringe';
 @singleton()
 export class SendMessageToUserService {
   private client: RedisClientType;
   private io: Server;
   private createQueue: CreateQueue;
   constructor(
-    @inject("RedisClient") client: RedisClientType,
-    @inject("IoServer") io: Server,
-    @inject("CreateQueue") createQueue: CreateQueue,
+    @inject('RedisClient') client: RedisClientType,
+    @inject('IoServer') io: Server,
+    @inject('CreateQueue') createQueue: CreateQueue,
   ) {
     this.client = client;
     this.io = io;

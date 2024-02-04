@@ -1,17 +1,17 @@
-import express from "express";
-import { createAccount } from "./APIs/create_account";
-import { tokenValidator } from "./APIs/token_validation";
-import { getData } from "./APIs/provide_data";
-import { verifyOTP } from "./APIs/verify_otp";
-import { sendOTP } from "./APIs/send_otp";
-import { login } from "./APIs/login";
-import { changeEmail } from "./APIs/change_email";
-import { changePassword } from "./APIs/change_password";
-import { sendConfession } from "./APIs/send_confession";
-import { saveFirebaseToken } from "./APIs/firebase_token";
-import { requestUnreadRecievedConfessions } from "./APIs/request_recieved_confessions";
-import { rejectConfession } from "./APIs/reject_confession";
-import path from "path";
+import express from 'express';
+import { createAccount } from './APIs/create_account';
+import { tokenValidator } from './APIs/token_validation';
+import { getData } from './APIs/provide_data';
+import { verifyOTP } from './APIs/verify_otp';
+import { sendOTP } from './APIs/send_otp';
+import { login } from './APIs/login';
+import { changeEmail } from './APIs/change_email';
+import { changePassword } from './APIs/change_password';
+import { sendConfession } from './APIs/send_confession';
+import { saveFirebaseToken } from './APIs/firebase_token';
+import { requestUnreadRecievedConfessions } from './APIs/request_recieved_confessions';
+import { rejectConfession } from './APIs/reject_confession';
+import path from 'path';
 
 export class ApiContainer {
   static app = express();
@@ -29,9 +29,9 @@ export class ApiContainer {
     ApiContainer.app.use(saveFirebaseToken);
     ApiContainer.app.use(requestUnreadRecievedConfessions);
     ApiContainer.app.use(rejectConfession);
-    ApiContainer.app.use(express.static(path.join(__dirname, "./docs")));
-    ApiContainer.app.get("/", (req, res) => {
-      return res.sendFile(path.join(__dirname, "./docs", "index.html"));
+    ApiContainer.app.use(express.static(path.join(__dirname, './docs')));
+    ApiContainer.app.get('/', (req, res) => {
+      return res.sendFile(path.join(__dirname, './docs', 'index.html'));
     });
 
     return ApiContainer.app;

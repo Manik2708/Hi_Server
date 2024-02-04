@@ -1,6 +1,6 @@
-import { client } from "../../service_containers";
-import { RedisNames } from "../../Constants/queues_redis";
-import { UnreadRecievedConfessions } from "../../Models/unread_recieved_confessions";
+import { client } from '../../service_containers';
+import { RedisNames } from '../../Constants/queues_redis';
+import { UnreadRecievedConfessions } from '../../Models/unread_recieved_confessions';
 
 export class RedisFunctions {
   static getUnreadRecievedConfessionById = async (

@@ -1,13 +1,13 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 export const DatabaseUrl: string =
-  "mongodb+srv://" +
+  'mongodb+srv://' +
   encodeURIComponent(process.env.DATABASE_USERNAME!) +
-  ":" +
+  ':' +
   encodeURIComponent(process.env.DATABASE_PASSWORD!) +
-  "@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority";
+  '@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority';
 export const IP: string = process.env.IP_ADDRESS!;
 export const FirebasePath: string = process.env.FIREBASE_PATH!;
 export const NodemailerSenderEmail: string =

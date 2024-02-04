@@ -1,5 +1,5 @@
-import { Schema, model } from "mongoose";
-import { ChatModel } from "../../Models/chat_model";
+import { Schema, model } from 'mongoose';
+import { ChatModel } from '../../Models/chat_model';
 
 export const chatModelSchema = new Schema<ChatModel>({
   crushId: {
@@ -22,6 +22,6 @@ export const chatModelSchema = new Schema<ChatModel>({
   },
 });
 
-const ChatModelDb = model("chatModel", chatModelSchema);
+const ChatModelDb = model('chatModel', chatModelSchema);
 
 export { ChatModelDb };

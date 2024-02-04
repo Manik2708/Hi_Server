@@ -1,14 +1,14 @@
-import jwt from "jwt-simple";
-import { User } from "../Database/Models/user";
-import { NestMiddleware } from "@nestjs/common";
+import jwt from 'jwt-simple';
+import { User } from '../Database/Models/user';
+import { NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { BadRequestError, BadRequestTypes } from "src/Errors/bad_request";
-import { InternalServerError } from "src/Errors/server_error";
+import { BadRequestError, BadRequestTypes } from 'src/Errors/bad_request';
+import { InternalServerError } from 'src/Errors/server_error';
 
-export class AuthMiddleware implements NestMiddleware{
+export class AuthMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     try {
-      const token: any = req.header("token");
+      const token: any = req.header('token');
       if (
         token == null ||
         token == undefined ||
@@ -16,10 +16,10 @@ export class AuthMiddleware implements NestMiddleware{
       ) {
         throw new BadRequestError(BadRequestTypes.TOKEN_NOT_FOUND);
       }
-      if (token.toString().includes(" ")) {
+      if (token.toString().includes(' ')) {
         throw new BadRequestError(BadRequestTypes.INVALID_HEADER_TOKEN);
       }
-      const decode = jwt.decode(token, "token");
+      const decode = jwt.decode(token, 'token');
       const user = await User.findById(decode.id);
       if (!user) {
         throw new BadRequestError(BadRequestTypes.USER_DOESNOT_EXISTS);
@@ -31,4 +31,4 @@ export class AuthMiddleware implements NestMiddleware{
       throw new InternalServerError(e.toString());
     }
   }
-} 
+}

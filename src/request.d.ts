@@ -1,7 +1,6 @@
-import express from 'express'
-declare module 'express'{
-        interface Request extends express.Request {
-            id?:string
-        }
-    
+import express from 'express';
+declare module 'express' {
+  interface Request extends express.Request {
+    id?: string;
+  }
 }

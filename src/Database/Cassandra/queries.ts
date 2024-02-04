@@ -1,13 +1,13 @@
-import { Client } from "cassandra-driver";
-import { ConfessionModel } from "../../Models/confession";
+import { Client } from 'cassandra-driver';
+import { ConfessionModel } from '../../Models/confession';
 import {
   CassandraMethods,
   CassandraTableNames,
-} from "../../Constants/cassandra_constants";
-import { UpdateConfessionStatus } from "../../Models/update_status_of_confession";
-import { Inject, Injectable, Scope } from "@nestjs/common";
-import { InjectionTokens } from "../../Constants/injection_tokens";
-@Injectable({scope:Scope.DEFAULT})
+} from '../../Constants/cassandra_constants';
+import { UpdateConfessionStatus } from '../../Models/update_status_of_confession';
+import { Inject, Injectable, Scope } from '@nestjs/common';
+import { InjectionTokens } from '../../Constants/injection_tokens';
+@Injectable({ scope: Scope.DEFAULT })
 export class CassandraDatabaseQueries {
   private client: Client;
   constructor(@Inject(InjectionTokens.CasClient) client: Client) {

@@ -1,18 +1,18 @@
-import { RedisClientType } from "..";
-import { Client as CasClient } from "cassandra-driver";
-import { IP, IfRunningOnDocker } from "../enviornment_variables";
-import { createClient } from "redis";
-import { Server } from "socket.io";
-import http from "http";
-import { ApiContainer } from "../api_containers";
+import { RedisClientType } from '..';
+import { Client as CasClient } from 'cassandra-driver';
+import { IP, IfRunningOnDocker } from '../enviornment_variables';
+import { createClient } from 'redis';
+import { Server } from 'socket.io';
+import http from 'http';
+import { ApiContainer } from '../api_containers';
 
 export class ConnectToServices {
   static createRedisClient = (): RedisClientType => {
     let client: RedisClientType;
 
-    if (IfRunningOnDocker == "true") {
+    if (IfRunningOnDocker == 'true') {
       client = createClient({
-        url: "redis://client:6379",
+        url: 'redis://client:6379',
       });
     } else {
       client = createClient({});
@@ -21,15 +21,15 @@ export class ConnectToServices {
   };
   static createCassandra = (): CasClient => {
     let casClient: CasClient;
-    if (IfRunningOnDocker == "true") {
+    if (IfRunningOnDocker == 'true') {
       casClient = new CasClient({
-        contactPoints: ["cassandra:9042"],
-        localDataCenter: "datacenter1",
+        contactPoints: ['cassandra:9042'],
+        localDataCenter: 'datacenter1',
       });
     } else {
       casClient = new CasClient({
-        contactPoints: ["0.0.0.0"],
-        localDataCenter: "datacenter1",
+        contactPoints: ['0.0.0.0'],
+        localDataCenter: 'datacenter1',
       });
     }
     return casClient;
@@ -37,7 +37,7 @@ export class ConnectToServices {
   static createHttpServer = (): http.Server => {
     const server = http.createServer(ApiContainer.registerApiInContainer());
     server.listen(3000, IP, () => {
-      console.log("Connected!");
+      console.log('Connected!');
     });
     return server;
   };

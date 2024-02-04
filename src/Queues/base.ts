@@ -1,5 +1,5 @@
-import amqp from "amqplib/callback_api";
-import { IfRunningOnDocker } from "../enviornment_variables";
+import amqp from 'amqplib/callback_api';
+import { IfRunningOnDocker } from '../enviornment_variables';
 
 export class CreateQueue {
   isTesting: boolean = false;
@@ -10,10 +10,10 @@ export class CreateQueue {
   }
   createChannel = (callback: (chnl: amqp.Channel) => void) => {
     const rabbitMqConnectionString: string = this.isTesting
-      ? "amqp://localhost:5673"
-      : IfRunningOnDocker == "true"
-        ? "amqp://rabbit:5672"
-        : "amqp://rabbit";
+      ? 'amqp://localhost:5673'
+      : IfRunningOnDocker == 'true'
+        ? 'amqp://rabbit:5672'
+        : 'amqp://rabbit';
     amqp.connect(
       rabbitMqConnectionString,
       async function (error: any, connection: amqp.Connection) {

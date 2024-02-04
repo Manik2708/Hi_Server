@@ -1,5 +1,5 @@
-import { RedisNames } from "../Constants/queues_redis";
-import { RedisClientType } from "..";
+import { RedisNames } from '../Constants/queues_redis';
+import { RedisClientType } from '..';
 export const userOnline = async (
   userId: string,
   socketId: string,

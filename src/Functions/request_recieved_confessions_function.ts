@@ -1,7 +1,7 @@
-import { UnreadRecievedConfessions } from "../Models/unread_recieved_confessions";
-import { RedisNames } from "../Constants/queues_redis";
-import { RedisFunctions } from "../Database/Redis/redis_functions";
-import { RedisClientType } from "..";
+import { UnreadRecievedConfessions } from '../Models/unread_recieved_confessions';
+import { RedisNames } from '../Constants/queues_redis';
+import { RedisFunctions } from '../Database/Redis/redis_functions';
+import { RedisClientType } from '..';
 
 export const requestUnreadRecievedConfessionsFxn = async (
   client: RedisClientType,
@@ -12,7 +12,7 @@ export const requestUnreadRecievedConfessionsFxn = async (
   const tryRetrivingFromRedis = await client.get(
     RedisNames.LastRecievedConfession + userId,
   );
-  if (lastConfessionId == "first-page") {
+  if (lastConfessionId == 'first-page') {
     if (tryRetrivingFromRedis == null) {
       return list;
     } else {

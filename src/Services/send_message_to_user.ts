@@ -1,13 +1,13 @@
-import { QueueNames, RedisNames } from "../Constants/queues_redis";
-import { MessageHandler } from "../Models/message_handler";
-import { ifUserIsOnline } from "../Functions/if_user_online";
-import { RedisClientType } from "..";
-import amqp from "amqplib/callback_api";
-import { Server } from "socket.io";
-import { CreateQueue } from "../Queues/base";
-import { InjectionTokens } from "../Constants/injection_tokens";
-import { Inject, Injectable, Scope } from "@nestjs/common";
-@Injectable({scope:Scope.DEFAULT})
+import { QueueNames, RedisNames } from '../Constants/queues_redis';
+import { MessageHandler } from '../Models/message_handler';
+import { ifUserIsOnline } from '../Functions/if_user_online';
+import { RedisClientType } from '..';
+import amqp from 'amqplib/callback_api';
+import { Server } from 'socket.io';
+import { CreateQueue } from '../Queues/base';
+import { InjectionTokens } from '../Constants/injection_tokens';
+import { Inject, Injectable, Scope } from '@nestjs/common';
+@Injectable({ scope: Scope.DEFAULT })
 export class SendMessageToUserService {
   private client: RedisClientType;
   private io: Server;

@@ -1,7 +1,7 @@
-import { MessageType } from "../Constants/messasge_type";
-import { ChatModel } from "./chat_model";
-import { ConfessionModel } from "./confession";
-import { UpdateConfessionStatusForSender } from "./update_status_of_confession";
+import { MessageType } from '../Constants/messasge_type';
+import { ChatModel } from './chat_model';
+import { ConfessionModel } from './confession';
+import { UpdateConfessionStatusForSender } from './update_status_of_confession';
 
 export interface MessageHandler {
   messageType: number;
