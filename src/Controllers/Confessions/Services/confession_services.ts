@@ -8,7 +8,10 @@ import {
   UpdateConfessionStatusForSender,
 } from '../../../Models/update_status_of_confession';
 import { EventNames } from '../../../Constants/event_names';
-import { convertUpdateConfessionStatusToCommonMessage, covertConfessionToCommonMessage } from '../../../Models/message_handler';
+import {
+  convertUpdateConfessionStatusToCommonMessage,
+  covertConfessionToCommonMessage,
+} from '../../../Models/message_handler';
 import { InternalServerError } from '../../../Errors/server_error';
 export class ConfessionServices {
   constructor(

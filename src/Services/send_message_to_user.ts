@@ -10,7 +10,7 @@ import { WebSocketServices } from './websocket_services';
 @Injectable({ scope: Scope.DEFAULT })
 export class SendMessageToUserService {
   private client: RedisClientType;
-  private webSocketServices: WebSocketServices
+  private webSocketServices: WebSocketServices;
   private createQueue: CreateQueue;
   constructor(
     @Inject(InjectionTokens.RedisClient) client: RedisClientType,
@@ -39,8 +39,8 @@ export class SendMessageToUserService {
         this.webSocketServices.addEvent({
           id: socketid!,
           name: userIsOnlineEvent,
-          data: messageForOnlineUser
-        })
+          data: messageForOnlineUser,
+        });
       } else {
         if (afterAcknowledgement) {
           afterAcknowledgement();

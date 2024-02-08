@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import {EventNames} from '../Constants/event_names';
+import { EventNames } from '../Constants/event_names';
 import { RedisNames } from '../Constants/queues_redis';
 import { RedisClientType } from '../main';
 export const appIsClosed = (socket: Socket, client: RedisClientType) => {

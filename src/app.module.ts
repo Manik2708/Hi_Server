@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { InjectionTokens } from './Constants/injection_tokens';
-import { casClient, client, createQueue} from './service_containers';
+import { casClient, client, createQueue } from './service_containers';
 import { SendMessageToUserService } from './Services/send_message_to_user';
 import { CassandraDatabaseQueries } from './Database/Cassandra/queries';
 import { ConfessionsModule } from './Controllers/Confessions/confession.module';
@@ -17,7 +17,7 @@ import { WebSocketsGateWay } from './websockets.gateway';
     WebSocketsGateWay,
     {
       provide: InjectionTokens.RedisClient,
-      useFactory: async()=>{
+      useFactory: async () => {
         await client.connect();
         return client;
       },
@@ -31,10 +31,6 @@ import { WebSocketsGateWay } from './websockets.gateway';
       useValue: casClient,
     },
   ],
-  imports:[
-    ConfessionsModule,
-    OTPModule, 
-    UserModule
-  ]
+  imports: [ConfessionsModule, OTPModule, UserModule],
 })
 export class AppModule {}

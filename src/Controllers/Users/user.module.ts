@@ -6,15 +6,12 @@ import { SetUserOnline } from './Services/set_user_online';
 import { UserController } from './user_controller';
 
 @Module({
-    providers:[
-        ChangeEmailService,
-        CreateUserAccountService,
-        UserLoginService,
-        SetUserOnline
-    ],
-    controllers:[
-        UserController
-    ]
+  providers: [
+    ChangeEmailService,
+    CreateUserAccountService,
+    UserLoginService,
+    SetUserOnline,
+  ],
+  controllers: [UserController],
 })
-
-export class UserModule{}
+export class UserModule {}
