@@ -2,8 +2,8 @@ import { User } from '../../../Database/Models/user';
 import bcrypt from 'bcryptjs';
 import jsonwt from 'jwt-simple';
 import mongoose from 'mongoose';
-import { BadRequestError, BadRequestTypes } from 'src/Errors/bad_request';
-import { InternalServerError } from 'src/Errors/server_error';
+import { BadRequestError, BadRequestTypes } from '../../../Errors/bad_request';
+import { InternalServerError } from '../../../Errors/server_error';
 import express from 'express';
 
 export class CreateUserAccountService {

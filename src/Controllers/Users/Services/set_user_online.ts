@@ -1,8 +1,8 @@
 import express from 'express';
-import { BadRequestError, BadRequestTypes } from 'src/Errors/bad_request';
-import { InternalServerError } from 'src/Errors/server_error';
-import { userOnline } from 'src/Functions/set_user_online';
-import { client } from 'src/service_containers';
+import { BadRequestError, BadRequestTypes } from '../../../Errors/bad_request';
+import { InternalServerError } from '../../../Errors/server_error';
+import { userOnline } from '../../../Functions/set_user_online';
+import { client } from '../../../service_containers';
 
 export class SetUserOnline {
   setUserOnline = async (req: express.Request, res: express.Response) => {

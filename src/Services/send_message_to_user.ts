@@ -1,24 +1,22 @@
 import { QueueNames, RedisNames } from '../Constants/queues_redis';
 import { MessageHandler } from '../Models/message_handler';
 import { ifUserIsOnline } from '../Functions/if_user_online';
-import { RedisClientType } from '..';
+import { RedisClientType } from '../main';
 import amqp from 'amqplib/callback_api';
-import { Server } from 'socket.io';
 import { CreateQueue } from '../Queues/base';
 import { InjectionTokens } from '../Constants/injection_tokens';
 import { Inject, Injectable, Scope } from '@nestjs/common';
+import { WebSocketServices } from './websocket_services';
 @Injectable({ scope: Scope.DEFAULT })
 export class SendMessageToUserService {
   private client: RedisClientType;
-  private io: Server;
+  private webSocketServices: WebSocketServices
   private createQueue: CreateQueue;
   constructor(
     @Inject(InjectionTokens.RedisClient) client: RedisClientType,
-    @Inject(InjectionTokens.IoServer) io: Server,
     @Inject(InjectionTokens.CreateQueue) createQueue: CreateQueue,
   ) {
     this.client = client;
-    this.io = io;
     this.createQueue = createQueue;
   }
 
@@ -38,15 +36,11 @@ export class SendMessageToUserService {
           RedisNames.OnlineUserMap + userId,
           RedisNames.SocketId,
         );
-        // An acknowledgement is required from client that message is delievered, only if it is delievered then message is saved to DB
-        // TODO: If no ack is there then we have to think of saving this same confession somewhere else!
-        this.io
-          .to(socketid!)
-          .emit(userIsOnlineEvent, messageForOnlineUser, (ack: string) => {
-            if (afterAcknowledgement) {
-              afterAcknowledgement();
-            }
-          });
+        this.webSocketServices.addEvent({
+          id: socketid!,
+          name: userIsOnlineEvent,
+          data: messageForOnlineUser
+        })
       } else {
         if (afterAcknowledgement) {
           afterAcknowledgement();

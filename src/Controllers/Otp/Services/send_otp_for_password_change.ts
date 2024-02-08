@@ -2,8 +2,8 @@ import express from 'express';
 import { User } from 'src/Database/Models/user';
 import { generateOtp } from 'otp-generator-ts';
 import sendmail from 'nodemailer';
-import { BadRequestError, BadRequestTypes } from 'src/Errors/bad_request';
-import { InternalServerError } from 'src/Errors/server_error';
+import { BadRequestError, BadRequestTypes } from '../../../Errors/bad_request';
+import { InternalServerError } from '../../../Errors/server_error';
 
 export class SendOTPForPasswordChange {
   sendOtpForPasswordChange = async (

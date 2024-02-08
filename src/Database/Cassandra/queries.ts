@@ -5,16 +5,20 @@ import {
   CassandraTableNames,
 } from '../../Constants/cassandra_constants';
 import { UpdateConfessionStatus } from '../../Models/update_status_of_confession';
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit, Scope } from '@nestjs/common';
 import { InjectionTokens } from '../../Constants/injection_tokens';
 @Injectable({ scope: Scope.DEFAULT })
-export class CassandraDatabaseQueries {
+export class CassandraDatabaseQueries implements OnModuleInit {
   private client: Client;
   constructor(@Inject(InjectionTokens.CasClient) client: Client) {
     this.client = client;
   }
 
   getClient = (): Client => this.client;
+
+  async onModuleInit() {
+    await this.connectAndCreateTables();
+  }
 
   connectAndCreateTables = async (): Promise<void> => {
     try {

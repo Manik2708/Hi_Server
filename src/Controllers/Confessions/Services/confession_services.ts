@@ -1,19 +1,15 @@
-import { SendMessageToUserService } from 'src/Services/send_message_to_user';
+import { SendMessageToUserService } from '../../../Services/send_message_to_user';
 import express from 'express';
-import { ConfessionModel } from 'src/Models/confession';
-import { EventNames } from 'src/Constants/event_names';
-import {
-  convertUpdateConfessionStatusToCommonMessage,
-  covertConfessionToCommonMessage,
-} from 'src/Models/message_handler';
-import { CassandraDatabaseQueries } from 'src/Database/Cassandra/queries';
-import { InternalServerError } from 'src/Errors/server_error';
+import { ConfessionModel } from '../../../Models/confession';
+import { CassandraDatabaseQueries } from '../../../Database/Cassandra/queries';
 import mongoose from 'mongoose';
 import {
   UpdateConfessionStatus,
   UpdateConfessionStatusForSender,
-} from 'src/Models/update_status_of_confession';
-import { BadRequestError } from 'src/Errors/bad_request';
+} from '../../../Models/update_status_of_confession';
+import { EventNames } from '../../../Constants/event_names';
+import { convertUpdateConfessionStatusToCommonMessage, covertConfessionToCommonMessage } from '../../../Models/message_handler';
+import { InternalServerError } from '../../../Errors/server_error';
 export class ConfessionServices {
   constructor(
     private readonly sendMessageToUserService: SendMessageToUserService,
@@ -66,7 +62,6 @@ export class ConfessionServices {
         senderId,
         sendingTime,
         crushId,
-        confession,
         time,
         readingTime,
         confessionId,
@@ -100,7 +95,7 @@ export class ConfessionServices {
       );
       res.status(200).json(true);
     } catch (e: any) {
-      throw new BadRequestError(e.toString());
+      throw new InternalServerError(e.toString());
     }
   };
 }

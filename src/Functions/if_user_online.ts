@@ -1,4 +1,4 @@
-import { RedisClientType } from '..';
+import { RedisClientType } from '../main';
 
 export const ifUserIsOnline = async (
   userId: string,
