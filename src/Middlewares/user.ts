@@ -2,12 +2,12 @@ import jwt from 'jwt-simple';
 import { User } from '../Database/Models/user';
 import { NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { BadRequestError, BadRequestTypes } from 'src/Errors/bad_request';
-import { InternalServerError } from 'src/Errors/server_error';
+import { BadRequestError, BadRequestTypes } from '../../src/Errors/bad_request';
+import { InternalServerError } from '../../src/Errors/server_error';
 import {
   UnathorizedErrorTypes,
   UnathorizedRequestError,
-} from 'src/Errors/unauthorised_request';
+} from '../../src/Errors/unauthorised_request';
 
 /**
  * @param header: token: A json webtoken, for authorization of the user!
@@ -38,7 +38,7 @@ export class AuthMiddleware implements NestMiddleware {
       }
       req.id = user.id;
       res.locals.token = token;
-      next();
+      return next();
     } catch (e: any) {
       if (e instanceof BadRequestError || UnathorizedRequestError) {
         return res.status(e.getStatus()).json({ message: e.message });
