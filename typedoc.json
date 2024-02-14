@@ -1,0 +1,11 @@
+{
+    "out": "./docs",
+    "entryPoints": ["./src"],
+    "name":"HI Documentation",
+    "exclude": ["node_modules/**/*", "./test/**/*"],
+    "entryPointStrategy": "expand",
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeExternals": true,
+    "excludeInternal": true
+  }

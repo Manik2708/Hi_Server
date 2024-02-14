@@ -33,14 +33,17 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       // This method uses that keyspace to perform queries
       await this.client.execute(`USE hi_database`);
 
-      // Create Table for saving confession for sender in Database, The table constitutes of:
-      // sender_id: The id of user who is sending confession
-      // crush_id: The id of user to which confession is sent
-      // confession_id: The id of confession which will make primary key unique
-      // confession: The message
-      // time: Time of sending confession
-      // status: Sent, Recieved, Accepted, Rejected
-      // crush_name: The name which will be displayed to the sender client
+      /**
+       * Create Table for saving confession for sender in Database
+       * @param sender_id: The id of user who is sending confession
+       * @param crush_id: The id of user to which confession is sent
+       * @param confession_id: The id of confession which will make primary key unique
+       * @param confession: The message
+       * @param time: Time of sending confession
+       * @param status: Sent, Recieved, Accepted, Rejected
+       * @param crush_name: The name which will be displayed to the sender client
+       */
+
       await this.client.execute(
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.sentConfessions}(
             sender_id TEXT,
@@ -54,14 +57,19 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             PRIMARY KEY (sender_id, time, confession_id)
             );`,
       );
-      // Create Table for saving unread confessions for reciever in Database, The table constitutes of:
-      // sender_id: The id of user who is sending confession
-      // crush_id: The id of user to which confession is sent
-      // confession_id: The id of confession which will make primary key unique
-      // confession: The message
-      // time: Time of sending confession
-      // status: Sent, Recieved, Accepted, Rejected
-      // anonymous_id: The name which will be displayed to the reciever client
+
+      /**
+       * Create Table for saving unread confessions for reciever in Database
+       * @param sender_id: The id of user who is sending confession
+       * @param crush_id: The id of user to which confession is sent
+       * @param confession_id: The id of confession which will make primary key unique
+       * @param confession: The message
+       * @param time: Time of sending confession
+       * @param status: Sent, Recieved, Accepted, Rejected
+       * @param crush_name: The name which will be displayed to the sender client
+       * @param anonymous_id: The name which will be displayed to the reciever client
+       */
+
       await this.client.execute(
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.recievedUnreadConfessions}(
             sender_id TEXT,
@@ -74,15 +82,19 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             PRIMARY KEY (crush_id, time, confession_id)
             );`,
       );
-      // Create Table for saving read confessions for reciever in Database, The table constitutes of:
-      // sender_id: The id of user who is sending confession
-      // crush_id: The id of user to which confession is sent
-      // confession_id: The id of confession which will make primary key unique
-      // confession: The message
-      // time: Time of sending confession
-      // status: Sent, Read, Accepted, Rejected
-      // anonymous_id: The name which will be displayed to the reciever client
-      // last_update: The time of reading confession
+
+      /**
+       * Create Table for saving read confessions for reciever in Database
+       * @param sender_id: The id of user who is sending confession
+       * @param crush_id: The id of user to which confession is sent
+       * @param confession_id: The id of confession which will make primary key unique
+       * @param confession: The message
+       * @param time: Time of sending confession
+       * @param status: Sent, Recieved, Accepted, Rejected
+       * @param anonymous_id: The name which will be displayed to the reciever client
+       * @param last_update: The time of reading confession
+       */
+
       await this.client.execute(
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.recievedReadConfessions}(
             sender_id TEXT,
@@ -100,6 +112,10 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       console.log(e.toString());
     }
   };
+
+  /**
+   * @param confessionModel
+   */
 
   saveConfessionToCassandra = async (confessionModel: ConfessionModel) => {
     try {
@@ -151,6 +167,11 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       console.log(e.toString());
     }
   };
+
+  /**
+   * This method marks confession as read and remove from unread category
+   * @param confessionModel
+   */
 
   readConfession = (confessionModel: ConfessionModel): void => {
     try {
@@ -206,6 +227,10 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       console.log(e.toString());
     }
   };
+
+  /**
+   * @param updateStatus UpdateConfessionStatusModel
+   */
 
   acceptOrRejectConfession = (updateStatus: UpdateConfessionStatus) => {
     this.client.execute(

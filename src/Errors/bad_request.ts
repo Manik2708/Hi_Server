@@ -34,12 +34,6 @@ export class BadRequestError extends HttpException {
       case BadRequestTypes.INVALID_EMAIL:
         message = 'Invalid email';
         break;
-      case BadRequestTypes.INVALID_HEADER_TOKEN:
-        message = 'Invalid Token';
-        break;
-      case BadRequestTypes.TOKEN_NOT_FOUND:
-        message = 'Token not found';
-        break;
       default:
         message = 'Unknown Bad Request';
         break;
@@ -64,6 +58,4 @@ export enum BadRequestTypes {
   PASSWORD_NOT_ENTERED,
   EMAIL_NOT_ENTERED,
   INVALID_EMAIL,
-  INVALID_HEADER_TOKEN,
-  TOKEN_NOT_FOUND,
 }

@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { InjectionTokens } from './Constants/injection_tokens';
 import { casClient, client, createQueue } from './service_containers';
 import { SendMessageToUserService } from './Services/send_message_to_user';
@@ -8,6 +13,12 @@ import { OTPModule } from './Controllers/Otp/otp.module';
 import { UserModule } from './Controllers/Users/user.module';
 import { WebSocketServices } from './Services/websocket_services';
 import { WebSocketsGateWay } from './websockets.gateway';
+import { AuthMiddleware } from './Middlewares/user';
+import { ConfessionsController } from './Controllers/Confessions/confession_controller';
+import { OTPController } from './Controllers/Otp/otp_controllers';
+import { UserController } from './Controllers/Users/user_controller';
+import { UserRoutes } from './Constants/route_paths';
+import { ControllerPaths } from './Constants/contoller_paths';
 
 @Module({
   providers: [
@@ -33,4 +44,23 @@ import { WebSocketsGateWay } from './websockets.gateway';
   ],
   imports: [ConfessionsModule, OTPModule, UserModule],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude(
+        {
+          path:
+            ControllerPaths.USER_CONTROLLER +
+            '/' +
+            UserRoutes.CREATE_ACCOUNT_WITHOUT_VERIFICATION,
+          method: RequestMethod.POST,
+        },
+        {
+          path: ControllerPaths.USER_CONTROLLER + '/' + UserRoutes.LOGIN,
+          method: RequestMethod.POST,
+        },
+      )
+      .forRoutes(ConfessionsController, OTPController, UserController);
+  }
+}

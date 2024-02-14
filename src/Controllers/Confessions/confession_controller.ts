@@ -1,12 +1,14 @@
 import { Controller, Post, Req, Res } from '@nestjs/common';
 import express from 'express';
 import { ConfessionServices } from './Services/confession_services';
+import { ControllerPaths } from 'src/Constants/contoller_paths';
+import { ConfessionRoutes } from 'src/Constants/route_paths';
 
-@Controller('confessions')
+@Controller(ControllerPaths.CONFESSION_CONTROLLER)
 export class ConfessionsController {
   constructor(private readonly confessionServices: ConfessionServices) {}
 
-  @Post('send-confession')
+  @Post(ConfessionRoutes.SEND_CONFESSION)
   async sendConfessionToCrush(
     @Req() req: express.Request,
     @Res() res: express.Response,
@@ -14,7 +16,7 @@ export class ConfessionsController {
     await this.confessionServices.sendConfessionToUser(req, res);
   }
 
-  @Post('reject-confession')
+  @Post(ConfessionRoutes.REJECT_CONFESSION)
   async rejectConfession(
     @Req() req: express.Request,
     @Res() res: express.Response,

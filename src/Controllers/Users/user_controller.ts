@@ -4,8 +4,10 @@ import express from 'express';
 import { UserLoginService } from './Services/login';
 import { ChangeEmailService } from './Services/change_email';
 import { SetUserOnline } from './Services/set_user_online';
+import { UserRoutes } from 'src/Constants/route_paths';
+import { ControllerPaths } from 'src/Constants/contoller_paths';
 
-@Controller('users')
+@Controller(ControllerPaths.USER_CONTROLLER)
 export class UserController {
   constructor(
     private readonly createUserAccountService: CreateUserAccountService,
@@ -14,7 +16,7 @@ export class UserController {
     private readonly setUserOnlineService: SetUserOnline,
   ) {}
 
-  @Post('create-account-without-verification')
+  @Post(UserRoutes.CREATE_ACCOUNT_WITHOUT_VERIFICATION)
   async createUserAccount(
     @Req() req: express.Request,
     @Res() res: express.Response,
@@ -22,17 +24,17 @@ export class UserController {
     await this.createUserAccountService.createAccount(req, res);
   }
 
-  @Post('login')
+  @Post(UserRoutes.LOGIN)
   async loginUser(@Req() req: express.Request, @Res() res: express.Response) {
     await this.userLoginService.userLogin(req, res);
   }
 
-  @Post('change-email')
+  @Post(UserRoutes.CHANGE_EMAIL)
   async changeEmail(@Req() req: express.Request, @Res() res: express.Response) {
     await this.changeEmailService.changeEmail(req, res);
   }
 
-  @Get('set-user-online')
+  @Get(UserRoutes.SET_USER_ONLINE)
   async setUserOnline(
     @Req() req: express.Request,
     @Res() res: express.Response,

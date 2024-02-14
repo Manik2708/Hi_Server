@@ -26,6 +26,9 @@ export class UserLoginService {
       const token = jwt.encode({ id: user._id }, 'token');
       return res.status(200).json({ token: token, ...user._doc });
     } catch (e: any) {
+      if (e instanceof BadRequestError) {
+        return res.status(e.getStatus()).json({ message: e.message });
+      }
       throw new InternalServerError(e.toString());
     }
   };

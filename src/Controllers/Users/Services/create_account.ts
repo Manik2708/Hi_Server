@@ -40,6 +40,9 @@ export class CreateUserAccountService {
         ...createUser._doc,
       });
     } catch (e: any) {
+      if (e instanceof BadRequestError) {
+        return res.status(e.getStatus()).json({ message: e.message });
+      }
       throw new InternalServerError(e.toString());
     }
   };

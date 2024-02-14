@@ -82,6 +82,9 @@ export class OTPServices {
         throw new BadRequestError(BadRequestTypes.OTP_VERIFICATION_FAILED);
       }
     } catch (e: any) {
+      if (e instanceof BadRequestError) {
+        return res.status(e.getStatus()).json({ message: e.message });
+      }
       throw new InternalServerError(e.toString());
     }
   };

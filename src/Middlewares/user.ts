@@ -4,6 +4,14 @@ import { NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { BadRequestError, BadRequestTypes } from 'src/Errors/bad_request';
 import { InternalServerError } from 'src/Errors/server_error';
+import {
+  UnathorizedErrorTypes,
+  UnathorizedRequestError,
+} from 'src/Errors/unauthorised_request';
+
+/**
+ * @param header: token: A json webtoken, for authorization of the user!
+ */
 
 export class AuthMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
@@ -14,10 +22,14 @@ export class AuthMiddleware implements NestMiddleware {
         token == undefined ||
         token.toString().trim().length == 0
       ) {
-        throw new BadRequestError(BadRequestTypes.TOKEN_NOT_FOUND);
+        throw new UnathorizedRequestError(
+          UnathorizedErrorTypes.TOKEN_NOT_FOUND,
+        );
       }
       if (token.toString().includes(' ')) {
-        throw new BadRequestError(BadRequestTypes.INVALID_HEADER_TOKEN);
+        throw new UnathorizedRequestError(
+          UnathorizedErrorTypes.INVALID_HEADER_TOKEN,
+        );
       }
       const decode = jwt.decode(token, 'token');
       const user = await User.findById(decode.id);
@@ -28,6 +40,9 @@ export class AuthMiddleware implements NestMiddleware {
       res.locals.token = token;
       next();
     } catch (e: any) {
+      if (e instanceof BadRequestError || UnathorizedRequestError) {
+        return res.status(e.getStatus()).json({ message: e.message });
+      }
       throw new InternalServerError(e.toString());
     }
   }
