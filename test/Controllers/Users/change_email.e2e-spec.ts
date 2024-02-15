@@ -14,7 +14,7 @@ import { ControllerPaths } from "../../../src/Constants/contoller_paths";
 import { UserRoutes } from "../../../src/Constants/route_paths";
 import { UserModule } from "../../../src/Controllers/Users/user.module";
 import { Test } from "@nestjs/testing";
-import { AuthMiddleware } from "../../../src/Middlewares/user";
+import { TestMiddlewareModule } from "../../Helpers/testmiddleware.module";
 
 describe("Change Email API test", () => {
   let mongooseInstance: typeof mongoose;
@@ -32,17 +32,11 @@ describe("Change Email API test", () => {
       };
     });
     const moduleRef = await Test.createTestingModule({
-        imports: [UserModule],
-        providers: [AuthMiddleware]
+        imports: [UserModule, TestMiddlewareModule],
     }).compile();
     
     app= moduleRef.createNestApplication();
     await app.init();
-  });
-  afterAll(async () => {
-    mongooseInstance = await createMongoInstance();
-    await disconnect(mongooseInstance);
-    await app.close();
   });
   it("No password sent", async () => {
     const mockRequest = {
@@ -89,7 +83,7 @@ describe("Change Email API test", () => {
       .post(routeName)
       .send(mockRequest)
       .expect(400);
-    expect(response.body.message).toBe("Wrong Password");
+    expect(response.body.message).toBe("Wrong password, Try again!");
   });
   it("Right password sent", async () => {
     const email = nanoid().toLowerCase() + "@xyz.com";
@@ -105,9 +99,14 @@ describe("Change Email API test", () => {
     const response = await request(app.getHttpServer())
       .post(routeName)
       .send(mockRequest)
-      .expect(200);
+      .expect(201);
     const searchForUser = await User.findById(user._id);
     expect(response.body).toBe(true);
     expect(searchForUser?.email).toBe(email);
+  });
+  afterAll(async () => {
+    mongooseInstance = await createMongoInstance();
+    await disconnect(mongooseInstance);
+    await app.close();
   });
 });

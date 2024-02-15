@@ -19,7 +19,6 @@ export class ChangeEmailService {
       if (!emailRegex.test(email)) {
         throw new BadRequestError(BadRequestTypes.INVALID_EMAIL);
       }
-      console.log(req.id);
       const user = await User.findById(req.id);
       const ifCorrectPassword = await bcrypt.compare(
         password,
