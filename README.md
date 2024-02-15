@@ -1,73 +1,26 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Hi
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This is a chat app aimed at providing users with the feature of sending confessions anonymously to people they wish to confess to. The app will include the following features:
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+1) Users can sign up with their email address, and an anonymous ID will be allotted after account creation.
+2) No user can access the app without verifying their email address.
+3) Returning users can log in using their email and retrieve all chat messages and sent confessions.  4) Users can search for other users and send confessions through their anonymous IDs.
+5) If the recipient (referred to as the "crush") is online, the confession will be sent immediately.
+6) If the crush is offline, the confession will be queued and temporarily stored.
+7) When the crush comes online again, they should be able to retrieve all queued confessions.
+8) The crush will have the option to either reject or accept the confessions after reading them.
+9) If a confession is rejected, the user will be informed about the rejection.
+10) If a confession is accepted, a chat will be initiated, allowing the user and the crush to have an end-to-end conversation.
+11) Users have the option to reveal their identity for a confession. Once revealed, a new anonymous ID will be allotted to the user, and the crush will be informed.
+12) If a confession is accepted and revealing is done for that confession, the chat will be dissolved, and no further chats will be permitted. This is in line with the app's rule: 
+`No two known users can chat; at least one of them must be anonymous.`
+13) Revealings should occur only after obtaining the user ID of at least one of the other public platforms (Instagram, Facebook, Twitter, etc.).
+14) Users should be able to anonymously invite their crush via other social media platforms such as Instagram, Facebook, WhatsApp, Telegram, Twitter, etc.     
 
-## Description
+## TechStack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+1) NestJs and Typescript: This project was originally formed in NodeJs and Typescript but this framework was giving us many problems like: Poor Architecture and No Dependency Injection. Hence we migrated from NodeJs to NestJs (You can find NodeJs repository in the main branch)
+2) Jest: For Unit, End-To-End and Integration Testing. Our strategy of Testing can be found in `Testing.md` file
+3) Apache Cassandra: A highly available Distributed Database, exclusively used for Messaging Service
+4) RabbitMQ: A Message broker acting between Users and their Crush. Will also be used as a broker for external APIs (like Instagram, Twitter etc.)
+5) Redis: Caching purposes and for storing Socket Id's. 
