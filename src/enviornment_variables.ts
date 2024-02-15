@@ -16,3 +16,4 @@ export const NodemailerSenderPassword: string =
   process.env.NODEMAILER_SENDER_PASSWORD!;
 export const NodemailerService: string = process.env.NODEMAILER_SPMTP_SERVICE!;
 export const IfRunningOnDocker = process.env.RUNNING_ON_DOCKER!;
+export const MongoTestingLink = process.env.MONGO_TESTING_LINK!;

@@ -34,13 +34,15 @@ export class AuthMiddleware implements NestMiddleware {
       const decode = jwt.decode(token, 'token');
       const user = await User.findById(decode.id);
       if (!user) {
-        throw new BadRequestError(BadRequestTypes.USER_DOESNOT_EXISTS);
+        throw new BadRequestError(BadRequestTypes.USER_WITH_TOKEN_DOESNT_EXIST);
       }
       req.id = user.id;
       res.locals.token = token;
       return next();
     } catch (e: any) {
-      if (e instanceof BadRequestError || UnathorizedRequestError) {
+      if (e instanceof BadRequestError) {
+        return res.status(e.getStatus()).json({ message: e.message });
+      } else if (e instanceof UnathorizedRequestError) {
         return res.status(e.getStatus()).json({ message: e.message });
       }
       throw new InternalServerError(e.toString());

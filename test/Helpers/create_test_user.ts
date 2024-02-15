@@ -1,6 +1,6 @@
-import { nanoid } from "nanoid";
-import { User } from "../../src/Database/Models/user";
-import { UserModel } from "../../src/Models/user";
+import { nanoid } from 'nanoid';
+import { User } from '../../src/Database/Models/user';
+import { UserModel } from '../../src/Models/user';
 
 export function createTestUser(): Promise<UserModel> {
   return User.create({

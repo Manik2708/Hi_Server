@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Req, Res } from '@nestjs/common';
 import express from 'express';
 import { OTPServices } from './Services/otp_services';
-import { ControllerPaths } from 'src/Constants/contoller_paths';
-import { OTPRoutes } from 'src/Constants/route_paths';
+import { ControllerPaths } from '../../Constants/contoller_paths';
+import { OTPRoutes } from '../../Constants/route_paths';
 
 @Controller(ControllerPaths.OTP_CONTROLLER)
 export class OTPController {
