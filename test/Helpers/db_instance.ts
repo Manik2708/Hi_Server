@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
-import { DatabaseUrl } from "../../src/enviornment_variables";
+import mongoose from 'mongoose';
+import { MongoTestingLink } from '../../src/enviornment_variables';
 
 export async function createMongoInstance(): Promise<typeof mongoose> {
-  const dbName: string = "HI_SERVER_TEST_DATABASE";
-  return mongoose.connect(DatabaseUrl, {
+  const dbName: string = 'HI_SERVER_TEST_DATABASE';
+  return mongoose.connect(MongoTestingLink, {
     dbName,
   });
 }
