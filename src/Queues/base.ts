@@ -1,5 +1,5 @@
 import amqp from 'amqplib/callback_api';
-import { IfRunningOnDocker } from '../enviornment_variables';
+import { IfRunningOnDocker, TestingRabbitLink } from '../enviornment_variables';
 
 export class CreateQueue {
   isTesting: boolean = false;
@@ -10,7 +10,7 @@ export class CreateQueue {
   }
   createChannel = (callback: (chnl: amqp.Channel) => void) => {
     const rabbitMqConnectionString: string = this.isTesting
-      ? 'amqp://localhost:5673'
+      ? TestingRabbitLink==undefined?'amqp://localhost:5673':TestingRabbitLink
       : IfRunningOnDocker == 'true'
         ? 'amqp://rabbit:5672'
         : 'amqp://rabbit';
