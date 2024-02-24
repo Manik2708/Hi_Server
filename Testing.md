@@ -13,7 +13,7 @@ Most of the services which we use (like Mongo, Redis and Cassandra) allows us to
 a) We have to make different scripts for running all the tests and individual tests.
 b) Most of the times, a contributor would not be working on all of the tests and if `docker compose` is there in npm scripts it would make a single test much slower, where a single test usually takes 5-7 seconds, a test with docker would take 40-60 seconds as it needs to setup all the containers before the test and kill them after it. This is very uneffecient also, as running and closing compose for each test would lead to higher load on the machine.
 
-# What if you don't wwant to use Docker?
+# What if you don't want to use Docker?
 You might have some problem with docker, or you might be more comfortable with setting up testing instances on your machine. For this move to `.env` file and use the following:
 ```
         REDIS_TESTING_PORT: The port on which you are running server for testing purpose
