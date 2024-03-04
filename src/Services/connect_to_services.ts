@@ -1,4 +1,4 @@
-import { RedisClientType } from '../main';
+import { RedisClientType } from '../Constants/constant_types';
 import { Client as CasClient } from 'cassandra-driver';
 import { IP, IfRunningOnDocker } from '../enviornment_variables';
 import { createClient } from 'redis';

@@ -3,7 +3,7 @@ import { CreateUserAccountService } from './Services/create_account';
 import express from 'express';
 import { UserLoginService } from './Services/login';
 import { ChangeEmailService } from './Services/change_email';
-import { SetUserOnline } from './Services/set_user_online';
+// import { SetUserOnline } from './Services/set_user_online';
 import { UserRoutes } from '../../Constants/route_paths';
 import { ControllerPaths } from '../../Constants/contoller_paths';
 
@@ -13,7 +13,7 @@ export class UserController {
     private readonly createUserAccountService: CreateUserAccountService,
     private readonly userLoginService: UserLoginService,
     private readonly changeEmailService: ChangeEmailService,
-    private readonly setUserOnlineService: SetUserOnline,
+    // private readonly setUserOnlineService: SetUserOnline,
   ) {}
 
   @Post(UserRoutes.CREATE_ACCOUNT_WITHOUT_VERIFICATION)
@@ -34,11 +34,11 @@ export class UserController {
     await this.changeEmailService.changeEmail(req, res);
   }
 
-  @Get(UserRoutes.SET_USER_ONLINE)
-  async setUserOnline(
-    @Req() req: express.Request,
-    @Res() res: express.Response,
-  ) {
-    await this.setUserOnlineService.setUserOnline(req, res);
-  }
+  // @Get(UserRoutes.SET_USER_ONLINE)
+  // async setUserOnline(
+  //   @Req() req: express.Request,
+  //   @Res() res: express.Response,
+  // ) {
+  //   await this.setUserOnlineService.setUserOnline(req, res);
+  // }
 }

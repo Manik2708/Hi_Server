@@ -1,23 +1,28 @@
 import { QueueNames, RedisNames } from '../Constants/queues_redis';
 import { MessageHandler } from '../Models/message_handler';
-import { ifUserIsOnline } from '../Functions/if_user_online';
-import { RedisClientType } from '../main';
+import { RedisClientType } from '../Constants/constant_types';
 import amqp from 'amqplib/callback_api';
 import { CreateQueue } from '../Queues/base';
 import { InjectionTokens } from '../Constants/injection_tokens';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { WebSocketServices } from './websocket_services';
+// import { UserOnlineServices } from './user_online_services';
 @Injectable({ scope: Scope.DEFAULT })
 export class SendMessageToUserService {
-  private client: RedisClientType;
   private webSocketServices: WebSocketServices;
   private createQueue: CreateQueue;
+  private client: RedisClientType;
+  // private userOnlineServices: UserOnlineServices;
   constructor(
-    @Inject(InjectionTokens.RedisClient) client: RedisClientType,
+    webSocketServices: WebSocketServices,
     @Inject(InjectionTokens.CreateQueue) createQueue: CreateQueue,
+    @Inject(InjectionTokens.RedisClient) client: RedisClientType,
+    // @Inject() userOnlineServices: UserOnlineServices
   ) {
     this.client = client;
     this.createQueue = createQueue;
+    this.webSocketServices = webSocketServices;
+    // this.userOnlineServices = userOnlineServices;
   }
 
   sendMessageToUser = async (
@@ -30,8 +35,9 @@ export class SendMessageToUserService {
     afterAcknowledgement?: () => void,
   ): Promise<void> => {
     try {
-      const userIsOnline = await ifUserIsOnline(userId, this.client);
-      if (userIsOnline) {
+      // const userIsOnline = await this.userOnlineServices.ifUserIsOnline(userId);
+      let bool = true;
+      if (bool) {
         const socketid = await this.client.hGet(
           RedisNames.OnlineUserMap + userId,
           RedisNames.SocketId,

@@ -2,16 +2,16 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const parseStringToNumber=(text:string|undefined):number|undefined=>{
-  try{
-   if(text==undefined){
-     return undefined;
-   }
-   return parseInt(text);
-  }catch(e){
-   return undefined;
+const parseStringToNumber = (text: string | undefined): number | undefined => {
+  try {
+    if (text == undefined) {
+      return undefined;
+    }
+    return parseInt(text);
+  } catch (e) {
+    return undefined;
   }
- }
+};
 
 export const DatabaseUrl: string =
   'mongodb+srv://' +
@@ -28,7 +28,12 @@ export const NodemailerSenderPassword: string =
 export const NodemailerService: string = process.env.NODEMAILER_SPMTP_SERVICE!;
 export const IfRunningOnDocker = process.env.RUNNING_ON_DOCKER!;
 export const MongoTestingLink = process.env.MONGO_TESTING_LINK!;
-export const RedisTestingLink: string|undefined = process.env.TESTING_REDIS_LINK;
-export const TestingCassandraContactPoint: string|undefined = process.env.TESTING_CASSANDRA_CONTACT_POINT;
-export const TestingCassandraPort: number|undefined = parseStringToNumber(process.env.TESTING_CASSANDRA_PORT);
-export const TestingRabbitLink: string|undefined = process.env.TESTING_RABBIT_LINK;
+export const RedisTestingLink: string | undefined =
+  process.env.TESTING_REDIS_LINK;
+export const TestingCassandraContactPoint: string | undefined =
+  process.env.TESTING_CASSANDRA_CONTACT_POINT;
+export const TestingCassandraPort: number | undefined = parseStringToNumber(
+  process.env.TESTING_CASSANDRA_PORT,
+);
+export const TestingRabbitLink: string | undefined =
+  process.env.TESTING_RABBIT_LINK;

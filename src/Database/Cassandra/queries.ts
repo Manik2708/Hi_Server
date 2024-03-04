@@ -48,7 +48,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.sentConfessions}(
             sender_id TEXT,
             crush_id TEXT,
-            confession_id TEXT,
+            confession_id uuid,
             confession TEXT,
             time TEXT,
             status TEXT,
@@ -74,7 +74,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.recievedUnreadConfessions}(
             sender_id TEXT,
             crush_id TEXT,
-            confession_id TEXT,
+            confession_id uuid,
             confession TEXT,
             time TEXT,
             status TEXT,
@@ -99,7 +99,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.recievedReadConfessions}(
             sender_id TEXT,
             crush_id TEXT,
-            confession_id TEXT,
+            confession_id uuid,
             confession TEXT,
             time TEXT,
             status TEXT,
@@ -134,7 +134,6 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         [
           confessionModel.senderId,
           confessionModel.crushId,
-          confessionModel.confessionId,
           confessionModel.confession,
           confessionModel.time,
           confessionModel.status,

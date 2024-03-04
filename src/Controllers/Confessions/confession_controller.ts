@@ -3,6 +3,7 @@ import express from 'express';
 import { ConfessionServices } from './Services/confession_services';
 import { ControllerPaths } from 'src/Constants/contoller_paths';
 import { ConfessionRoutes } from 'src/Constants/route_paths';
+import { InternalServerError } from 'src/Errors/server_error';
 
 @Controller(ControllerPaths.CONFESSION_CONTROLLER)
 export class ConfessionsController {
@@ -13,7 +14,31 @@ export class ConfessionsController {
     @Req() req: express.Request,
     @Res() res: express.Response,
   ) {
-    await this.confessionServices.sendConfessionToUser(req, res);
+    try {
+      const {
+        senderId,
+        senderAnonymousId,
+        crushId,
+        confession,
+        time,
+        crushName,
+      } = req.body;
+      const confessionDb = await this.confessionServices.sendConfessionToUser(
+        senderId,
+        senderAnonymousId,
+        crushId,
+        confession,
+        time,
+        crushName,
+      );
+      return res.status(400).json(confessionDb);
+    } catch (error) {
+      if (error instanceof InternalServerError) {
+        throw error;
+      } else {
+        throw Error('Unknown error');
+      }
+    }
   }
 
   @Post(ConfessionRoutes.REJECT_CONFESSION)

@@ -2,7 +2,7 @@ import { SendMessageToUserService } from '../../../Services/send_message_to_user
 import express from 'express';
 import { ConfessionModel } from '../../../Models/confession';
 import { CassandraDatabaseQueries } from '../../../Database/Cassandra/queries';
-import mongoose from 'mongoose';
+import { types } from 'cassandra-driver';
 import {
   UpdateConfessionStatus,
   UpdateConfessionStatusForSender,
@@ -20,20 +20,17 @@ export class ConfessionServices {
   ) {}
 
   sendConfessionToUser = async (
-    req: express.Request,
-    res: express.Response,
-  ) => {
+    senderId: string,
+    senderAnonymousId: string,
+    crushId: string,
+    confession: string,
+    time: string,
+    crushName: string,
+  ): Promise<ConfessionModel> => {
     try {
-      const {
-        senderId,
-        senderAnonymousId,
-        crushId,
-        confession,
-        time,
-        crushName,
-      } = req.body;
+      const confessionId = types.TimeUuid.now();
       let confessionDb: ConfessionModel = {
-        confessionId: mongoose.Types.ObjectId.toString(),
+        confessionId: confessionId.toString(),
         senderId: senderId,
         senderAnonymousId: senderAnonymousId,
         crushId: crushId,
@@ -54,7 +51,7 @@ export class ConfessionServices {
           await this.cassandraObject.saveConfessionToCassandra(confessionDb);
         },
       );
-      return res.status(200).json(confessionDb);
+      return confessionDb;
     } catch (e: any) {
       throw new InternalServerError(e.toString());
     }

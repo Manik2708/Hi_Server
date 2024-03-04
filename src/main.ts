@@ -1,12 +1,8 @@
 import mongoose from 'mongoose';
-import { createClient } from 'redis';
 import { DatabaseUrl } from './enviornment_variables';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-
-const typeClient = createClient();
-export type RedisClientType = typeof typeClient;
 
 async function bootstrap() {
   const Db = DatabaseUrl;

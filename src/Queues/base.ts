@@ -10,7 +10,9 @@ export class CreateQueue {
   }
   createChannel = (callback: (chnl: amqp.Channel) => void) => {
     const rabbitMqConnectionString: string = this.isTesting
-      ? TestingRabbitLink==undefined?'amqp://localhost:5673':TestingRabbitLink
+      ? TestingRabbitLink == undefined
+        ? 'amqp://localhost:5673'
+        : TestingRabbitLink
       : IfRunningOnDocker == 'true'
         ? 'amqp://rabbit:5672'
         : 'amqp://rabbit';
