@@ -1,5 +1,5 @@
-export class WebSocketMessageError extends Error{
-    constructor(){
-        super()
-    }
+export class WebSocketMessageError extends Error {
+  constructor() {
+    super();
+  }
 }

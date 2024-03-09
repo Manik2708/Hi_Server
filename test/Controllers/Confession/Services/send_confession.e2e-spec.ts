@@ -77,7 +77,7 @@ describe('Send confession tests', () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(outputData).toStrictEqual(expectedValue);
   });
-  it('When use is offline', async()=>{
+  it('When use is offline', async () => {
     const mockedValue = types.TimeUuid.now();
     jest.spyOn(types.TimeUuid, 'now').mockImplementationOnce(() => {
       return mockedValue;
@@ -109,18 +109,18 @@ describe('Send confession tests', () => {
       lastUpdate: sendingObject.time,
     };
     await new Promise((resolve) => setTimeout(resolve, 500));
-    TestServiceContainers.getTestingRabbitClient().createChannel((chnl)=>{
-      chnl.assertQueue( QueueNames.OfflineQueue + sendingObject.crushId,
-        { durable: true },)
-      chnl.consume(QueueNames.OfflineQueue+sendingObject.crushId, (msg)=>{
-        if(msg==null){
-          outputData=null
+    TestServiceContainers.getTestingRabbitClient().createChannel((chnl) => {
+      chnl.assertQueue(QueueNames.OfflineQueue + sendingObject.crushId, {
+        durable: true,
+      });
+      chnl.consume(QueueNames.OfflineQueue + sendingObject.crushId, (msg) => {
+        if (msg == null) {
+          outputData = null;
+        } else {
+          console.log(JSON.parse(msg.content.toString()));
         }
-        else{
-          console.log(JSON.parse(msg.content.toString()))
-        }
-      })
-    })
+      });
+    });
     await new Promise((resolve) => setTimeout(resolve, 500));
-  })
+  });
 });

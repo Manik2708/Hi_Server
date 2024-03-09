@@ -17,13 +17,12 @@ export class WebSocketsGateWay implements OnGatewayInit<Server> {
       .subscribe({
         next: (event) => {
           const socket = ioServer.sockets.sockets.get(event.id);
-          if(socket==null){
-            throw new WebSocketMessageError(); 
-          }
-          else{
-            try{
+          if (socket == null) {
+            throw new WebSocketMessageError();
+          } else {
+            try {
               socket.emitWithAck(event.name, event.data);
-            }catch(e){
+            } catch (e) {
               throw new WebSocketMessageError();
             }
           }

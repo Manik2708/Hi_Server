@@ -120,7 +120,9 @@ export class CassandraDatabaseQueries implements OnModuleInit {
 
   saveConfessionToCassandra = async (confessionModel: ConfessionModel) => {
     try {
-      const confessionId = types.TimeUuid.fromString(confessionModel.confessionId);
+      const confessionId = types.TimeUuid.fromString(
+        confessionModel.confessionId,
+      );
       // This function saves confession for saving it for sender
       await this.client.execute(
         `INSERT INTO ${CassandraTableNames.sentConfessions}(
@@ -166,7 +168,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         ],
       );
     } catch (e: any) {
-      throw new InternalServerError(e.toString())
+      throw new InternalServerError(e.toString());
     }
   };
 

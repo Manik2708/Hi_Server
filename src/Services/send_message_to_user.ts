@@ -19,7 +19,8 @@ export class SendMessageToUserService {
     webSocketServices: WebSocketServices,
     @Inject(InjectionTokens.CreateQueue) createQueue: CreateQueue,
     @Inject(InjectionTokens.RedisClient) client: RedisClientType,
-    @Inject(forwardRef(()=>UserOnlineServices)) userOnlineServices: UserOnlineServices
+    @Inject(forwardRef(() => UserOnlineServices))
+    userOnlineServices: UserOnlineServices,
   ) {
     this.client = client;
     this.createQueue = createQueue;
@@ -48,7 +49,7 @@ export class SendMessageToUserService {
           name: userIsOnlineEvent,
           data: messageForOnlineUser,
         });
-        if(afterAcknowledgement){
+        if (afterAcknowledgement) {
           afterAcknowledgement();
         }
       } else {
@@ -57,27 +58,31 @@ export class SendMessageToUserService {
           commonMessage,
           sendNotificationFunction,
           wantTosendNotification,
-          afterAcknowledgement
-        )
+          afterAcknowledgement,
+        );
       }
     } catch (e: any) {
-      if(e instanceof WebSocketMessageError){
+      if (e instanceof WebSocketMessageError) {
         this.sendMessageToOfflineUser(
           userId,
           commonMessage,
           sendNotificationFunction,
           wantTosendNotification,
-          afterAcknowledgement
-          )
+          afterAcknowledgement,
+        );
       }
-      throw new InternalServerError(e.toString())
+      throw new InternalServerError(e.toString());
     }
   };
-  private sendMessageToOfflineUser= async(userId: string, commonMessage: MessageHandler,  sendNotificationFunction: () => void,  wantTosendNotification: boolean,
-  afterAcknowledgement?: () => void
-  ): Promise<void>=>{
-    try{
-      if(afterAcknowledgement){
+  private sendMessageToOfflineUser = async (
+    userId: string,
+    commonMessage: MessageHandler,
+    sendNotificationFunction: () => void,
+    wantTosendNotification: boolean,
+    afterAcknowledgement?: () => void,
+  ): Promise<void> => {
+    try {
+      if (afterAcknowledgement) {
         afterAcknowledgement();
       }
       this.createQueue.createChannel(
@@ -95,8 +100,8 @@ export class SendMessageToUserService {
       if (wantTosendNotification) {
         sendNotificationFunction();
       }
-    }catch(e: any){
-      throw new InternalServerError(e.toString())
+    } catch (e: any) {
+      throw new InternalServerError(e.toString());
     }
-  }
+  };
 }
