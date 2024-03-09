@@ -1,4 +1,4 @@
-import { Client } from 'cassandra-driver';
+import { Client, types } from 'cassandra-driver';
 import { ConfessionModel } from '../../Models/confession';
 import {
   CassandraMethods,
@@ -7,6 +7,7 @@ import {
 import { UpdateConfessionStatus } from '../../Models/update_status_of_confession';
 import { Inject, Injectable, OnModuleInit, Scope } from '@nestjs/common';
 import { InjectionTokens } from '../../Constants/injection_tokens';
+import { InternalServerError } from '../../Errors/server_error';
 @Injectable({ scope: Scope.DEFAULT })
 export class CassandraDatabaseQueries implements OnModuleInit {
   private client: Client;
@@ -48,7 +49,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.sentConfessions}(
             sender_id TEXT,
             crush_id TEXT,
-            confession_id uuid,
+            confession_id timeuuid,
             confession TEXT,
             time TEXT,
             status TEXT,
@@ -74,7 +75,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.recievedUnreadConfessions}(
             sender_id TEXT,
             crush_id TEXT,
-            confession_id uuid,
+            confession_id timeuuid,
             confession TEXT,
             time TEXT,
             status TEXT,
@@ -99,7 +100,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.recievedReadConfessions}(
             sender_id TEXT,
             crush_id TEXT,
-            confession_id uuid,
+            confession_id timeuuid,
             confession TEXT,
             time TEXT,
             status TEXT,
@@ -119,6 +120,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
 
   saveConfessionToCassandra = async (confessionModel: ConfessionModel) => {
     try {
+      const confessionId = types.TimeUuid.fromString(confessionModel.confessionId);
       // This function saves confession for saving it for sender
       await this.client.execute(
         `INSERT INTO ${CassandraTableNames.sentConfessions}(
@@ -134,6 +136,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         [
           confessionModel.senderId,
           confessionModel.crushId,
+          confessionModel.confessionId,
           confessionModel.confession,
           confessionModel.time,
           confessionModel.status,
@@ -163,7 +166,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         ],
       );
     } catch (e: any) {
-      console.log(e.toString());
+      throw new InternalServerError(e.toString())
     }
   };
 

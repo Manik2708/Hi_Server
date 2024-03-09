@@ -2,6 +2,7 @@ import { Inject } from '@nestjs/common';
 import { RedisClientType } from '../Constants/constant_types';
 import { InjectionTokens } from '../Constants/injection_tokens';
 import { RedisNames } from '../Constants/queues_redis';
+import { InternalServerError } from '../Errors/server_error';
 
 export class UserOnlineServices {
   private client: RedisClientType;
@@ -10,9 +11,9 @@ export class UserOnlineServices {
   }
   ifUserIsOnline = async (userId: string): Promise<boolean> => {
     try {
-      return this.client.sIsMember('online-users', userId);
+      return this.client.sIsMember(RedisNames.OnlineUsers, userId);
     } catch (e: any) {
-      return false;
+      throw new InternalServerError(e.toString());
     }
   };
   userOnline = async (userId: string, socketId: string) => {
@@ -22,7 +23,7 @@ export class UserOnlineServices {
         socketId: socketId,
       });
     } catch (e: any) {
-      console.log(e.toString());
+      throw new InternalServerError(e.toString());
     }
   };
 }
