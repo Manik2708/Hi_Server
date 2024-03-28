@@ -1,5 +1,4 @@
 import { SendMessageToUserService } from '../../../Services/send_message_to_user';
-import express from 'express';
 import { ConfessionModel } from '../../../Models/confession';
 import { CassandraDatabaseQueries } from '../../../Database/Cassandra/queries';
 import { types } from 'cassandra-driver';
@@ -35,10 +34,9 @@ export class ConfessionServices {
         senderAnonymousId: senderAnonymousId,
         crushId: crushId,
         confession: confession,
-        time: time,
+        sendingTime: time,
         crushName: crushName,
         status: 'Sent',
-        lastUpdate: time,
       };
       await this.sendMessageToUserService.sendMessageToUser(
         crushId,
@@ -56,16 +54,55 @@ export class ConfessionServices {
       throw new InternalServerError(e.toString());
     }
   };
-  rejectConfession = async (req: express.Request, res: express.Response) => {
+  readConfession = async (
+    confessionId: string,
+    senderId: string,
+    senderAnonymousId: string,
+    crushId: string,
+    confession: string,
+    sendingTime: string,
+    crushName: string,
+    readingTime: string,
+  ) => {
+    const confessionDb: ConfessionModel = {
+      confessionId: confessionId,
+      senderId: senderId,
+      senderAnonymousId: senderAnonymousId,
+      crushId: crushId,
+      confession: confession,
+      sendingTime: sendingTime,
+      crushName: crushName,
+      status: 'Read',
+      readingTime: readingTime,
+    };
+    const updateConfessionStatusForSender: UpdateConfessionStatusForSender = {
+      confessionId: confessionId,
+      updatedStatus: 'Read',
+      updateTime: readingTime,
+    };
+    await this.sendMessageToUserService.sendMessageToUser(
+      crushId,
+      false,
+      EventNames.updateConfssionStatus,
+      updateConfessionStatusForSender,
+      convertUpdateConfessionStatusToCommonMessage(
+        updateConfessionStatusForSender,
+      ),
+      async () => {},
+      async () => {
+        await this.cassandraObject.readConfession(confessionDb);
+      },
+    );
+  };
+  rejectConfession = async (
+    senderId: string,
+    sendingTime: string,
+    crushId: string,
+    time: string,
+    readingTime: string,
+    confessionId: string,
+  ): Promise<boolean> => {
     try {
-      const {
-        senderId,
-        sendingTime,
-        crushId,
-        time,
-        readingTime,
-        confessionId,
-      } = req.body;
       const updateConfssionStatus: UpdateConfessionStatus = {
         senderId: senderId,
         crushId: crushId,
@@ -93,7 +130,7 @@ export class ConfessionServices {
           this.cassandraObject.acceptOrRejectConfession(updateConfssionStatus);
         },
       );
-      res.status(200).json(true);
+      return true;
     } catch (e: any) {
       throw new InternalServerError(e.toString());
     }

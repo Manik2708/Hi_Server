@@ -17,6 +17,12 @@ import { nanoid } from 'nanoid';
 import { MessageHandler } from '../../../../src/Models/message_handler';
 import { MessageType } from '../../../../src/Constants/messasge_type';
 import { CassandraTableNames } from '../../../../src/Constants/cassandra_constants';
+import { createTestConfession } from '../../../Helpers/create_test_confession';
+import { UpdateConfessionStatusForSender } from '../../../../src/Models/update_status_of_confession';
+import {
+  getSearchedConfession,
+  getSearchedReadConfession,
+} from '../../../Helpers/search_confession';
 describe('Send confession tests', () => {
   let redisClient: RedisClientType;
   let app: INestApplication;
@@ -35,7 +41,7 @@ describe('Send confession tests', () => {
     );
     socket = await initClientSocket((socket) => {
       socketId = socket.id!;
-      socket.on(EventNames.recieveConfession, (data) => {
+      socket.on(EventNames.updateConfssionStatus, (data) => {
         outputData = data;
       });
     });
@@ -46,87 +52,55 @@ describe('Send confession tests', () => {
     socket.disconnect();
   });
   it('When user is online', async () => {
-    const mockedValue = types.TimeUuid.now();
-    jest.spyOn(types.TimeUuid, 'now').mockImplementationOnce(() => {
-      return mockedValue;
-    });
-    const sendingObject: ConfessionModel = {
-      senderId: nanoid().toLowerCase(),
-      senderAnonymousId: nanoid().toLowerCase(),
-      confessionId: '',
-      crushId: nanoid().toLowerCase(),
-      confession: nanoid().toLowerCase(),
-      sendingTime: Date.now().toString(),
-      status: nanoid().toLowerCase(),
-      crushName: nanoid().toLowerCase(),
-    };
+    const senderId = nanoid().toLowerCase();
+    const crushId = nanoid().toLowerCase();
+    const sendingObject: ConfessionModel = await createTestConfession(
+      senderId,
+      crushId,
+    );
     await redisClient.sAdd(RedisNames.OnlineUsers, sendingObject.crushId);
     await redisClient.hSet(RedisNames.OnlineUserMap + sendingObject.crushId, {
       socketId: socketId,
     });
-    await confessionServices.sendConfessionToUser(
+    const updateTme = Date.now().toString();
+    await confessionServices.readConfession(
+      sendingObject.confessionId,
       sendingObject.senderId,
       sendingObject.senderAnonymousId,
       sendingObject.crushId,
       sendingObject.confession,
       sendingObject.sendingTime,
       sendingObject.crushName,
+      updateTme,
     );
-    const expectedValue: ConfessionModel = {
-      ...sendingObject,
-      confessionId: mockedValue.toString(),
-      status: 'Sent',
+    const expectedOutput: UpdateConfessionStatusForSender = {
+      confessionId: sendingObject.confessionId,
+      updatedStatus: 'Read',
+      updateTime: updateTme,
     };
     await new Promise((resolve) => setTimeout(resolve, 500));
-    expect(outputData).toStrictEqual(expectedValue);
-    const output = await cassandraClient.execute(
-      `SELECT * FROM hi_database.${CassandraTableNames.sentConfessions} 
-    WHERE sender_id = ? AND
-    sending_time = ? AND
-    confession_id = ?
-    `,
-      [
-        sendingObject.senderId,
-        sendingObject.sendingTime,
-        mockedValue.toString(),
-      ],
-      { prepare: true },
+    expect(outputData).toStrictEqual(expectedOutput);
+    const output = await getSearchedConfession(
+      sendingObject.confessionId,
+      sendingObject.senderId,
+      sendingObject.sendingTime,
+      CassandraTableNames.sentConfessions,
     );
-    expect(output.rowLength).toBe(1);
-    expect(output.rows[0].values().includes(sendingObject.confession)).toBe(
-      true,
+    expect(output.rows[0].values().includes('Read')).toBe(true);
+    const recieverOutput = await getSearchedConfession(
+      sendingObject.confessionId,
+      sendingObject.senderId,
+      sendingObject.sendingTime,
+      CassandraTableNames.recievedUnreadConfessions,
     );
-    expect(output.rows[0].values().includes(sendingObject.sendingTime)).toBe(
-      true,
+    expect(recieverOutput.rowLength).toBe(0);
+    const recueverReadOutput = await getSearchedReadConfession(
+      sendingObject.confessionId,
+      sendingObject.senderId,
+      sendingObject.sendingTime,
+      CassandraTableNames.recievedReadConfessions,
     );
-    expect(
-      output.rows[0].values().includes(sendingObject.senderAnonymousId),
-    ).toBe(false);
-    const recieverOutput = await cassandraClient.execute(
-      `SELECT * FROM hi_database.${CassandraTableNames.recievedUnreadConfessions}
-    WHERE crush_id = ? AND
-    sending_time = ? AND
-    confession_id = ?
-    `,
-      [
-        sendingObject.crushId,
-        sendingObject.sendingTime,
-        mockedValue.toString(),
-      ],
-      {
-        prepare: true,
-      },
-    );
-    expect(recieverOutput.rowLength).toBe(1);
-    expect(
-      recieverOutput.rows[0].values().includes(sendingObject.confession),
-    ).toBe(true);
-    expect(
-      recieverOutput.rows[0].values().includes(sendingObject.sendingTime),
-    ).toBe(true);
-    expect(
-      recieverOutput.rows[0].values().includes(sendingObject.senderAnonymousId),
-    ).toBe(true);
+    expect(recueverReadOutput.rowLength).toBe(1);
   });
   it('When user is offline', async () => {
     const mockedValue = types.TimeUuid.now();

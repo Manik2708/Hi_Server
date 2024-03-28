@@ -14,21 +14,21 @@ export class CassandraMethods {
   static getSentConfessionsKey = (): CassandraKeys => {
     return {
       PARTITION_KEY: 'sender_id',
-      FIRST_SORTING_KEY: 'time',
+      FIRST_SORTING_KEY: 'sending_time',
       SECOND_SORTING_KEY: 'confession_id',
     };
   };
   static getRecievedUnreadConfessionsKey = (): CassandraKeys => {
     return {
       PARTITION_KEY: 'crush_id',
-      FIRST_SORTING_KEY: 'time',
+      FIRST_SORTING_KEY: 'sending_time',
       SECOND_SORTING_KEY: 'confession_id',
     };
   };
   static getRecievedReadConfessionsKey = (): CassandraKeys => {
     return {
       PARTITION_KEY: 'crush_id',
-      FIRST_SORTING_KEY: 'time',
+      FIRST_SORTING_KEY: 'reading_time',
       SECOND_SORTING_KEY: 'confession_id',
     };
   };

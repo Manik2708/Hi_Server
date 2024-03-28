@@ -46,6 +46,30 @@ export class ConfessionsController {
     @Req() req: express.Request,
     @Res() res: express.Response,
   ) {
-    await this.confessionServices.rejectConfession(req, res);
+    try {
+      const {
+        senderId,
+        sendingTime,
+        crushId,
+        time,
+        readingTime,
+        confessionId,
+      } = req.body;
+      const ifRejected = await this.confessionServices.rejectConfession(
+        senderId,
+        sendingTime,
+        crushId,
+        time,
+        readingTime,
+        confessionId,
+      );
+      return res.status(200).json(ifRejected);
+    } catch (error) {
+      if (error instanceof InternalServerError) {
+        throw error;
+      } else {
+        throw Error('Unknown error');
+      }
+    }
   }
 }

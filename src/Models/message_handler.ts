@@ -3,32 +3,18 @@ import { ChatModel } from './chat_model';
 import { ConfessionModel } from './confession';
 import { UpdateConfessionStatusForSender } from './update_status_of_confession';
 
-export interface MessageHandler {
-  messageType: number;
-  senderId?: string;
-  senderAnonymousId?: string;
-  crushId?: string;
-  confession?: string;
-  time?: string;
-  status?: string;
-  crushName?: string;
-  confessionId?: string;
-  confessionUpdatedStatus?: string;
-  anonymousUserId?: string;
-  updateTime?: string;
-}
+export type MessageHandler =
+  | { messageType: number }
+  | ConfessionModel
+  | UpdateConfessionStatusForSender
+  | ChatModel;
+
 export const covertConfessionToCommonMessage = (
   confession: ConfessionModel,
 ): MessageHandler => {
   return {
     messageType: MessageType.CONFESSION_MESSAGE_TYPE,
-    senderId: confession.senderId,
-    senderAnonymousId: confession.senderAnonymousId,
-    crushId: confession.crushId,
-    confession: confession.confession,
-    time: confession.time,
-    status: confession.status,
-    crushName: confession.crushName,
+    ...confession,
   };
 };
 export const convertUpdateConfessionStatusToCommonMessage = (
@@ -36,9 +22,7 @@ export const convertUpdateConfessionStatusToCommonMessage = (
 ): MessageHandler => {
   return {
     messageType: MessageType.UPDATE_CONFESSION_STATUS,
-    confessionId: updatedConfession.confessionId,
-    confessionUpdatedStatus: updatedConfession.updatedStatus,
-    updateTime: updatedConfession.updateTime,
+    ...updatedConfession,
   };
 };
 
@@ -47,8 +31,6 @@ export const convertCreateChatMessageToCommonMessage = (
 ): MessageHandler => {
   return {
     messageType: MessageType.CREATE_CHAT_MESSAGE_TYPE,
-    crushId: chat.crushId,
-    anonymousUserId: chat.anonymousUserId,
-    confessionId: chat.confessionId,
+    ...chat,
   };
 };

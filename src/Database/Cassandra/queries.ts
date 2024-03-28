@@ -1,4 +1,4 @@
-import { Client, types } from 'cassandra-driver';
+import { Client } from 'cassandra-driver';
 import { ConfessionModel } from '../../Models/confession';
 import {
   CassandraMethods,
@@ -51,11 +51,12 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             crush_id TEXT,
             confession_id timeuuid,
             confession TEXT,
-            time TEXT,
+            sending_time TEXT,
             status TEXT,
             crush_name TEXT,
-            last_update TEXT,
-            PRIMARY KEY (sender_id, time, confession_id)
+            reading_time TEXT,
+            reaction_time TEXT,
+            PRIMARY KEY (sender_id, sending_time, confession_id)
             );`,
       );
 
@@ -77,10 +78,10 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             crush_id TEXT,
             confession_id timeuuid,
             confession TEXT,
-            time TEXT,
+            sending_time TEXT,
             status TEXT,
             anonymous_id TEXT,
-            PRIMARY KEY (crush_id, time, confession_id)
+            PRIMARY KEY (crush_id, sending_time, confession_id)
             );`,
       );
 
@@ -102,11 +103,12 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             crush_id TEXT,
             confession_id timeuuid,
             confession TEXT,
-            time TEXT,
+            sending_time TEXT,
             status TEXT,
             anonymous_id TEXT,
-            last_update TEXT,
-            PRIMARY KEY (crush_id, last_update, confession_id)
+            reading_time TEXT,
+            reaction_time TEXT,
+            PRIMARY KEY (crush_id, reading_time, confession_id)
             );`,
       );
     } catch (e: any) {
@@ -120,9 +122,6 @@ export class CassandraDatabaseQueries implements OnModuleInit {
 
   saveConfessionToCassandra = async (confessionModel: ConfessionModel) => {
     try {
-      const confessionId = types.TimeUuid.fromString(
-        confessionModel.confessionId,
-      );
       // This function saves confession for saving it for sender
       await this.client.execute(
         `INSERT INTO ${CassandraTableNames.sentConfessions}(
@@ -130,21 +129,26 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             crush_id,
             confession_id,
             confession,
-            time,
+            sending_time,
             status,
             crush_name,
-            last_update 
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            reading_time,
+            reaction_time 
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           confessionModel.senderId,
           confessionModel.crushId,
           confessionModel.confessionId,
           confessionModel.confession,
-          confessionModel.time,
+          confessionModel.sendingTime,
           confessionModel.status,
           confessionModel.crushName,
-          confessionModel.lastUpdate,
+          null,
+          null,
         ],
+        {
+          prepare: true,
+        },
       );
       // This method saves confession for saving it for reviever
       await this.client.execute(
@@ -153,7 +157,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             crush_id,
             confession_id,
             confession,
-            time,
+            sending_time,
             status,
             anonymous_id
         ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -162,10 +166,13 @@ export class CassandraDatabaseQueries implements OnModuleInit {
           confessionModel.crushId,
           confessionModel.confessionId,
           confessionModel.confession,
-          confessionModel.time,
+          confessionModel.sendingTime,
           confessionModel.status,
           confessionModel.senderAnonymousId,
         ],
+        {
+          prepare: true,
+        },
       );
     } catch (e: any) {
       throw new InternalServerError(e.toString());
@@ -177,58 +184,61 @@ export class CassandraDatabaseQueries implements OnModuleInit {
    * @param confessionModel
    */
 
-  readConfession = (confessionModel: ConfessionModel): void => {
+  readConfession = async (confessionModel: ConfessionModel): Promise<void> => {
     try {
+      console.log('here');
       // Firstly confession is removed from recieved_unread_confession
       const { PARTITION_KEY, FIRST_SORTING_KEY, SECOND_SORTING_KEY } =
         CassandraMethods.getRecievedUnreadConfessionsKey();
-      this.client.execute(
+      await this.client.execute(
         `DELETE FROM ${CassandraTableNames.recievedUnreadConfessions} WHERE ${PARTITION_KEY} = ? AND ${FIRST_SORTING_KEY} = ? AND ${SECOND_SORTING_KEY} = ?`,
         [
           confessionModel.crushId,
-          confessionModel.time,
+          confessionModel.sendingTime,
           confessionModel.confessionId,
         ],
       );
       // Add this confession to recieved_read_confession
-      this.client.execute(
+      await this.client.execute(
         `INSERT INTO ${CassandraTableNames.recievedReadConfessions}(
-                sender_id,
-                crush_id,
-                confession_id,
-                confession,
-                time,
-                status,
-                anonymous_id,
-                last_update,  
-            )`,
+            sender_id,
+            crush_id,
+            confession_id,
+            confession,
+            sending_time,
+            status,
+            anonymous_id,
+            reading_time,
+            reaction_time
+            ) VALUES (?,?,?,?,?,?,?,?,?)`,
         [
           confessionModel.senderId,
           confessionModel.crushId,
           confessionModel.confessionId,
           confessionModel.confession,
-          confessionModel.time,
+          confessionModel.sendingTime,
           confessionModel.status,
           confessionModel.senderAnonymousId,
-          confessionModel.lastUpdate,
+          confessionModel.readingTime,
+          null,
         ],
       );
       // Update the status of confession in sent_confessions table
-      this.client.execute(
-        `UPDATE ${CassandraTableNames.sentConfessions} SET status = ?, last_update = ? WHERE 
-            ${CassandraMethods.getSentConfessionsKey().PARTITION_KEY} = ? AND
-            ${CassandraMethods.getSentConfessionsKey().FIRST_SORTING_KEY} = ? AND,
-            ${CassandraMethods.getSentConfessionsKey().SECOND_SORTING_KEY} = ?`,
+      await this.client.execute(
+        `UPDATE ${CassandraTableNames.sentConfessions} SET status = ?, reading_time = ? WHERE 
+            sender_id = ? AND
+            sending_time = ? AND
+            confession_id = ?`,
         [
           confessionModel.status,
-          confessionModel.lastUpdate,
+          confessionModel.readingTime,
           confessionModel.senderId,
-          confessionModel.time,
+          confessionModel.sendingTime,
           confessionModel.confessionId,
         ],
       );
     } catch (e: any) {
-      console.log(e.toString());
+      throw new InternalServerError(e.toString());
     }
   };
 
@@ -238,9 +248,9 @@ export class CassandraDatabaseQueries implements OnModuleInit {
 
   acceptOrRejectConfession = (updateStatus: UpdateConfessionStatus) => {
     this.client.execute(
-      `UPDATE ${CassandraTableNames.recievedReadConfessions} SET status = ?, last_update = ? WHERE
+      `UPDATE ${CassandraTableNames.recievedReadConfessions} SET status = ?, reaction_time = ? WHERE
         ${CassandraMethods.getRecievedReadConfessionsKey().PARTITION_KEY} = ? AND
-        ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND,
+        ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND
         ${CassandraMethods.getRecievedReadConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
         updateStatus.updatedStatus,
@@ -251,9 +261,9 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       ],
     );
     this.client.execute(
-      `UPDATE ${CassandraTableNames.sentConfessions} SET status = ?, last_update = ? WHERE
+      `UPDATE ${CassandraTableNames.sentConfessions} SET status = ?, reaction_time = ? WHERE
         ${CassandraMethods.getRecievedReadConfessionsKey().PARTITION_KEY} = ? AND
-        ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND,
+        ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND
         ${CassandraMethods.getRecievedReadConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
         updateStatus.updatedStatus,
