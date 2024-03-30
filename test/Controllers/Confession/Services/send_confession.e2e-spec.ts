@@ -71,7 +71,7 @@ describe('Send confession tests', () => {
       sendingObject.sendingTime,
       sendingObject.crushName,
     );
-    const expectedValue= {
+    const expectedValue = {
       senderId: sendingObject.senderId,
       senderAnonymousId: sendingObject.senderAnonymousId,
       crushId: sendingObject.crushId,
@@ -79,7 +79,7 @@ describe('Send confession tests', () => {
       sendingTime: sendingObject.sendingTime.toISOString(),
       confessionId: mockedValue.toString(),
       status: 'Sent',
-      crushName: sendingObject.crushName
+      crushName: sendingObject.crushName,
     };
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(outputData).toStrictEqual(expectedValue);
@@ -100,9 +100,15 @@ describe('Send confession tests', () => {
     expect(output.rows[0].values().includes(sendingObject.confession)).toBe(
       true,
     );
-    expect(output.rows[0].values().includes(sendingObject.sendingTime.toDateString()+" "+sendingObject.sendingTime.toTimeString())).toBe(
-      true,
-    );
+    expect(
+      output.rows[0]
+        .values()
+        .includes(
+          sendingObject.sendingTime.toDateString() +
+            ' ' +
+            sendingObject.sendingTime.toTimeString(),
+        ),
+    ).toBe(true);
     expect(
       output.rows[0].values().includes(sendingObject.senderAnonymousId),
     ).toBe(false);
@@ -126,7 +132,13 @@ describe('Send confession tests', () => {
       recieverOutput.rows[0].values().includes(sendingObject.confession),
     ).toBe(true);
     expect(
-      recieverOutput.rows[0].values().includes(sendingObject.sendingTime.toDateString()+" "+sendingObject.sendingTime.toTimeString()),
+      recieverOutput.rows[0]
+        .values()
+        .includes(
+          sendingObject.sendingTime.toDateString() +
+            ' ' +
+            sendingObject.sendingTime.toTimeString(),
+        ),
     ).toBe(true);
     expect(
       recieverOutput.rows[0].values().includes(sendingObject.senderAnonymousId),
@@ -156,7 +168,7 @@ describe('Send confession tests', () => {
       sendingObject.sendingTime,
       sendingObject.crushName,
     );
-    const expectedValue= {
+    const expectedValue = {
       senderId: sendingObject.senderId,
       senderAnonymousId: sendingObject.senderAnonymousId,
       crushId: sendingObject.crushId,
@@ -199,9 +211,15 @@ describe('Send confession tests', () => {
     expect(output.rows[0].values().includes(sendingObject.confession)).toBe(
       true,
     );
-    expect(output.rows[0].values().includes(sendingObject.sendingTime.toDateString()+" "+sendingObject.sendingTime.toTimeString())).toBe(
-      true,
-    );
+    expect(
+      output.rows[0]
+        .values()
+        .includes(
+          sendingObject.sendingTime.toDateString() +
+            ' ' +
+            sendingObject.sendingTime.toTimeString(),
+        ),
+    ).toBe(true);
     expect(
       output.rows[0].values().includes(sendingObject.senderAnonymousId),
     ).toBe(false);
@@ -225,7 +243,13 @@ describe('Send confession tests', () => {
       recieverOutput.rows[0].values().includes(sendingObject.confession),
     ).toBe(true);
     expect(
-      recieverOutput.rows[0].values().includes(sendingObject.sendingTime.toDateString()+" "+sendingObject.sendingTime.toTimeString()),
+      recieverOutput.rows[0]
+        .values()
+        .includes(
+          sendingObject.sendingTime.toDateString() +
+            ' ' +
+            sendingObject.sendingTime.toTimeString(),
+        ),
     ).toBe(true);
     expect(
       recieverOutput.rows[0].values().includes(sendingObject.senderAnonymousId),

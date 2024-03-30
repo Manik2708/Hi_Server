@@ -1,4 +1,4 @@
-import { types } from "cassandra-driver";
+import { types } from 'cassandra-driver';
 
 export interface ChatMessageModel {
   messageId: types.TimeUuid;

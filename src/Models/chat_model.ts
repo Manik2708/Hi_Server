@@ -1,5 +1,5 @@
-import { types } from "cassandra-driver";
-import { ChatMessageModel } from "./chat_message_model";
+import { types } from 'cassandra-driver';
+import { ChatMessageModel } from './chat_message_model';
 
 export interface ChatModel {
   chatId: types.TimeUuid;

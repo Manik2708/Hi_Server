@@ -10,7 +10,10 @@ import { InjectionTokens } from '../../Constants/injection_tokens';
 import { InternalServerError } from '../../Errors/server_error';
 import { ChatModel } from '../../Models/chat_model';
 import { ChatMessageModel } from '../../Models/chat_message_model';
-import { DeleteMessageModel, UpdateStatusOfChatMessageModel } from '../../Models/update_status_of_chat_message';
+import {
+  DeleteMessageModel,
+  UpdateStatusOfChatMessageModel,
+} from '../../Models/update_status_of_chat_message';
 @Injectable({ scope: Scope.DEFAULT })
 export class CassandraDatabaseQueries implements OnModuleInit {
   private client: Client;
@@ -124,11 +127,11 @@ export class CassandraDatabaseQueries implements OnModuleInit {
           confession_id timeuuid,
           last_update TIMESTAMP,
           PRIMARY KEY (user_id, last_update, chat_id)
-          );`
-        )
+          );`,
+      );
 
-        await this.client.execute(
-          `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.chatsForCrush}(
+      await this.client.execute(
+        `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.chatsForCrush}(
             chat_id timeuuid,
             crush_id TEXT,
             user_id TEXT,
@@ -136,11 +139,11 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             confession_id timeuuid,
             last_update TIMESTAMP,
             PRIMARY KEY (crush_id, last_update, chat_id)
-            );`
-          )
+            );`,
+      );
 
-          await this.client.execute(
-            `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.chatMessages}(
+      await this.client.execute(
+        `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.chatMessages}(
               chat_id timeuuid,
               message_id timeuuid,
               sending_time TIMESTAMP,
@@ -153,9 +156,8 @@ export class CassandraDatabaseQueries implements OnModuleInit {
               deleted_by_sender BOOLEAN,
               deleted_by_reciever BOOLEAN,
               PRIMARY KEY (chat_id, sending_time, message_id)
-              );`
-            )
-        
+              );`,
+      );
     } catch (e: any) {
       console.log(e.toString());
     }
@@ -282,8 +284,8 @@ export class CassandraDatabaseQueries implements OnModuleInit {
           confessionModel.confessionId,
         ],
         {
-          prepare: true
-        }
+          prepare: true,
+        },
       );
     } catch (e: any) {
       throw new InternalServerError(e.toString());
@@ -294,7 +296,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
    * @param updateStatus UpdateConfessionStatusModel
    */
 
-  acceptOrRejectConfession = async(updateStatus: UpdateConfessionStatus) => {
+  acceptOrRejectConfession = async (updateStatus: UpdateConfessionStatus) => {
     await this.client.execute(
       `UPDATE ${CassandraTableNames.recievedReadConfessions} SET status = ?, reaction_time = ? WHERE
         ${CassandraMethods.getRecievedReadConfessionsKey().PARTITION_KEY} = ? AND
@@ -323,7 +325,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
     );
   };
 
-  createChat = async(chatModel: ChatModel)=>{
+  createChat = async (chatModel: ChatModel) => {
     await this.client.execute(
       `INSERT INTO ${CassandraTableNames.chatsForSender} (
         chat_id,
@@ -339,11 +341,11 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         chatModel.crushId,
         chatModel.userId,
         chatModel.confessionId,
-        chatModel.lastUpdate.toString()
+        chatModel.lastUpdate.toString(),
       ],
       {
-        prepare: true
-      }
+        prepare: true,
+      },
     );
 
     await this.client.execute(
@@ -361,14 +363,14 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         chatModel.userId,
         chatModel.anonymousUserId,
         chatModel.confessionId,
-        chatModel.lastUpdate.toString()
+        chatModel.lastUpdate.toString(),
       ],
       {
-        prepare: true
-      }
-    )
-  }
-  saveChatMessage = async(chatMessageModel: ChatMessageModel)=>{
+        prepare: true,
+      },
+    );
+  };
+  saveChatMessage = async (chatMessageModel: ChatMessageModel) => {
     await this.client.execute(
       `INSERT INTO ${CassandraTableNames.chatMessages} (
         chat_id,
@@ -388,51 +390,59 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         chatMessageModel.chatId,
         chatMessageModel.messageId,
         chatMessageModel.sendingTime.toString(),
-        chatMessageModel.delieveryTime==null?null:chatMessageModel.delieveryTime.toString(),
-        chatMessageModel.readingTime==null?null:chatMessageModel.readingTime.toString(),
+        chatMessageModel.delieveryTime == null
+          ? null
+          : chatMessageModel.delieveryTime.toString(),
+        chatMessageModel.readingTime == null
+          ? null
+          : chatMessageModel.readingTime.toString(),
         chatMessageModel.senderId,
         chatMessageModel.recieverId,
         chatMessageModel.message,
         chatMessageModel.status,
         chatMessageModel.deletedBySender,
-        chatMessageModel.deletedByReciever
+        chatMessageModel.deletedByReciever,
       ],
       {
-        prepare: true
-      }
-    )
-  }
-  readChatMessage = async(updateStatusOfChatMessage: UpdateStatusOfChatMessageModel)=>{
-      await this.client.execute(
-        `UPDATE ${CassandraTableNames.chatMessages} status = ?, reading_time = ? WHERE
+        prepare: true,
+      },
+    );
+  };
+  readChatMessage = async (
+    updateStatusOfChatMessage: UpdateStatusOfChatMessageModel,
+  ) => {
+    await this.client.execute(
+      `UPDATE ${CassandraTableNames.chatMessages} status = ?, reading_time = ? WHERE
           chat_id = ? AND
           sending_time = ? AND
           message_id = ?`,
-          [
-            updateStatusOfChatMessage.status,
-            updateStatusOfChatMessage.updateTime.toString(),
-            updateStatusOfChatMessage.chatId,
-            updateStatusOfChatMessage.sendingTime.toString(),
-            updateStatusOfChatMessage.messageId
-          ]
-          )
-  }
-  updateDelieveredMessage = async(updateStatusOfChatMessage: UpdateStatusOfChatMessageModel)=>{
+      [
+        updateStatusOfChatMessage.status,
+        updateStatusOfChatMessage.updateTime.toString(),
+        updateStatusOfChatMessage.chatId,
+        updateStatusOfChatMessage.sendingTime.toString(),
+        updateStatusOfChatMessage.messageId,
+      ],
+    );
+  };
+  updateDelieveredMessage = async (
+    updateStatusOfChatMessage: UpdateStatusOfChatMessageModel,
+  ) => {
     await this.client.execute(
       `UPDATE ${CassandraTableNames.chatMessages} status = ?, delievery_time = ? WHERE
         chat_id = ? AND
         sending_time = ? AND
         message_id = ?`,
-        [
-          updateStatusOfChatMessage.status,
-          updateStatusOfChatMessage.updateTime.toString(),
-          updateStatusOfChatMessage.chatId,
-          updateStatusOfChatMessage.sendingTime.toString(),
-          updateStatusOfChatMessage.messageId
-        ]
-        )
-}
-  deleteChatMessageForMe = async(deleteMessage: DeleteMessageModel)=>{
+      [
+        updateStatusOfChatMessage.status,
+        updateStatusOfChatMessage.updateTime.toString(),
+        updateStatusOfChatMessage.chatId,
+        updateStatusOfChatMessage.sendingTime.toString(),
+        updateStatusOfChatMessage.messageId,
+      ],
+    );
+  };
+  deleteChatMessageForMe = async (deleteMessage: DeleteMessageModel) => {
     const statusOfRequester = await this.client.execute(
       `SELECT sender_id, reciever_id ${CassandraTableNames.chatMessages} WHERE
       chat_id = ? AND
@@ -441,13 +451,13 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       [
         deleteMessage.chatId,
         deleteMessage.sendingTime.toString(),
-        deleteMessage.messageId
-      ]
-    )
-    if(statusOfRequester.rowLength!=1){}
-    
-  }
-  deleteChatMessageForEveryone = async(deleteMessage: DeleteMessageModel)=>{
+        deleteMessage.messageId,
+      ],
+    );
+    if (statusOfRequester.rowLength != 1) {
+    }
+  };
+  deleteChatMessageForEveryone = async (deleteMessage: DeleteMessageModel) => {
     await this.client.execute(
       `DELETE ${CassandraTableNames.chatMessages} WHERE
       chat_id = ? AND
@@ -456,8 +466,8 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       [
         deleteMessage.chatId,
         deleteMessage.sendingTime.toString(),
-        deleteMessage.messageId
-      ]
-    )
-  }
+        deleteMessage.messageId,
+      ],
+    );
+  };
 }
