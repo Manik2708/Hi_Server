@@ -6,7 +6,7 @@ export interface ConfessionModel {
   confession: string;
   status: string;
   crushName: string;
-  sendingTime: string;
-  readingTime?: string;
-  reactionTime?: string;
+  sendingTime: Date;
+  readingTime?: Date;
+  reactionTime?: Date;
 }

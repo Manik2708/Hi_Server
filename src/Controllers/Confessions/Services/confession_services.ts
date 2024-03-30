@@ -23,7 +23,7 @@ export class ConfessionServices {
     senderAnonymousId: string,
     crushId: string,
     confession: string,
-    time: string,
+    time: Date,
     crushName: string,
   ): Promise<ConfessionModel> => {
     try {
@@ -60,9 +60,9 @@ export class ConfessionServices {
     senderAnonymousId: string,
     crushId: string,
     confession: string,
-    sendingTime: string,
+    sendingTime: Date,
     crushName: string,
-    readingTime: string,
+    readingTime: Date,
   ) => {
     const confessionDb: ConfessionModel = {
       confessionId: confessionId,
@@ -96,10 +96,10 @@ export class ConfessionServices {
   };
   rejectConfession = async (
     senderId: string,
-    sendingTime: string,
+    sendingTime: Date,
     crushId: string,
-    time: string,
-    readingTime: string,
+    time: Date,
+    readingTime: Date,
     confessionId: string,
   ): Promise<boolean> => {
     try {

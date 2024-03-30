@@ -1,8 +1,13 @@
-import mongoose from 'mongoose';
-export interface ChatModel extends mongoose.Document {
+import { types } from 'cassandra-driver';
+import { ChatMessageModel } from './chat_message_model';
+
+export interface ChatModel {
+  chatId: types.TimeUuid;
+  crushName: string;
   crushId: string;
+  userId: string;
   anonymousUserId: string;
-  lastMessage: string | null;
   lastUpdate: Date;
   confessionId: string;
+  messages: ChatMessageModel[];
 }
