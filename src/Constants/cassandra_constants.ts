@@ -2,6 +2,9 @@ export class CassandraTableNames {
   static sentConfessions: string = 'sent_confessions';
   static recievedUnreadConfessions: string = 'recieved_unread_confessions';
   static recievedReadConfessions: string = 'recieved_read_confessions';
+  static chatsForSender: string = 'chats_for_sender';
+  static chatsForCrush: string = 'chats_for_crush';
+  static chatMessages: string = 'chat_messages';
 }
 
 export interface CassandraKeys {

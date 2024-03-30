@@ -8,6 +8,9 @@ import { UpdateConfessionStatus } from '../../Models/update_status_of_confession
 import { Inject, Injectable, OnModuleInit, Scope } from '@nestjs/common';
 import { InjectionTokens } from '../../Constants/injection_tokens';
 import { InternalServerError } from '../../Errors/server_error';
+import { ChatModel } from '../../Models/chat_model';
+import { ChatMessageModel } from '../../Models/chat_message_model';
+import { DeleteMessageModel, UpdateStatusOfChatMessageModel } from '../../Models/update_status_of_chat_message';
 @Injectable({ scope: Scope.DEFAULT })
 export class CassandraDatabaseQueries implements OnModuleInit {
   private client: Client;
@@ -51,11 +54,11 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             crush_id TEXT,
             confession_id timeuuid,
             confession TEXT,
-            sending_time TEXT,
+            sending_time TIMESTAMP,
             status TEXT,
             crush_name TEXT,
-            reading_time TEXT,
-            reaction_time TEXT,
+            reading_time TIMESTAMP,
+            reaction_time TIMESTAMP,
             PRIMARY KEY (sender_id, sending_time, confession_id)
             );`,
       );
@@ -78,7 +81,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             crush_id TEXT,
             confession_id timeuuid,
             confession TEXT,
-            sending_time TEXT,
+            sending_time TIMESTAMP,
             status TEXT,
             anonymous_id TEXT,
             PRIMARY KEY (crush_id, sending_time, confession_id)
@@ -103,14 +106,56 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             crush_id TEXT,
             confession_id timeuuid,
             confession TEXT,
-            sending_time TEXT,
+            sending_time TIMESTAMP,
             status TEXT,
             anonymous_id TEXT,
-            reading_time TEXT,
-            reaction_time TEXT,
+            reading_time TIMESTAMP,
+            reaction_time TIMESTAMP,
             PRIMARY KEY (crush_id, reading_time, confession_id)
             );`,
       );
+
+      await this.client.execute(
+        `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.chatsForSender}(
+          chat_id timeuuid,
+          crush_name TEXT,
+          crush_id TEXT,
+          user_id TEXT,
+          confession_id timeuuid,
+          last_update TIMESTAMP,
+          PRIMARY KEY (user_id, last_update, chat_id)
+          );`
+        )
+
+        await this.client.execute(
+          `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.chatsForCrush}(
+            chat_id timeuuid,
+            crush_id TEXT,
+            user_id TEXT,
+            anonymous_user_id TEXT,
+            confession_id timeuuid,
+            last_update TIMESTAMP,
+            PRIMARY KEY (crush_id, last_update, chat_id)
+            );`
+          )
+
+          await this.client.execute(
+            `CREATE TABLE IF NOT EXISTS ${CassandraTableNames.chatMessages}(
+              chat_id timeuuid,
+              message_id timeuuid,
+              sending_time TIMESTAMP,
+              delievery_time TIMESTAMP,
+              reading_time TIMESTAMP,
+              sender_id TEXT,
+              reciever_id TEXT,
+              message TEXT,
+              status TEXT,
+              deleted_by_sender BOOLEAN,
+              deleted_by_reciever BOOLEAN,
+              PRIMARY KEY (chat_id, sending_time, message_id)
+              );`
+            )
+        
     } catch (e: any) {
       console.log(e.toString());
     }
@@ -140,7 +185,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
           confessionModel.crushId,
           confessionModel.confessionId,
           confessionModel.confession,
-          confessionModel.sendingTime,
+          confessionModel.sendingTime.toString(),
           confessionModel.status,
           confessionModel.crushName,
           null,
@@ -166,7 +211,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
           confessionModel.crushId,
           confessionModel.confessionId,
           confessionModel.confession,
-          confessionModel.sendingTime,
+          confessionModel.sendingTime.toString(),
           confessionModel.status,
           confessionModel.senderAnonymousId,
         ],
@@ -186,7 +231,6 @@ export class CassandraDatabaseQueries implements OnModuleInit {
 
   readConfession = async (confessionModel: ConfessionModel): Promise<void> => {
     try {
-      console.log('here');
       // Firstly confession is removed from recieved_unread_confession
       const { PARTITION_KEY, FIRST_SORTING_KEY, SECOND_SORTING_KEY } =
         CassandraMethods.getRecievedUnreadConfessionsKey();
@@ -194,7 +238,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         `DELETE FROM ${CassandraTableNames.recievedUnreadConfessions} WHERE ${PARTITION_KEY} = ? AND ${FIRST_SORTING_KEY} = ? AND ${SECOND_SORTING_KEY} = ?`,
         [
           confessionModel.crushId,
-          confessionModel.sendingTime,
+          confessionModel.sendingTime.toString(),
           confessionModel.confessionId,
         ],
       );
@@ -216,10 +260,10 @@ export class CassandraDatabaseQueries implements OnModuleInit {
           confessionModel.crushId,
           confessionModel.confessionId,
           confessionModel.confession,
-          confessionModel.sendingTime,
+          confessionModel.sendingTime.toString(),
           confessionModel.status,
           confessionModel.senderAnonymousId,
-          confessionModel.readingTime,
+          confessionModel.readingTime?.toString(),
           null,
         ],
       );
@@ -228,14 +272,18 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         `UPDATE ${CassandraTableNames.sentConfessions} SET status = ?, reading_time = ? WHERE 
             sender_id = ? AND
             sending_time = ? AND
-            confession_id = ?`,
+            confession_id = ?
+            `,
         [
           confessionModel.status,
-          confessionModel.readingTime,
+          confessionModel.readingTime?.toString(),
           confessionModel.senderId,
-          confessionModel.sendingTime,
+          confessionModel.sendingTime.toString(),
           confessionModel.confessionId,
         ],
+        {
+          prepare: true
+        }
       );
     } catch (e: any) {
       throw new InternalServerError(e.toString());
@@ -246,32 +294,170 @@ export class CassandraDatabaseQueries implements OnModuleInit {
    * @param updateStatus UpdateConfessionStatusModel
    */
 
-  acceptOrRejectConfession = (updateStatus: UpdateConfessionStatus) => {
-    this.client.execute(
+  acceptOrRejectConfession = async(updateStatus: UpdateConfessionStatus) => {
+    await this.client.execute(
       `UPDATE ${CassandraTableNames.recievedReadConfessions} SET status = ?, reaction_time = ? WHERE
         ${CassandraMethods.getRecievedReadConfessionsKey().PARTITION_KEY} = ? AND
         ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND
         ${CassandraMethods.getRecievedReadConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
         updateStatus.updatedStatus,
-        updateStatus.updateTime,
+        updateStatus.updateTime.toString(),
         updateStatus.crushId,
-        updateStatus.readingTime,
+        updateStatus.readingTime.toString(),
         updateStatus.confessionId,
       ],
     );
-    this.client.execute(
+    await this.client.execute(
       `UPDATE ${CassandraTableNames.sentConfessions} SET status = ?, reaction_time = ? WHERE
         ${CassandraMethods.getRecievedReadConfessionsKey().PARTITION_KEY} = ? AND
         ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND
         ${CassandraMethods.getRecievedReadConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
         updateStatus.updatedStatus,
-        updateStatus.updateTime,
+        updateStatus.updateTime.toString(),
         updateStatus.senderId,
-        updateStatus.sendingTime,
+        updateStatus.sendingTime.toString(),
         updateStatus.confessionId,
       ],
     );
   };
+
+  createChat = async(chatModel: ChatModel)=>{
+    await this.client.execute(
+      `INSERT INTO ${CassandraTableNames.chatsForSender} (
+        chat_id,
+        crush_name,
+        crush_id,
+        user_id,
+        confession_id,
+        last_update
+      ) VALUES(?,?,?,?,?,?)`,
+      [
+        chatModel.chatId,
+        chatModel.crushName,
+        chatModel.crushId,
+        chatModel.userId,
+        chatModel.confessionId,
+        chatModel.lastUpdate.toString()
+      ],
+      {
+        prepare: true
+      }
+    );
+
+    await this.client.execute(
+      `INSERT INTO ${CassandraTableNames.chatsForCrush} (
+        chat_id,
+        crush_id,
+        user_id,
+        anonymous_user_id,
+        confession_id,
+        last_update,
+      ) VALUES(?,?,?,?,?,?)`,
+      [
+        chatModel.chatId,
+        chatModel.crushId,
+        chatModel.userId,
+        chatModel.anonymousUserId,
+        chatModel.confessionId,
+        chatModel.lastUpdate.toString()
+      ],
+      {
+        prepare: true
+      }
+    )
+  }
+  saveChatMessage = async(chatMessageModel: ChatMessageModel)=>{
+    await this.client.execute(
+      `INSERT INTO ${CassandraTableNames.chatMessages} (
+        chat_id,
+        message_id,
+        sending_time,
+        delievery_time,
+        reading_time,
+        sender_id,
+        reciever_id,
+        message,
+        status,
+        deleted_by_sender,
+        deleted_by_reciever,
+        VALUES(?,?,?,?,?,?,?,?,?,?,?)
+      )`,
+      [
+        chatMessageModel.chatId,
+        chatMessageModel.messageId,
+        chatMessageModel.sendingTime.toString(),
+        chatMessageModel.delieveryTime==null?null:chatMessageModel.delieveryTime.toString(),
+        chatMessageModel.readingTime==null?null:chatMessageModel.readingTime.toString(),
+        chatMessageModel.senderId,
+        chatMessageModel.recieverId,
+        chatMessageModel.message,
+        chatMessageModel.status,
+        chatMessageModel.deletedBySender,
+        chatMessageModel.deletedByReciever
+      ],
+      {
+        prepare: true
+      }
+    )
+  }
+  readChatMessage = async(updateStatusOfChatMessage: UpdateStatusOfChatMessageModel)=>{
+      await this.client.execute(
+        `UPDATE ${CassandraTableNames.chatMessages} status = ?, reading_time = ? WHERE
+          chat_id = ? AND
+          sending_time = ? AND
+          message_id = ?`,
+          [
+            updateStatusOfChatMessage.status,
+            updateStatusOfChatMessage.updateTime.toString(),
+            updateStatusOfChatMessage.chatId,
+            updateStatusOfChatMessage.sendingTime.toString(),
+            updateStatusOfChatMessage.messageId
+          ]
+          )
+  }
+  updateDelieveredMessage = async(updateStatusOfChatMessage: UpdateStatusOfChatMessageModel)=>{
+    await this.client.execute(
+      `UPDATE ${CassandraTableNames.chatMessages} status = ?, delievery_time = ? WHERE
+        chat_id = ? AND
+        sending_time = ? AND
+        message_id = ?`,
+        [
+          updateStatusOfChatMessage.status,
+          updateStatusOfChatMessage.updateTime.toString(),
+          updateStatusOfChatMessage.chatId,
+          updateStatusOfChatMessage.sendingTime.toString(),
+          updateStatusOfChatMessage.messageId
+        ]
+        )
+}
+  deleteChatMessageForMe = async(deleteMessage: DeleteMessageModel)=>{
+    const statusOfRequester = await this.client.execute(
+      `SELECT sender_id, reciever_id ${CassandraTableNames.chatMessages} WHERE
+      chat_id = ? AND
+      sending_time = ? AND
+      message_id = ?`,
+      [
+        deleteMessage.chatId,
+        deleteMessage.sendingTime.toString(),
+        deleteMessage.messageId
+      ]
+    )
+    if(statusOfRequester.rowLength!=1){}
+    
+  }
+  deleteChatMessageForEveryone = async(deleteMessage: DeleteMessageModel)=>{
+    await this.client.execute(
+      `DELETE ${CassandraTableNames.chatMessages} WHERE
+      chat_id = ? AND
+      sending_time = ? AND
+      message_id = ?`,
+      [
+        deleteMessage.chatId,
+        deleteMessage.sendingTime.toString(),
+        deleteMessage.messageId
+      ]
+    )
+  }
 }

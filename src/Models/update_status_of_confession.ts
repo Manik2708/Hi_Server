@@ -3,13 +3,18 @@ export interface UpdateConfessionStatus {
   crushId: string;
   confessionId: string;
   updatedStatus: string;
-  updateTime: string;
-  sendingTime: string;
-  readingTime: string;
+  updateTime: Date;
+  sendingTime: Date;
+  readingTime: Date;
 }
 
 export interface UpdateConfessionStatusForSender {
   confessionId: string;
   updatedStatus: string;
-  updateTime: string;
+  updateTime: Date;
+}
+
+export interface AcceptConfessionStatus extends UpdateConfessionStatus {
+  crushName: string;
+  anonymousId: string;
 }
