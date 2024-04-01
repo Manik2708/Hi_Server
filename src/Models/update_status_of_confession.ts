@@ -1,3 +1,5 @@
+import { ChatModel } from "./chat_model";
+
 export interface UpdateConfessionStatus {
   senderId: string;
   crushId: string;
@@ -14,7 +16,7 @@ export interface UpdateConfessionStatusForSender {
   updateTime: Date;
 }
 
-export interface AcceptConfessionStatus extends UpdateConfessionStatus {
-  crushName: string;
-  anonymousId: string;
+export interface AcceptConfessionStatus {
+  chatModel: ChatModel;
+  updatedStatus: string;
 }

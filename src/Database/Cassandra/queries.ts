@@ -14,6 +14,8 @@ import {
   DeleteMessageModel,
   UpdateStatusOfChatMessageModel,
 } from '../../Models/update_status_of_chat_message';
+import { ConflictError, ConflictErrorTypes } from '../../Errors/conflict_error';
+import { CassandraQueryHelper } from './query_helper';
 @Injectable({ scope: Scope.DEFAULT })
 export class CassandraDatabaseQueries implements OnModuleInit {
   private client: Client;
@@ -425,6 +427,20 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       ],
     );
   };
+  readMultipleChatMessages = async(
+    updateStatusOfChatMessage: UpdateStatusOfChatMessageModel[],
+  )=>{
+    const helper = new CassandraQueryHelper()
+    if(!helper.ifEveryMessageHaveSameChatId(updateStatusOfChatMessage)){
+      throw new ConflictError(ConflictErrorTypes.ALL_MESSAGES_SHOULD_HAVE_SAME_CHAT_ID);
+    }    
+    await this.client.execute(`
+      BEGIN BATCH
+      ${helper.getMultipleUpdateQueriesForReadingMessages(updateStatusOfChatMessage.length)}
+      APPLY BATCH`,
+      helper.getParametersForReadingMessages(updateStatusOfChatMessage)
+      )
+  }
   updateDelieveredMessage = async (
     updateStatusOfChatMessage: UpdateStatusOfChatMessageModel,
   ) => {
@@ -442,9 +458,25 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       ],
     );
   };
+  updateMultipleDelieveredMessages = async(
+    updateStatusOfChatMessage: UpdateStatusOfChatMessageModel[],
+  )=>{
+    const helper = new CassandraQueryHelper()
+    if(!helper.ifEveryMessageHaveSameChatId(updateStatusOfChatMessage)){
+      throw new ConflictError(ConflictErrorTypes.ALL_MESSAGES_SHOULD_HAVE_SAME_CHAT_ID);
+    }    
+    await this.client.execute(`
+      BEGIN BATCH
+      ${helper.getMultipleUpdateQueriesForDelieveredMessages(updateStatusOfChatMessage.length)}
+      APPLY BATCH`,
+      helper.getParametersForReadingMessages(updateStatusOfChatMessage)
+      )
+  }
   deleteChatMessageForMe = async (deleteMessage: DeleteMessageModel) => {
+    let deletedBySender = false;
+    let deletedByReciever = false;
     const statusOfRequester = await this.client.execute(
-      `SELECT sender_id, reciever_id ${CassandraTableNames.chatMessages} WHERE
+      `SELECT sender_id, reciever_id, deleted_by_sender, deleted_by_reciever ${CassandraTableNames.chatMessages} WHERE
       chat_id = ? AND
       sending_time = ? AND
       message_id = ?`,
@@ -455,6 +487,43 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       ],
     );
     if (statusOfRequester.rowLength != 1) {
+      throw new ConflictError(ConflictErrorTypes.MORE_THAN_ONE_USER_EXISTS_WITH_SAME_ID)
+    }
+    if(statusOfRequester.rows[0].get("sender_id")==deleteMessage.requesterId&&statusOfRequester.rows[0].get("reciever_id")==deleteMessage.requesterId){
+      throw new ConflictError(ConflictErrorTypes.MESSAGE_CANT_HAVE_SAME_SENDER_AND_RECIEVER_ID)
+    }
+    else if (statusOfRequester.rows[0].get("sender_id")==deleteMessage.requesterId){
+      await this.client.execute(
+        `UPDATE ${CassandraTableNames.chatMessages} deleted_by_sender = ? WHERE
+        chat_id = ? AND
+        sending_time = ? AND
+        message_id = ?`,
+        [
+          true,
+          deleteMessage.chatId,
+          deleteMessage.sendingTime,
+          deleteMessage.messageId
+        ]
+        )
+        deletedBySender = true;
+    }
+    else if (statusOfRequester.rows[0].get("reciever_id")==deleteMessage.requesterId){
+      await this.client.execute(
+        `UPDATE ${CassandraTableNames.chatMessages} deleted_by_reciever = ? WHERE
+        chat_id = ? AND
+        sending_time = ? AND
+        message_id = ?`,
+        [
+          true,
+          deleteMessage.chatId,
+          deleteMessage.sendingTime,
+          deleteMessage.messageId
+        ]
+        )
+        deletedByReciever = true;
+    }
+    if(deletedBySender&&statusOfRequester.rows[0].get("deleted_by_reciever")||deletedByReciever&&statusOfRequester.rows[0].get("deleted_by_sender")){
+      await this.deleteChatMessageForEveryone(deleteMessage);
     }
   };
   deleteChatMessageForEveryone = async (deleteMessage: DeleteMessageModel) => {
