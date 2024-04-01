@@ -1,4 +1,4 @@
-import { ChatModel } from "./chat_model";
+import { ChatModel } from './chat_model';
 
 export interface UpdateConfessionStatus {
   senderId: string;

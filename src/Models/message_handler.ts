@@ -2,11 +2,13 @@ import { MessageType } from '../Constants/messasge_type';
 import { ChatMessageModel } from './chat_message_model';
 import { ChatModel } from './chat_model';
 import { ConfessionModel } from './confession';
-import { AcceptConfessionStatus, UpdateConfessionStatusForSender } from './update_status_of_confession';
+import {
+  AcceptConfessionStatus,
+  UpdateConfessionStatusForSender,
+} from './update_status_of_confession';
 
 export type MessageHandler =
-  { messageType: number }
-  & ConfessionModel
+  | ({ messageType: number } & ConfessionModel)
   | UpdateConfessionStatusForSender
   | ChatModel
   | AcceptConfessionStatus
@@ -38,19 +40,19 @@ export const convertCreateChatMessageToCommonMessage = (
   };
 };
 export const convertAcceptConfessionStatusToCommonMessage = (
-  acceptConfession: AcceptConfessionStatus
-): MessageHandler =>{
+  acceptConfession: AcceptConfessionStatus,
+): MessageHandler => {
   return {
     messageType: MessageType.ACCEPT_CONFESSION_TYPE,
-    ...acceptConfession
+    ...acceptConfession,
   };
-}
+};
 
 export const convertChatMessageToCommonMessage = (
-  chatMessageModel: ChatMessageModel
-): MessageHandler=>{
+  chatMessageModel: ChatMessageModel,
+): MessageHandler => {
   return {
     messageType: MessageType.SEND_CHAT_MESSAGE,
-    ...chatMessageModel
-  }
-}
+    ...chatMessageModel,
+  };
+};

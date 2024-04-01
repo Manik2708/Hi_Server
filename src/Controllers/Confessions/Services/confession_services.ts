@@ -129,8 +129,10 @@ export class ConfessionServices {
           updateConfessionStatusForSender,
         ),
         () => {},
-        async() => {
-          await this.cassandraObject.acceptOrRejectConfession(updateConfssionStatus);
+        async () => {
+          await this.cassandraObject.acceptOrRejectConfession(
+            updateConfssionStatus,
+          );
         },
       );
       return true;
@@ -138,7 +140,7 @@ export class ConfessionServices {
       throw new InternalServerError(e.toString());
     }
   };
-  acceptConfession = async(
+  acceptConfession = async (
     senderId: string,
     sendingTime: Date,
     crushId: string,
@@ -146,8 +148,8 @@ export class ConfessionServices {
     readingTime: Date,
     confessionId: string,
     crushName: string,
-    anonymousId: string
-  ): Promise<ChatModel>=>{
+    anonymousId: string,
+  ): Promise<ChatModel> => {
     const updateConfssionStatus: UpdateConfessionStatus = {
       senderId: senderId,
       crushId: crushId,
@@ -162,7 +164,7 @@ export class ConfessionServices {
       updatedStatus: 'Accepted',
       updateTime: time,
     };
-    const chatModel: ChatModel ={
+    const chatModel: ChatModel = {
       chatId: types.TimeUuid.now(),
       crushName: crushName,
       crushId: crushId,
@@ -170,12 +172,12 @@ export class ConfessionServices {
       anonymousUserId: anonymousId,
       lastUpdate: new Date(),
       confessionId: confessionId,
-      messages: []
-    }
-    const acceptConfessionModel: AcceptConfessionStatus={
+      messages: [],
+    };
+    const acceptConfessionModel: AcceptConfessionStatus = {
       chatModel: chatModel,
-      updatedStatus: "Accepted"
-    }
+      updatedStatus: 'Accepted',
+    };
     await this.sendMessageToUserService.sendMessageToUser(
       updateConfssionStatus.senderId,
       true,
@@ -183,11 +185,13 @@ export class ConfessionServices {
       acceptConfessionModel,
       convertAcceptConfessionStatusToCommonMessage(acceptConfessionModel),
       () => {},
-      async() => {
-        await this.cassandraObject.acceptOrRejectConfession(updateConfssionStatus);
-        await this.cassandraObject.createChat(chatModel)
+      async () => {
+        await this.cassandraObject.acceptOrRejectConfession(
+          updateConfssionStatus,
+        );
+        await this.cassandraObject.createChat(chatModel);
       },
     );
     return chatModel;
-  }
+  };
 }
