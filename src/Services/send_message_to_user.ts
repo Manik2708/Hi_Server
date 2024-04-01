@@ -35,7 +35,7 @@ export class SendMessageToUserService {
     messageForOnlineUser: any,
     commonMessage: MessageHandler,
     sendNotificationFunction: () => void,
-    afterAcknowledgement?: () => void,
+    afterAcknowledgement?: () => Promise<void>,
   ): Promise<void> => {
     try {
       const userIsOnline = await this.userOnlineServices.ifUserIsOnline(userId);
@@ -50,7 +50,7 @@ export class SendMessageToUserService {
           data: messageForOnlineUser,
         });
         if (afterAcknowledgement) {
-          afterAcknowledgement();
+          await afterAcknowledgement();
         }
       } else {
         await this.sendMessageToOfflineUser(
