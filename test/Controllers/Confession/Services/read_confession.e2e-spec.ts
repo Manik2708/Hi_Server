@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
 import { EventNames } from '../../../../src/Constants/event_names';
-import { RedisNames } from '../../../../src/Constants/queues_redis';
+import { QueueNames, RedisNames } from '../../../../src/Constants/queues_redis';
 import { ConfessionServices } from '../../../../src/Controllers/Confessions/Services/confession_services';
 import { CassandraDatabaseQueries } from '../../../../src/Database/Cassandra/queries';
 import { initClientSocket } from '../../../Helpers/create_socket_client';
@@ -11,16 +11,15 @@ import { Socket } from 'socket.io-client';
 import { getTestingGlobalServicesModule } from '../../../Helpers/global_test_services.module';
 import { TestServiceContainers } from '../../../Helpers/test_service_containers';
 import { getTestingApp } from '../../../Helpers/get_testing_app';
-import { Client } from 'cassandra-driver';
 import { ConfessionModel } from '../../../../src/Models/confession';
 import { nanoid } from 'nanoid';
 import { CassandraTableNames } from '../../../../src/Constants/cassandra_constants';
 import { createTestConfession } from '../../../Helpers/create_test_confession';
-import { UpdateConfessionStatusForSender } from '../../../../src/Models/update_status_of_confession';
 import {
   getSearchedConfession,
   getSearchedReadConfession,
 } from '../../../Helpers/search_confession';
+import { MessageType } from '../../../../src/Constants/messasge_type';
 describe('Send confession tests', () => {
   let redisClient: RedisClientType;
   let app: INestApplication;
@@ -28,7 +27,6 @@ describe('Send confession tests', () => {
   let socketId: string;
   let socket: Socket;
   let outputData: any;
-  let cassandraClient: Client;
   beforeAll(async () => {
     redisClient = await TestServiceContainers.getTestingRedisClient().connect();
     const moduleRef = await getTestingGlobalServicesModule();
@@ -43,7 +41,6 @@ describe('Send confession tests', () => {
         outputData = data;
       });
     });
-    cassandraClient = TestServiceContainers.getTestingCassandraClient();
   });
   afterAll(async () => {
     await app.close();
@@ -71,10 +68,10 @@ describe('Send confession tests', () => {
       sendingObject.crushName,
       updateTme,
     );
-    const expectedOutput: UpdateConfessionStatusForSender = {
+    const expectedOutput = {
       confessionId: sendingObject.confessionId,
-      updatedStatus: 'Read',
-      updateTime: updateTme,
+      updatedStatus: 'READ',
+      updateTime: updateTme.toISOString(),
     };
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(outputData).toStrictEqual(expectedOutput);
@@ -84,7 +81,8 @@ describe('Send confession tests', () => {
       sendingObject.sendingTime,
       CassandraTableNames.sentConfessions,
     );
-    expect(output.rows[0].values().includes('Read')).toBe(true);
+    expect(output.rows[0].get('status')).toBe('READ');
+    expect(output.rows[0].get(`reading_time`)).toStrictEqual(updateTme);
     const recieverOutput = await getSearchedConfession(
       sendingObject.confessionId,
       sendingObject.senderId,
@@ -92,12 +90,82 @@ describe('Send confession tests', () => {
       CassandraTableNames.recievedUnreadConfessions,
     );
     expect(recieverOutput.rowLength).toBe(0);
-    const recueverReadOutput = await getSearchedReadConfession(
+    const recieverReadOutput = await getSearchedReadConfession(
+      sendingObject.confessionId,
+      sendingObject.crushId,
+      updateTme,
+    );
+    expect(recieverReadOutput.rowLength).toBe(1);
+    expect(recieverReadOutput.rows[0].get('status')).toBe(`READ`);
+    expect(recieverReadOutput.rows[0].get(`reading_time`)).toStrictEqual(
+      updateTme,
+    );
+    expect(recieverReadOutput.rows[0].get(`reaction_time`)).toBe(null);
+  });
+  it('When user is offline', async () => {
+    const senderId = nanoid().toLowerCase();
+    const crushId = nanoid().toLowerCase();
+    const sendingObject: ConfessionModel = await createTestConfession(
+      senderId,
+      crushId,
+    );
+    const updateTme = new Date();
+    await confessionServices.readConfession(
+      sendingObject.confessionId,
+      sendingObject.senderId,
+      sendingObject.senderAnonymousId,
+      sendingObject.crushId,
+      sendingObject.confession,
+      sendingObject.sendingTime,
+      sendingObject.crushName,
+      updateTme,
+    );
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    TestServiceContainers.getTestingRabbitClient().createChannel((chnl) => {
+      chnl.assertQueue(QueueNames.OfflineQueue + sendingObject.crushId, {
+        durable: true,
+      });
+      chnl.consume(QueueNames.OfflineQueue + sendingObject.crushId, (msg) => {
+        if (msg == null) {
+          outputData = null;
+        } else {
+          outputData = msg.content;
+        }
+      });
+    });
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const expectedOutput = {
+      messageType: MessageType.UPDATE_CONFESSION_STATUS,
+      confessionId: sendingObject.confessionId,
+      updatedStatus: 'READ',
+      updateTime: updateTme.toISOString(),
+    };
+    expect(JSON.parse(outputData.toString())).toStrictEqual(expectedOutput);
+    const output = await getSearchedConfession(
       sendingObject.confessionId,
       sendingObject.senderId,
       sendingObject.sendingTime,
-      CassandraTableNames.recievedReadConfessions,
+      CassandraTableNames.sentConfessions,
     );
-    expect(recueverReadOutput.rowLength).toBe(1);
+    expect(output.rows[0].get('status')).toBe('READ');
+    expect(output.rows[0].get(`reading_time`)).toStrictEqual(updateTme);
+    const recieverOutput = await getSearchedConfession(
+      sendingObject.confessionId,
+      sendingObject.senderId,
+      sendingObject.sendingTime,
+      CassandraTableNames.recievedUnreadConfessions,
+    );
+    expect(recieverOutput.rowLength).toBe(0);
+    const recieverReadOutput = await getSearchedReadConfession(
+      sendingObject.confessionId,
+      sendingObject.crushId,
+      updateTme,
+    );
+    expect(recieverReadOutput.rowLength).toBe(1);
+    expect(recieverReadOutput.rows[0].get('status')).toBe(`READ`);
+    expect(recieverReadOutput.rows[0].get(`reading_time`)).toStrictEqual(
+      updateTme,
+    );
+    expect(recieverReadOutput.rows[0].get(`reaction_time`)).toBe(null);
   });
 });

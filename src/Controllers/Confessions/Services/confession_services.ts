@@ -75,12 +75,12 @@ export class ConfessionServices {
       confession: confession,
       sendingTime: sendingTime,
       crushName: crushName,
-      status: 'Read',
+      status: 'READ',
       readingTime: readingTime,
     };
     const updateConfessionStatusForSender: UpdateConfessionStatusForSender = {
       confessionId: confessionId,
-      updatedStatus: 'Read',
+      updatedStatus: 'READ',
       updateTime: readingTime,
     };
     await this.sendMessageToUserService.sendMessageToUser(
