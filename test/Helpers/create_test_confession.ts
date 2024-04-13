@@ -14,7 +14,7 @@ export const createTestConfession = async (
     crushId: crushId,
     confessionId: types.TimeUuid.now().toString(),
     confession: nanoid().toLowerCase(),
-    sendingTime: Date.now().toString(),
+    sendingTime: new Date(),
     status: 'SENT',
     crushName: nanoid().toLowerCase(),
     senderAnonymousId: nanoid().toLowerCase(),

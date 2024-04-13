@@ -235,6 +235,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
 
   readConfession = async (confessionModel: ConfessionModel): Promise<void> => {
     try {
+      const status = 'READ';
       // Firstly confession is removed from recieved_unread_confession
       const { PARTITION_KEY, FIRST_SORTING_KEY, SECOND_SORTING_KEY } =
         CassandraMethods.getRecievedUnreadConfessionsKey();
@@ -242,7 +243,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         `DELETE FROM ${CassandraTableNames.recievedUnreadConfessions} WHERE ${PARTITION_KEY} = ? AND ${FIRST_SORTING_KEY} = ? AND ${SECOND_SORTING_KEY} = ?`,
         [
           confessionModel.crushId,
-          confessionModel.sendingTime.toString(),
+          confessionModel.sendingTime,
           confessionModel.confessionId,
         ],
       );
@@ -264,10 +265,10 @@ export class CassandraDatabaseQueries implements OnModuleInit {
           confessionModel.crushId,
           confessionModel.confessionId,
           confessionModel.confession,
-          confessionModel.sendingTime.toString(),
-          confessionModel.status,
+          confessionModel.sendingTime,
+          status,
           confessionModel.senderAnonymousId,
-          confessionModel.readingTime?.toString(),
+          confessionModel.readingTime,
           null,
         ],
       );
@@ -279,10 +280,10 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             confession_id = ?
             `,
         [
-          confessionModel.status,
-          confessionModel.readingTime?.toString(),
+          status,
+          confessionModel.readingTime,
           confessionModel.senderId,
-          confessionModel.sendingTime.toString(),
+          confessionModel.sendingTime,
           confessionModel.confessionId,
         ],
         {
@@ -471,8 +472,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       );
     }
     await this.client.execute(
-      `
-      BEGIN BATCH
+      `BEGIN BATCH
       ${helper.getMultipleUpdateQueriesForDelieveredMessages(updateStatusOfChatMessage.length)}
       APPLY BATCH`,
       helper.getParametersForReadingMessages(updateStatusOfChatMessage),
