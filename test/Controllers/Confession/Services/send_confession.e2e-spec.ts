@@ -50,36 +50,36 @@ describe('Send confession tests', () => {
       return mockedValue;
     });
     const sendingObject: ConfessionModel = {
-      senderId: nanoid().toLowerCase(),
-      senderAnonymousId: nanoid().toLowerCase(),
-      confessionId: '',
-      crushId: nanoid().toLowerCase(),
+      sender_id: nanoid().toLowerCase(),
+      sender_anonymous_id: nanoid().toLowerCase(),
+      confession_id: '',
+      crush_id: nanoid().toLowerCase(),
       confession: nanoid().toLowerCase(),
-      sendingTime: new Date(),
+      sending_time: new Date(),
       status: nanoid().toLowerCase(),
-      crushName: nanoid().toLowerCase(),
+      crush_name: nanoid().toLowerCase(),
     };
-    await redisClient.sAdd(RedisNames.OnlineUsers, sendingObject.crushId);
-    await redisClient.hSet(RedisNames.OnlineUserMap + sendingObject.crushId, {
+    await redisClient.sAdd(RedisNames.OnlineUsers, sendingObject.crush_id);
+    await redisClient.hSet(RedisNames.OnlineUserMap + sendingObject.crush_id, {
       socketId: socketId,
     });
     await confessionServices.sendConfessionToUser(
-      sendingObject.senderId,
-      sendingObject.senderAnonymousId,
-      sendingObject.crushId,
+      sendingObject.sender_id,
+      sendingObject.sender_anonymous_id,
+      sendingObject.crush_id,
       sendingObject.confession,
-      sendingObject.sendingTime,
-      sendingObject.crushName,
+      sendingObject.sending_time,
+      sendingObject.crush_name,
     );
     const expectedValue = {
-      senderId: sendingObject.senderId,
-      senderAnonymousId: sendingObject.senderAnonymousId,
-      crushId: sendingObject.crushId,
+      senderId: sendingObject.sender_id,
+      senderAnonymousId: sendingObject.sender_anonymous_id,
+      crushId: sendingObject.crush_id,
       confession: sendingObject.confession,
-      sendingTime: sendingObject.sendingTime.toISOString(),
+      sendingTime: sendingObject.sending_time.toISOString(),
       confessionId: mockedValue.toString(),
       status: 'Sent',
-      crushName: sendingObject.crushName,
+      crushName: sendingObject.crush_name,
     };
     await new Promise((resolve) => setTimeout(resolve, 500));
     expect(outputData).toStrictEqual(expectedValue);
@@ -90,8 +90,8 @@ describe('Send confession tests', () => {
     confession_id = ?
     `,
       [
-        sendingObject.senderId,
-        sendingObject.sendingTime.toString(),
+        sendingObject.sender_id,
+        sendingObject.sending_time.toString(),
         mockedValue.toString(),
       ],
       { prepare: true },
@@ -104,13 +104,13 @@ describe('Send confession tests', () => {
       output.rows[0]
         .values()
         .includes(
-          sendingObject.sendingTime.toDateString() +
+          sendingObject.sending_time.toDateString() +
             ' ' +
-            sendingObject.sendingTime.toTimeString(),
+            sendingObject.sending_time.toTimeString(),
         ),
     ).toBe(true);
     expect(
-      output.rows[0].values().includes(sendingObject.senderAnonymousId),
+      output.rows[0].values().includes(sendingObject.sender_anonymous_id),
     ).toBe(false);
     const recieverOutput = await cassandraClient.execute(
       `SELECT * FROM hi_database.${CassandraTableNames.recievedUnreadConfessions}
@@ -119,8 +119,8 @@ describe('Send confession tests', () => {
     confession_id = ?
     `,
       [
-        sendingObject.crushId,
-        sendingObject.sendingTime.toString(),
+        sendingObject.crush_id,
+        sendingObject.sending_time.toString(),
         mockedValue.toString(),
       ],
       {
@@ -135,13 +135,15 @@ describe('Send confession tests', () => {
       recieverOutput.rows[0]
         .values()
         .includes(
-          sendingObject.sendingTime.toDateString() +
+          sendingObject.sending_time.toDateString() +
             ' ' +
-            sendingObject.sendingTime.toTimeString(),
+            sendingObject.sending_time.toTimeString(),
         ),
     ).toBe(true);
     expect(
-      recieverOutput.rows[0].values().includes(sendingObject.senderAnonymousId),
+      recieverOutput.rows[0]
+        .values()
+        .includes(sendingObject.sender_anonymous_id),
     ).toBe(true);
   });
   it('When user is offline', async () => {
@@ -151,40 +153,40 @@ describe('Send confession tests', () => {
     });
     let outputData: any;
     const sendingObject: ConfessionModel = {
-      senderId: nanoid().toLowerCase(),
-      senderAnonymousId: nanoid().toLowerCase(),
-      confessionId: '',
-      crushId: nanoid().toLowerCase(),
+      sender_id: nanoid().toLowerCase(),
+      sender_anonymous_id: nanoid().toLowerCase(),
+      confession_id: '',
+      crush_id: nanoid().toLowerCase(),
       confession: nanoid().toLowerCase(),
-      sendingTime: new Date(),
+      sending_time: new Date(),
       status: nanoid().toLowerCase(),
-      crushName: nanoid().toLowerCase(),
+      crush_name: nanoid().toLowerCase(),
     };
     await confessionServices.sendConfessionToUser(
-      sendingObject.senderId,
-      sendingObject.senderAnonymousId,
-      sendingObject.crushId,
+      sendingObject.sender_id,
+      sendingObject.sender_anonymous_id,
+      sendingObject.crush_id,
       sendingObject.confession,
-      sendingObject.sendingTime,
-      sendingObject.crushName,
+      sendingObject.sending_time,
+      sendingObject.crush_name,
     );
     const expectedValue = {
-      senderId: sendingObject.senderId,
-      senderAnonymousId: sendingObject.senderAnonymousId,
-      crushId: sendingObject.crushId,
+      senderId: sendingObject.sender_id,
+      senderAnonymousId: sendingObject.sender_anonymous_id,
+      crushId: sendingObject.crush_id,
       confession: sendingObject.confession,
-      sendingTime: sendingObject.sendingTime.toISOString(),
+      sendingTime: sendingObject.sending_time.toISOString(),
       confessionId: mockedValue.toString(),
       status: 'Sent',
-      crushName: sendingObject.crushName,
+      crushName: sendingObject.crush_name,
       messageType: MessageType.CONFESSION_MESSAGE_TYPE,
     };
     await new Promise((resolve) => setTimeout(resolve, 500));
     TestServiceContainers.getTestingRabbitClient().createChannel((chnl) => {
-      chnl.assertQueue(QueueNames.OfflineQueue + sendingObject.crushId, {
+      chnl.assertQueue(QueueNames.OfflineQueue + sendingObject.crush_id, {
         durable: true,
       });
-      chnl.consume(QueueNames.OfflineQueue + sendingObject.crushId, (msg) => {
+      chnl.consume(QueueNames.OfflineQueue + sendingObject.crush_id, (msg) => {
         if (msg == null) {
           outputData = null;
         } else {
@@ -201,8 +203,8 @@ describe('Send confession tests', () => {
     confession_id = ?
     `,
       [
-        sendingObject.senderId,
-        sendingObject.sendingTime.toString(),
+        sendingObject.sender_id,
+        sendingObject.sending_time.toString(),
         mockedValue.toString(),
       ],
       { prepare: true },
@@ -215,13 +217,13 @@ describe('Send confession tests', () => {
       output.rows[0]
         .values()
         .includes(
-          sendingObject.sendingTime.toDateString() +
+          sendingObject.sending_time.toDateString() +
             ' ' +
-            sendingObject.sendingTime.toTimeString(),
+            sendingObject.sending_time.toTimeString(),
         ),
     ).toBe(true);
     expect(
-      output.rows[0].values().includes(sendingObject.senderAnonymousId),
+      output.rows[0].values().includes(sendingObject.sender_anonymous_id),
     ).toBe(false);
     const recieverOutput = await cassandraClient.execute(
       `SELECT * FROM hi_database.${CassandraTableNames.recievedUnreadConfessions}
@@ -230,8 +232,8 @@ describe('Send confession tests', () => {
     confession_id = ?
     `,
       [
-        sendingObject.crushId,
-        sendingObject.sendingTime.toString(),
+        sendingObject.crush_id,
+        sendingObject.sending_time.toString(),
         mockedValue.toString(),
       ],
       {
@@ -246,13 +248,15 @@ describe('Send confession tests', () => {
       recieverOutput.rows[0]
         .values()
         .includes(
-          sendingObject.sendingTime.toDateString() +
+          sendingObject.sending_time.toDateString() +
             ' ' +
-            sendingObject.sendingTime.toTimeString(),
+            sendingObject.sending_time.toTimeString(),
         ),
     ).toBe(true);
     expect(
-      recieverOutput.rows[0].values().includes(sendingObject.senderAnonymousId),
+      recieverOutput.rows[0]
+        .values()
+        .includes(sendingObject.sender_anonymous_id),
     ).toBe(true);
   });
 });

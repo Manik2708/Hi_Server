@@ -54,22 +54,22 @@ describe(`Reject confession tests`, () => {
       senderId,
       crushId,
     );
-    await redisClient.sAdd(RedisNames.OnlineUsers, sendingObject.senderId);
-    await redisClient.hSet(RedisNames.OnlineUserMap + sendingObject.senderId, {
+    await redisClient.sAdd(RedisNames.OnlineUsers, sendingObject.sender_id);
+    await redisClient.hSet(RedisNames.OnlineUserMap + sendingObject.sender_id, {
       socketId: socketId,
     });
     const updateTme = new Date();
     await confessionServices.rejectConfession(
-      sendingObject.senderId,
-      sendingObject.sendingTime,
-      sendingObject.crushId,
+      sendingObject.sender_id,
+      sendingObject.sending_time,
+      sendingObject.crush_id,
       updateTme,
-      sendingObject.readingTime!,
-      sendingObject.confessionId,
+      sendingObject.reading_time!,
+      sendingObject.confession_id,
     );
     await new Promise((resolve) => setTimeout(resolve, 500));
     const expectedOutput = {
-      confessionId: sendingObject.confessionId,
+      confessionId: sendingObject.confession_id,
       updatedStatus: 'REJECTED',
       updateTime: updateTme.toISOString(),
     };

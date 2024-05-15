@@ -32,13 +32,13 @@ export class ConfessionServices {
     try {
       const confessionId = types.TimeUuid.now();
       let confessionDb: ConfessionModel = {
-        confessionId: confessionId.toString(),
-        senderId: senderId,
-        senderAnonymousId: senderAnonymousId,
-        crushId: crushId,
+        confession_id: confessionId.toString(),
+        sender_id: senderId,
+        sender_anonymous_id: senderAnonymousId,
+        crush_id: crushId,
         confession: confession,
-        sendingTime: time,
-        crushName: crushName,
+        sending_time: time,
+        crush_name: crushName,
         status: 'Sent',
       };
       await this.sendMessageToUserService.sendMessageToUser(
@@ -68,20 +68,20 @@ export class ConfessionServices {
     readingTime: Date,
   ) => {
     const confessionDb: ConfessionModel = {
-      confessionId: confessionId,
-      senderId: senderId,
-      senderAnonymousId: senderAnonymousId,
-      crushId: crushId,
+      confession_id: confessionId,
+      sender_id: senderId,
+      sender_anonymous_id: senderAnonymousId,
+      crush_id: crushId,
       confession: confession,
-      sendingTime: sendingTime,
-      crushName: crushName,
+      sending_time: sendingTime,
+      crush_name: crushName,
       status: 'READ',
-      readingTime: readingTime,
+      reading_time: readingTime,
     };
     const updateConfessionStatusForSender: UpdateConfessionStatusForSender = {
-      confessionId: confessionId,
-      updatedStatus: 'READ',
-      updateTime: readingTime,
+      confession_id: confessionId,
+      updated_status: 'READ',
+      update_time: readingTime,
     };
     await this.sendMessageToUserService.sendMessageToUser(
       crushId,
@@ -107,21 +107,21 @@ export class ConfessionServices {
   ): Promise<boolean> => {
     try {
       const updateConfssionStatus: UpdateConfessionStatus = {
-        senderId: senderId,
-        crushId: crushId,
-        confessionId: confessionId,
-        updatedStatus: 'REJECTED',
-        updateTime: time,
-        sendingTime: sendingTime,
-        readingTime: readingTime,
+        sender_id: senderId,
+        crush_id: crushId,
+        confession_id: confessionId,
+        updated_status: 'REJECTED',
+        update_time: time,
+        sending_time: sendingTime,
+        reading_time: readingTime,
       };
       const updateConfessionStatusForSender: UpdateConfessionStatusForSender = {
-        confessionId: confessionId,
-        updatedStatus: 'REJECTED',
-        updateTime: time,
+        confession_id: confessionId,
+        updated_status: 'REJECTED',
+        update_time: time,
       };
       await this.sendMessageToUserService.sendMessageToUser(
-        updateConfssionStatus.senderId,
+        updateConfssionStatus.sender_id,
         true,
         EventNames.updateConfssionStatus,
         updateConfessionStatusForSender,
@@ -151,30 +151,31 @@ export class ConfessionServices {
     anonymousId: string,
   ): Promise<ChatModel> => {
     const updateConfssionStatus: UpdateConfessionStatus = {
-      senderId: senderId,
-      crushId: crushId,
-      confessionId: confessionId,
-      updatedStatus: 'ACCEPTED',
-      updateTime: time,
-      sendingTime: sendingTime,
-      readingTime: readingTime,
+      sender_id: senderId,
+      crush_id: crushId,
+      confession_id: confessionId,
+      updated_status: 'ACCEPTED',
+      update_time: time,
+      sending_time: sendingTime,
+      reading_time: readingTime,
     };
     const chatModel: ChatModel = {
-      chatId: types.TimeUuid.now(),
-      crushName: crushName,
-      crushId: crushId,
-      userId: senderId,
-      anonymousUserId: anonymousId,
-      lastUpdate: new Date(),
-      confessionId: confessionId,
+      chat_id: types.TimeUuid.now(),
+      crush_name: crushName,
+      crush_id: crushId,
+      user_id: senderId,
+      anonymous_id: anonymousId,
+      last_update: new Date(),
+      confession_id: confessionId,
       messages: [],
     };
     const acceptConfessionModel: AcceptConfessionStatus = {
-      chatModel: chatModel,
-      updatedStatus: 'ACCEPTED',
+      chat_model: chatModel,
+      updated_status: 'ACCEPTED',
+      update_time: time,
     };
     await this.sendMessageToUserService.sendMessageToUser(
-      updateConfssionStatus.senderId,
+      updateConfssionStatus.sender_id,
       true,
       EventNames.acceptConfession,
       acceptConfessionModel,

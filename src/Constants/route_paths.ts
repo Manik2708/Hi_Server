@@ -26,3 +26,10 @@ export class ChatRoutes {
   static DELETE_CHAT_MESSAGE_FOR_EVERYONE: string =
     'delete-chat-message-for-everyone';
 }
+
+export class RetrieveDataRoutes {
+  static retrieveDataAfterLogin: string = 'retrieve-data-after-login';
+  static getUnreadConfessionsByCrushId: string = 'get-confessions-by-crush-id';
+  static getReadConfessionsByCrushId: string =
+    'get-unread-confessions-by-crush-id';
+}

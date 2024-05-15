@@ -17,23 +17,23 @@ export class ChatsController {
   ) {
     try {
       const {
-        chatId,
-        senderId,
-        recieverId,
+        chat_id,
+        sender_id,
+        reciever_id,
         message,
-        sendingTime,
+        sending_time,
         status,
-        referredBy,
+        referred_by,
       } = req.body;
       await this.chatMessageService.sendChatMessage(
         types.TimeUuid.now(),
-        chatId,
-        senderId,
-        recieverId,
+        chat_id,
+        sender_id,
+        reciever_id,
         message,
-        sendingTime,
+        sending_time,
         status,
-        referredBy,
+        referred_by,
       );
     } catch (error) {
       throw new ThrowError(error, res);
@@ -46,8 +46,10 @@ export class ChatsController {
     @Res() res: express.Response,
   ) {
     try {
-      const { deleteMessagesModel } = req.body;
-      await this.chatMessageService.deleteChatMessageForMe(deleteMessagesModel);
+      const { delete_message_model } = req.body;
+      await this.chatMessageService.deleteChatMessageForMe(
+        delete_message_model,
+      );
     } catch (error) {
       throw new ThrowError(error, res);
     }
@@ -59,9 +61,9 @@ export class ChatsController {
     @Res() res: express.Response,
   ) {
     try {
-      const { deleteMessageModel } = req.body;
+      const { delete_message_model } = req.body;
       await this.chatMessageService.deleteChatMessageForEveryOne(
-        deleteMessageModel,
+        delete_message_model,
       );
     } catch (error) {
       throw new ThrowError(error, res);
@@ -74,12 +76,12 @@ export class ChatsController {
     @Res() res: express.Response,
   ) {
     try {
-      const { crushId, updateStatusOfChatMessageModel, updatedStatus } =
+      const { crush_id, update_status_of_chat_message_model, updated_status } =
         req.body;
       await this.chatMessageService.updateStatusOfChatMessages(
-        crushId,
-        updateStatusOfChatMessageModel,
-        updatedStatus,
+        crush_id,
+        update_status_of_chat_message_model,
+        updated_status,
       );
     } catch (error) {
       throw new ThrowError(error, res);

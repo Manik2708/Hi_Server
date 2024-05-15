@@ -1,23 +1,23 @@
 export interface UpdateStatusOfChatMessageModel {
-  ownerId: string;
-  chatId: string;
-  messageId: string;
-  sendingTime: Date;
+  owner_id: string;
+  chat_id: string;
+  message_id: string;
+  sending_time: Date;
   status: string;
-  updateTime: Date;
-  senderId: string;
+  update_time: Date;
+  sender_id: string;
 }
 
 export interface UpdateStatusOfChatMessages {
-  crushId: string;
-  updatedStatus: number;
-  updateStatusOfChatMessageModel: UpdateStatusOfChatMessageModel[];
+  crush_id: string;
+  updated_status: number;
+  update_status_of_chat_message_model: UpdateStatusOfChatMessageModel[];
 }
 
 export interface DeleteMessageModel {
-  requesterId: string;
-  recieverId: string;
-  chatId: string;
-  messageId: string;
-  sendingTime: Date;
+  requester_id: string;
+  reciever_id: string;
+  chat_id: string;
+  message_id: string;
+  sending_time: Date;
 }

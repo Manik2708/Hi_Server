@@ -1,12 +1,12 @@
 export interface ConfessionModel {
-  confessionId: string;
-  senderId: string;
-  senderAnonymousId: string;
-  crushId: string;
+  confession_id: string;
+  sender_id: string;
+  sender_anonymous_id: string;
+  crush_id: string;
   confession: string;
   status: string;
-  crushName: string;
-  sendingTime: Date;
-  readingTime?: Date;
-  reactionTime?: Date;
+  crush_name: string;
+  sending_time: Date;
+  reading_time?: Date;
+  reaction_time?: Date;
 }

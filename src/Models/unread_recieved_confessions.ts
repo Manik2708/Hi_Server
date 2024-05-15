@@ -1,7 +1,7 @@
 export interface UnreadRecievedConfessions {
   id: string;
   confession: string;
-  senderAnonymousId: string;
+  anonymous_id: string;
   time: string;
-  senderId: string;
+  sender_id: string;
 }

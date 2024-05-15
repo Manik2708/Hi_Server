@@ -17,20 +17,20 @@ export class ConfessionsController {
   ) {
     try {
       const {
-        senderId,
-        senderAnonymousId,
-        crushId,
+        sender_id,
+        anonymous_id,
+        crush_id,
         confession,
         time,
-        crushName,
+        crush_name,
       } = req.body;
       const confessionDb = await this.confessionServices.sendConfessionToUser(
-        senderId,
-        senderAnonymousId,
-        crushId,
+        sender_id,
+        anonymous_id,
+        crush_id,
         confession,
         time,
-        crushName,
+        crush_name,
       );
       return res.status(400).json(confessionDb);
     } catch (error) {
@@ -49,20 +49,20 @@ export class ConfessionsController {
   ) {
     try {
       const {
-        senderId,
-        sendingTime,
-        crushId,
+        sender_id,
+        sending_time,
+        crush_id,
         time,
-        readingTime,
-        confessionId,
+        reading_time,
+        confession_id,
       } = req.body;
       const ifRejected = await this.confessionServices.rejectConfession(
-        senderId,
-        sendingTime,
-        crushId,
+        sender_id,
+        sending_time,
+        crush_id,
         time,
-        readingTime,
-        confessionId,
+        reading_time,
+        confession_id,
       );
       return res.status(200).json(ifRejected);
     } catch (error) {
@@ -81,24 +81,24 @@ export class ConfessionsController {
   ) {
     try {
       const {
-        confessionId,
-        senderId,
-        senderAnonymousId,
-        crushId,
+        confession_id,
+        sender_id,
+        anonymous_id,
+        crush_id,
         confession,
-        sendingTime,
-        crushName,
-        readingTime,
+        sending_time,
+        crush_name,
+        reading_time,
       } = req.body;
       await this.confessionServices.readConfession(
-        confessionId,
-        senderId,
-        senderAnonymousId,
-        crushId,
+        confession_id,
+        sender_id,
+        anonymous_id,
+        crush_id,
         confession,
-        sendingTime,
-        crushName,
-        readingTime,
+        sending_time,
+        crush_name,
+        reading_time,
       );
       return res.status(200).json(true);
     } catch (error) {
@@ -113,24 +113,24 @@ export class ConfessionsController {
   ) {
     try {
       const {
-        senderId,
-        sendingTime,
-        crushId,
+        sender_id,
+        sending_time,
+        crush_id,
         time,
-        readingTime,
-        confessionId,
-        crushName,
-        anonymousId,
+        reading_time,
+        confession_id,
+        crush_name,
+        anonymous_id,
       } = req.body;
       const chat = await this.confessionServices.acceptConfession(
-        senderId,
-        sendingTime,
-        crushId,
+        sender_id,
+        sending_time,
+        crush_id,
         time,
-        readingTime,
-        confessionId,
-        crushName,
-        anonymousId,
+        reading_time,
+        confession_id,
+        crush_name,
+        anonymous_id,
       );
       return res.status(200).json(chat);
     } catch (error) {

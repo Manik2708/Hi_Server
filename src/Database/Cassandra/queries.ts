@@ -137,7 +137,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             chat_id timeuuid,
             crush_id TEXT,
             user_id TEXT,
-            anonymous_user_id TEXT,
+            anonymous_id TEXT,
             confession_id timeuuid,
             last_update TIMESTAMP,
             PRIMARY KEY (crush_id, last_update, chat_id)
@@ -184,13 +184,13 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             reaction_time 
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          confessionModel.senderId,
-          confessionModel.crushId,
-          confessionModel.confessionId,
+          confessionModel.sender_id,
+          confessionModel.crush_id,
+          confessionModel.confession_id,
           confessionModel.confession,
-          confessionModel.sendingTime.toString(),
+          confessionModel.sending_time.toString(),
           confessionModel.status,
-          confessionModel.crushName,
+          confessionModel.crush_name,
           null,
           null,
         ],
@@ -210,13 +210,13 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             anonymous_id
         ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
-          confessionModel.senderId,
-          confessionModel.crushId,
-          confessionModel.confessionId,
+          confessionModel.sender_id,
+          confessionModel.crush_id,
+          confessionModel.confession_id,
           confessionModel.confession,
-          confessionModel.sendingTime.toString(),
+          confessionModel.sending_time.toString(),
           confessionModel.status,
-          confessionModel.senderAnonymousId,
+          confessionModel.sender_anonymous_id,
         ],
         {
           prepare: true,
@@ -241,9 +241,9 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       await this.client.execute(
         `DELETE FROM ${CassandraTableNames.recievedUnreadConfessions} WHERE ${PARTITION_KEY} = ? AND ${FIRST_SORTING_KEY} = ? AND ${SECOND_SORTING_KEY} = ?`,
         [
-          confessionModel.crushId,
-          confessionModel.sendingTime,
-          confessionModel.confessionId,
+          confessionModel.crush_id,
+          confessionModel.sending_time,
+          confessionModel.confession_id,
         ],
       );
       // Add this confession to recieved_read_confession
@@ -260,14 +260,14 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             reaction_time
             ) VALUES (?,?,?,?,?,?,?,?,?)`,
         [
-          confessionModel.senderId,
-          confessionModel.crushId,
-          confessionModel.confessionId,
+          confessionModel.sender_id,
+          confessionModel.crush_id,
+          confessionModel.confession_id,
           confessionModel.confession,
-          confessionModel.sendingTime,
+          confessionModel.sending_time,
           status,
-          confessionModel.senderAnonymousId,
-          confessionModel.readingTime,
+          confessionModel.sender_anonymous_id,
+          confessionModel.reading_time,
           null,
         ],
       );
@@ -280,10 +280,10 @@ export class CassandraDatabaseQueries implements OnModuleInit {
             `,
         [
           status,
-          confessionModel.readingTime,
-          confessionModel.senderId,
-          confessionModel.sendingTime,
-          confessionModel.confessionId,
+          confessionModel.reading_time,
+          confessionModel.sender_id,
+          confessionModel.sending_time,
+          confessionModel.confession_id,
         ],
         {
           prepare: true,
@@ -306,9 +306,9 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         ${CassandraMethods.getSentConfessionsKey().FIRST_SORTING_KEY} = ? AND
         ${CassandraMethods.getSentConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
-        updateStatus.senderId,
-        updateStatus.sendingTime,
-        updateStatus.confessionId,
+        updateStatus.sender_id,
+        updateStatus.sending_time,
+        updateStatus.confession_id,
       ],
     );
     if (whetherStatusIsRead.rows[0].get(`status`) != `READ`) {
@@ -323,9 +323,9 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND
         ${CassandraMethods.getRecievedReadConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
-        updateStatus.crushId,
-        updateStatus.readingTime,
-        updateStatus.confessionId,
+        updateStatus.crush_id,
+        updateStatus.reading_time,
+        updateStatus.confession_id,
       ],
     );
     if (readConfession.rowLength == 0) {
@@ -337,11 +337,11 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND
         ${CassandraMethods.getRecievedReadConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
-        updateStatus.updatedStatus,
-        updateStatus.updateTime,
-        updateStatus.crushId,
-        updateStatus.readingTime,
-        updateStatus.confessionId,
+        updateStatus.updated_status,
+        updateStatus.update_time,
+        updateStatus.crush_id,
+        updateStatus.reading_time,
+        updateStatus.confession_id,
       ],
     );
     await this.client.execute(
@@ -350,11 +350,11 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         ${CassandraMethods.getSentConfessionsKey().FIRST_SORTING_KEY} = ? AND
         ${CassandraMethods.getSentConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
-        updateStatus.updatedStatus,
-        updateStatus.updateTime,
-        updateStatus.senderId,
-        updateStatus.sendingTime,
-        updateStatus.confessionId,
+        updateStatus.updated_status,
+        updateStatus.update_time,
+        updateStatus.sender_id,
+        updateStatus.sending_time,
+        updateStatus.confession_id,
       ],
     );
   };
@@ -370,12 +370,12 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         last_update
       ) VALUES(?,?,?,?,?,?)`,
       [
-        chatModel.chatId,
-        chatModel.crushName,
-        chatModel.crushId,
-        chatModel.userId,
-        chatModel.confessionId,
-        chatModel.lastUpdate.toString(),
+        chatModel.chat_id,
+        chatModel.crush_name,
+        chatModel.crush_id,
+        chatModel.user_id,
+        chatModel.confession_id,
+        chatModel.last_update.toString(),
       ],
       {
         prepare: true,
@@ -387,17 +387,17 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         chat_id,
         crush_id,
         user_id,
-        anonymous_user_id,
+        anonymous_id,
         confession_id,
         last_update,
       ) VALUES(?,?,?,?,?,?)`,
       [
-        chatModel.chatId,
-        chatModel.crushId,
-        chatModel.userId,
-        chatModel.anonymousUserId,
-        chatModel.confessionId,
-        chatModel.lastUpdate.toString(),
+        chatModel.chat_id,
+        chatModel.crush_id,
+        chatModel.user_id,
+        chatModel.anonymous_id,
+        chatModel.confession_id,
+        chatModel.last_update.toString(),
       ],
       {
         prepare: true,
@@ -421,20 +421,20 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         VALUES(?,?,?,?,?,?,?,?,?,?)
       )`,
       [
-        chatMessageModel.chatId,
-        chatMessageModel.messageId,
-        chatMessageModel.sendingTime.toString(),
-        chatMessageModel.delieveryTime == null
+        chatMessageModel.chat_id,
+        chatMessageModel.message_id,
+        chatMessageModel.sending_time.toString(),
+        chatMessageModel.delievery_time == null
           ? null
-          : chatMessageModel.delieveryTime.toString(),
-        chatMessageModel.readingTime == null
+          : chatMessageModel.delievery_time.toString(),
+        chatMessageModel.reading_time == null
           ? null
-          : chatMessageModel.readingTime.toString(),
-        chatMessageModel.senderId,
-        chatMessageModel.recieverId,
+          : chatMessageModel.reading_time.toString(),
+        chatMessageModel.sender_id,
+        chatMessageModel.reciever_id,
         chatMessageModel.message,
         chatMessageModel.status,
-        chatMessageModel.ownerId,
+        chatMessageModel.owner_id,
       ],
       {
         prepare: true,
@@ -468,11 +468,11 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         message_id = ?`,
       [
         updateStatusOfChatMessage.status,
-        updateStatusOfChatMessage.updateTime.toString(),
-        updateStatusOfChatMessage.ownerId,
-        updateStatusOfChatMessage.chatId,
-        updateStatusOfChatMessage.sendingTime.toString(),
-        updateStatusOfChatMessage.messageId,
+        updateStatusOfChatMessage.update_time.toString(),
+        updateStatusOfChatMessage.owner_id,
+        updateStatusOfChatMessage.chat_id,
+        updateStatusOfChatMessage.sending_time.toString(),
+        updateStatusOfChatMessage.message_id,
       ],
     );
   };
@@ -514,10 +514,10 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       sending_time = ? AND
       message_id = ?`,
       [
-        deleteMessage.requesterId,
-        deleteMessage.chatId,
-        deleteMessage.sendingTime.toString(),
-        deleteMessage.messageId,
+        deleteMessage.requester_id,
+        deleteMessage.chat_id,
+        deleteMessage.sending_time.toString(),
+        deleteMessage.message_id,
       ],
     );
     await this.client.execute(
@@ -527,11 +527,25 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       sending_time = ? AND
       message_id = ?`,
       [
-        deleteMessage.recieverId,
-        deleteMessage.chatId,
-        deleteMessage.sendingTime.toString(),
-        deleteMessage.messageId,
+        deleteMessage.reciever_id,
+        deleteMessage.chat_id,
+        deleteMessage.sending_time.toString(),
+        deleteMessage.message_id,
       ],
     );
+  };
+  getAllChatsForSenderByUserId = async (userId: string): Promise<ChatModel> => {
+    return new Promise<ChatModel>((resolve, reject) => {
+      const stream = this.client
+        .stream(
+          `SELECT * FROM ${CassandraTableNames.chatsForSender} WHERE sender_id = ?`,
+          [userId],
+          {
+            prepare: true,
+          },
+        )
+        .on(`readable`, (chats_row) => {})
+        .on(`end`, () => {});
+    });
   };
 }
