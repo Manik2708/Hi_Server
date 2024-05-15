@@ -16,6 +16,7 @@ import { UserRoutes } from './Constants/route_paths';
 import { ControllerPaths } from './Constants/contoller_paths';
 import { InjectionTokens } from './Constants/injection_tokens';
 import { casClient } from './service_containers';
+import { ChatsModule } from './Controllers/Chats/chats.module';
 
 @Module({
   providers: [
@@ -25,7 +26,7 @@ import { casClient } from './service_containers';
       useValue: casClient,
     },
   ],
-  imports: [ConfessionsModule, OTPModule, UserModule],
+  imports: [ConfessionsModule, OTPModule, UserModule, ChatsModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

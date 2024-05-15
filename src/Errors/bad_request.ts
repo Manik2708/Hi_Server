@@ -37,6 +37,9 @@ export class BadRequestError extends HttpException {
       case BadRequestTypes.USER_WITH_TOKEN_DOESNT_EXIST:
         message = `User with this token doesn't exist`;
         break;
+      case BadRequestTypes.UNKOWN_UPDATE_STATUS:
+        message = `Can't identify the updated status`;
+        break;
       default:
         message = 'Unknown Bad Request';
         break;
@@ -62,4 +65,5 @@ export enum BadRequestTypes {
   EMAIL_NOT_ENTERED,
   INVALID_EMAIL,
   USER_WITH_TOKEN_DOESNT_EXIST,
+  UNKOWN_UPDATE_STATUS,
 }

@@ -155,9 +155,8 @@ export class CassandraDatabaseQueries implements OnModuleInit {
               reciever_id TEXT,
               message TEXT,
               status TEXT,
-              deleted_by_sender BOOLEAN,
-              deleted_by_reciever BOOLEAN,
-              PRIMARY KEY (chat_id, sending_time, message_id)
+              owner_id TEXT,
+              PRIMARY KEY ((owner_id, chat_id), sending_time, message_id)
               );`,
       );
     } catch (e: any) {
@@ -300,6 +299,38 @@ export class CassandraDatabaseQueries implements OnModuleInit {
    */
 
   acceptOrRejectConfession = async (updateStatus: UpdateConfessionStatus) => {
+    const whetherStatusIsRead = await this.client.execute(
+      `
+    SELECT status FROM ${CassandraTableNames.sentConfessions} WHERE
+    ${CassandraMethods.getSentConfessionsKey().PARTITION_KEY} = ? AND
+        ${CassandraMethods.getSentConfessionsKey().FIRST_SORTING_KEY} = ? AND
+        ${CassandraMethods.getSentConfessionsKey().SECOND_SORTING_KEY} = ?`,
+      [
+        updateStatus.senderId,
+        updateStatus.sendingTime,
+        updateStatus.confessionId,
+      ],
+    );
+    if (whetherStatusIsRead.rows[0].get(`status`) != `READ`) {
+      throw new ConflictError(
+        ConflictErrorTypes.UNREAD_CONFESSION_STATUS_CHANGE_REQUEST,
+      );
+    }
+    const readConfession = await this.client.execute(
+      `
+        SELECT confession_id FROM ${CassandraTableNames.recievedReadConfessions} WHERE
+        ${CassandraMethods.getRecievedReadConfessionsKey().PARTITION_KEY} = ? AND
+        ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND
+        ${CassandraMethods.getRecievedReadConfessionsKey().SECOND_SORTING_KEY} = ?`,
+      [
+        updateStatus.crushId,
+        updateStatus.readingTime,
+        updateStatus.confessionId,
+      ],
+    );
+    if (readConfession.rowLength == 0) {
+      throw new ConflictError(ConflictErrorTypes.NO_CONFESSION_FOUND);
+    }
     await this.client.execute(
       `UPDATE ${CassandraTableNames.recievedReadConfessions} SET status = ?, reaction_time = ? WHERE
         ${CassandraMethods.getRecievedReadConfessionsKey().PARTITION_KEY} = ? AND
@@ -307,22 +338,22 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         ${CassandraMethods.getRecievedReadConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
         updateStatus.updatedStatus,
-        updateStatus.updateTime.toString(),
+        updateStatus.updateTime,
         updateStatus.crushId,
-        updateStatus.readingTime.toString(),
+        updateStatus.readingTime,
         updateStatus.confessionId,
       ],
     );
     await this.client.execute(
       `UPDATE ${CassandraTableNames.sentConfessions} SET status = ?, reaction_time = ? WHERE
-        ${CassandraMethods.getRecievedReadConfessionsKey().PARTITION_KEY} = ? AND
-        ${CassandraMethods.getRecievedReadConfessionsKey().FIRST_SORTING_KEY} = ? AND
-        ${CassandraMethods.getRecievedReadConfessionsKey().SECOND_SORTING_KEY} = ?`,
+        ${CassandraMethods.getSentConfessionsKey().PARTITION_KEY} = ? AND
+        ${CassandraMethods.getSentConfessionsKey().FIRST_SORTING_KEY} = ? AND
+        ${CassandraMethods.getSentConfessionsKey().SECOND_SORTING_KEY} = ?`,
       [
         updateStatus.updatedStatus,
-        updateStatus.updateTime.toString(),
+        updateStatus.updateTime,
         updateStatus.senderId,
-        updateStatus.sendingTime.toString(),
+        updateStatus.sendingTime,
         updateStatus.confessionId,
       ],
     );
@@ -386,8 +417,8 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         message,
         status,
         deleted_by_sender,
-        deleted_by_reciever,
-        VALUES(?,?,?,?,?,?,?,?,?,?,?)
+        owner_id,
+        VALUES(?,?,?,?,?,?,?,?,?,?)
       )`,
       [
         chatMessageModel.chatId,
@@ -403,29 +434,11 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         chatMessageModel.recieverId,
         chatMessageModel.message,
         chatMessageModel.status,
-        chatMessageModel.deletedBySender,
-        chatMessageModel.deletedByReciever,
+        chatMessageModel.ownerId,
       ],
       {
         prepare: true,
       },
-    );
-  };
-  readChatMessage = async (
-    updateStatusOfChatMessage: UpdateStatusOfChatMessageModel,
-  ) => {
-    await this.client.execute(
-      `UPDATE ${CassandraTableNames.chatMessages} status = ?, reading_time = ? WHERE
-          chat_id = ? AND
-          sending_time = ? AND
-          message_id = ?`,
-      [
-        updateStatusOfChatMessage.status,
-        updateStatusOfChatMessage.updateTime.toString(),
-        updateStatusOfChatMessage.chatId,
-        updateStatusOfChatMessage.sendingTime.toString(),
-        updateStatusOfChatMessage.messageId,
-      ],
     );
   };
   readMultipleChatMessages = async (
@@ -438,8 +451,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       );
     }
     await this.client.execute(
-      `
-      BEGIN BATCH
+      `BEGIN BATCH
       ${helper.getMultipleUpdateQueriesForReadingMessages(updateStatusOfChatMessage.length)}
       APPLY BATCH`,
       helper.getParametersForReadingMessages(updateStatusOfChatMessage),
@@ -450,12 +462,14 @@ export class CassandraDatabaseQueries implements OnModuleInit {
   ) => {
     await this.client.execute(
       `UPDATE ${CassandraTableNames.chatMessages} status = ?, delievery_time = ? WHERE
+        owner_id = ? AND
         chat_id = ? AND
         sending_time = ? AND
         message_id = ?`,
       [
         updateStatusOfChatMessage.status,
         updateStatusOfChatMessage.updateTime.toString(),
+        updateStatusOfChatMessage.ownerId,
         updateStatusOfChatMessage.chatId,
         updateStatusOfChatMessage.sendingTime.toString(),
         updateStatusOfChatMessage.messageId,
@@ -478,80 +492,42 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       helper.getParametersForReadingMessages(updateStatusOfChatMessage),
     );
   };
-  deleteChatMessageForMe = async (deleteMessage: DeleteMessageModel) => {
-    let deletedBySender = false;
-    let deletedByReciever = false;
-    const statusOfRequester = await this.client.execute(
-      `SELECT sender_id, reciever_id, deleted_by_sender, deleted_by_reciever ${CassandraTableNames.chatMessages} WHERE
+  deleteChatMessageForMe = async (deleteMessage: DeleteMessageModel[]) => {
+    const helper = new CassandraQueryHelper();
+    if (!helper.ifEveryMessageHaveSameChatId(deleteMessage)) {
+      throw new ConflictError(
+        ConflictErrorTypes.ALL_MESSAGES_SHOULD_HAVE_SAME_CHAT_ID,
+      );
+    }
+    await this.client.execute(
+      `BEGIN BATCH
+       ${helper.getMultipleQueriesForDeletingMessages(deleteMessage.length)}
+       APPLY BATCH`,
+      helper.getParametersForDeletingMessages(deleteMessage),
+    );
+  };
+  deleteChatMessageForEveryone = async (deleteMessage: DeleteMessageModel) => {
+    await this.client.execute(
+      `DELETE ${CassandraTableNames.chatMessages} WHERE
+      owner_id = ? AND
       chat_id = ? AND
       sending_time = ? AND
       message_id = ?`,
       [
+        deleteMessage.requesterId,
         deleteMessage.chatId,
         deleteMessage.sendingTime.toString(),
         deleteMessage.messageId,
       ],
     );
-    if (statusOfRequester.rowLength != 1) {
-      throw new ConflictError(
-        ConflictErrorTypes.MORE_THAN_ONE_USER_EXISTS_WITH_SAME_ID,
-      );
-    }
-    if (
-      statusOfRequester.rows[0].get('sender_id') == deleteMessage.requesterId &&
-      statusOfRequester.rows[0].get('reciever_id') == deleteMessage.requesterId
-    ) {
-      throw new ConflictError(
-        ConflictErrorTypes.MESSAGE_CANT_HAVE_SAME_SENDER_AND_RECIEVER_ID,
-      );
-    } else if (
-      statusOfRequester.rows[0].get('sender_id') == deleteMessage.requesterId
-    ) {
-      await this.client.execute(
-        `UPDATE ${CassandraTableNames.chatMessages} deleted_by_sender = ? WHERE
-        chat_id = ? AND
-        sending_time = ? AND
-        message_id = ?`,
-        [
-          true,
-          deleteMessage.chatId,
-          deleteMessage.sendingTime,
-          deleteMessage.messageId,
-        ],
-      );
-      deletedBySender = true;
-    } else if (
-      statusOfRequester.rows[0].get('reciever_id') == deleteMessage.requesterId
-    ) {
-      await this.client.execute(
-        `UPDATE ${CassandraTableNames.chatMessages} deleted_by_reciever = ? WHERE
-        chat_id = ? AND
-        sending_time = ? AND
-        message_id = ?`,
-        [
-          true,
-          deleteMessage.chatId,
-          deleteMessage.sendingTime,
-          deleteMessage.messageId,
-        ],
-      );
-      deletedByReciever = true;
-    }
-    if (
-      (deletedBySender &&
-        statusOfRequester.rows[0].get('deleted_by_reciever')) ||
-      (deletedByReciever && statusOfRequester.rows[0].get('deleted_by_sender'))
-    ) {
-      await this.deleteChatMessageForEveryone(deleteMessage);
-    }
-  };
-  deleteChatMessageForEveryone = async (deleteMessage: DeleteMessageModel) => {
     await this.client.execute(
       `DELETE ${CassandraTableNames.chatMessages} WHERE
+      owner_id = ? AND
       chat_id = ? AND
       sending_time = ? AND
       message_id = ?`,
       [
+        deleteMessage.recieverId,
         deleteMessage.chatId,
         deleteMessage.sendingTime.toString(),
         deleteMessage.messageId,

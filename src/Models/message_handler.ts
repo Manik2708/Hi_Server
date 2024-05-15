@@ -3,6 +3,10 @@ import { ChatMessageModel } from './chat_message_model';
 import { ChatModel } from './chat_model';
 import { ConfessionModel } from './confession';
 import {
+  DeleteMessageModel,
+  UpdateStatusOfChatMessageModel,
+} from './update_status_of_chat_message';
+import {
   AcceptConfessionStatus,
   UpdateConfessionStatusForSender,
 } from './update_status_of_confession';
@@ -12,7 +16,9 @@ export type MessageHandler =
   | UpdateConfessionStatusForSender
   | ChatModel
   | AcceptConfessionStatus
-  | ChatMessageModel;
+  | ChatMessageModel
+  | UpdateStatusOfChatMessageModel[]
+  | DeleteMessageModel;
 
 export const covertConfessionToCommonMessage = (
   confession: ConfessionModel,
@@ -54,5 +60,23 @@ export const convertChatMessageToCommonMessage = (
   return {
     messageType: MessageType.SEND_CHAT_MESSAGE,
     ...chatMessageModel,
+  };
+};
+
+export const convertUpdateStatusOfChatMessagesToCommonMessage = (
+  updateStatusOfChatMessagesModel: UpdateStatusOfChatMessageModel[],
+): MessageHandler => {
+  return {
+    messageType: MessageType.UPDATE_STATUS_CHAT_MESSAGES,
+    ...updateStatusOfChatMessagesModel,
+  };
+};
+
+export const convertDeleteMessasgeToCommonMessage = (
+  deleteMessageModel: DeleteMessageModel,
+): MessageHandler => {
+  return {
+    messageType: MessageType.DELETE_CHAT_MESSASGE,
+    ...deleteMessageModel,
   };
 };

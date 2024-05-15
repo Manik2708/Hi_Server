@@ -1,9 +1,10 @@
 import { Controller, Post, Req, Res } from '@nestjs/common';
 import express from 'express';
 import { ConfessionServices } from './Services/confession_services';
-import { ControllerPaths } from 'src/Constants/contoller_paths';
-import { ConfessionRoutes } from 'src/Constants/route_paths';
-import { InternalServerError } from 'src/Errors/server_error';
+import { ControllerPaths } from '../../Constants/contoller_paths';
+import { ConfessionRoutes } from '../../Constants/route_paths';
+import { InternalServerError } from '../../Errors/server_error';
+import { ThrowError } from '../../Errors/throw_error';
 
 @Controller(ControllerPaths.CONFESSION_CONTROLLER)
 export class ConfessionsController {
@@ -70,6 +71,70 @@ export class ConfessionsController {
       } else {
         throw Error('Unknown error');
       }
+    }
+  }
+
+  @Post(ConfessionRoutes.READ_CONFESSION)
+  async readConfession(
+    @Req() req: express.Request,
+    @Res() res: express.Response,
+  ) {
+    try {
+      const {
+        confessionId,
+        senderId,
+        senderAnonymousId,
+        crushId,
+        confession,
+        sendingTime,
+        crushName,
+        readingTime,
+      } = req.body;
+      await this.confessionServices.readConfession(
+        confessionId,
+        senderId,
+        senderAnonymousId,
+        crushId,
+        confession,
+        sendingTime,
+        crushName,
+        readingTime,
+      );
+      return res.status(200).json(true);
+    } catch (error) {
+      throw new ThrowError(error, res);
+    }
+  }
+
+  @Post(ConfessionRoutes.ACCEPT_CONFESSION)
+  async acceptConfession(
+    @Req() req: express.Request,
+    @Res() res: express.Response,
+  ) {
+    try {
+      const {
+        senderId,
+        sendingTime,
+        crushId,
+        time,
+        readingTime,
+        confessionId,
+        crushName,
+        anonymousId,
+      } = req.body;
+      const chat = await this.confessionServices.acceptConfession(
+        senderId,
+        sendingTime,
+        crushId,
+        time,
+        readingTime,
+        confessionId,
+        crushName,
+        anonymousId,
+      );
+      return res.status(200).json(chat);
+    } catch (error) {
+      throw new ThrowError(error, res);
     }
   }
 }

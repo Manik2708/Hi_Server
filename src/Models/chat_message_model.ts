@@ -11,6 +11,5 @@ export interface ChatMessageModel {
   readingTime?: Date;
   status: string;
   referredBy: types.TimeUuid;
-  deletedBySender: boolean;
-  deletedByReciever: boolean;
+  ownerId: string;
 }

@@ -14,6 +14,12 @@ export class ConflictError extends HttpException {
         message =
           'All chat messages which are needy of update should have same chat id';
         break;
+      case ConflictErrorTypes.UNREAD_CONFESSION_STATUS_CHANGE_REQUEST:
+        message = `The confession is not read by crush therefore request to change the status of confession can't be accepted`;
+        break;
+      case ConflictErrorTypes.NO_CONFESSION_FOUND:
+        message = `No confession exists with this primary key`;
+        break;
       default:
         message = 'Unknown Conflict Error';
         break;
@@ -31,4 +37,6 @@ export enum ConflictErrorTypes {
   MORE_THAN_ONE_USER_EXISTS_WITH_SAME_ID,
   MESSAGE_CANT_HAVE_SAME_SENDER_AND_RECIEVER_ID,
   ALL_MESSAGES_SHOULD_HAVE_SAME_CHAT_ID,
+  UNREAD_CONFESSION_STATUS_CHANGE_REQUEST,
+  NO_CONFESSION_FOUND,
 }

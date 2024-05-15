@@ -110,21 +110,21 @@ export class ConfessionServices {
         senderId: senderId,
         crushId: crushId,
         confessionId: confessionId,
-        updatedStatus: 'Rejected',
+        updatedStatus: 'REJECTED',
         updateTime: time,
         sendingTime: sendingTime,
         readingTime: readingTime,
       };
       const updateConfessionStatusForSender: UpdateConfessionStatusForSender = {
         confessionId: confessionId,
-        updatedStatus: 'Rejected',
+        updatedStatus: 'REJECTED',
         updateTime: time,
       };
       await this.sendMessageToUserService.sendMessageToUser(
         updateConfssionStatus.senderId,
         true,
         EventNames.updateConfssionStatus,
-        updateConfssionStatus,
+        updateConfessionStatusForSender,
         convertUpdateConfessionStatusToCommonMessage(
           updateConfessionStatusForSender,
         ),
@@ -154,15 +154,10 @@ export class ConfessionServices {
       senderId: senderId,
       crushId: crushId,
       confessionId: confessionId,
-      updatedStatus: 'Accepted',
+      updatedStatus: 'ACCEPTED',
       updateTime: time,
       sendingTime: sendingTime,
       readingTime: readingTime,
-    };
-    const updateConfessionStatusForSender: UpdateConfessionStatusForSender = {
-      confessionId: confessionId,
-      updatedStatus: 'Accepted',
-      updateTime: time,
     };
     const chatModel: ChatModel = {
       chatId: types.TimeUuid.now(),
@@ -176,7 +171,7 @@ export class ConfessionServices {
     };
     const acceptConfessionModel: AcceptConfessionStatus = {
       chatModel: chatModel,
-      updatedStatus: 'Accepted',
+      updatedStatus: 'ACCEPTED',
     };
     await this.sendMessageToUserService.sendMessageToUser(
       updateConfssionStatus.senderId,
