@@ -18,4 +18,6 @@ export class EventNames {
   static readConfession: string = 'read-confession';
   static acceptConfession: string = 'accept-confession';
   static recieveChatMessage: string = 'recieve-chat-message';
+  static updateStatusOfChatMesssages: string = `update-status-of-chat-messages`;
+  static deleteChatMessage: string = `delete-chat-message`;
 }

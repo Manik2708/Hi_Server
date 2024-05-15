@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose';
 import { UserModel } from '../../Models/user';
-import { chatModelSchema } from './chat';
 const userSchema = new Schema<UserModel>({
   name: {
     type: String,
@@ -30,11 +29,6 @@ const userSchema = new Schema<UserModel>({
     type: String,
     required: true,
   },
-  chats: [
-    {
-      chats: chatModelSchema,
-    },
-  ],
 });
 userSchema.index({ name: 'text', username: 'text' });
 const User = model('User', userSchema);

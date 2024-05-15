@@ -10,14 +10,14 @@ export const createTestConfession = async (
 ): Promise<ConfessionModel> => {
   const client = TestServiceContainers.getTestingCassandraClient();
   const confessionModel: ConfessionModel = {
-    senderId: senderId,
-    crushId: crushId,
-    confessionId: types.TimeUuid.now().toString(),
+    sender_id: senderId,
+    crush_id: crushId,
+    confession_id: types.TimeUuid.now().toString(),
     confession: nanoid().toLowerCase(),
-    sendingTime: new Date(),
+    sending_time: new Date(),
     status: 'SENT',
-    crushName: nanoid().toLowerCase(),
-    senderAnonymousId: nanoid().toLowerCase(),
+    crush_name: nanoid().toLowerCase(),
+    sender_anonymous_id: nanoid().toLowerCase(),
   };
   await client.execute(
     `INSERT INTO hi_database.${CassandraTableNames.sentConfessions}(
@@ -32,13 +32,13 @@ export const createTestConfession = async (
         reaction_time 
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      confessionModel.senderId,
-      confessionModel.crushId,
-      confessionModel.confessionId,
+      confessionModel.sender_id,
+      confessionModel.crush_id,
+      confessionModel.confession_id,
       confessionModel.confession,
-      confessionModel.sendingTime,
+      confessionModel.sending_time,
       confessionModel.status,
-      confessionModel.crushName,
+      confessionModel.crush_name,
       null,
       null,
     ],
@@ -57,17 +57,87 @@ export const createTestConfession = async (
             anonymous_id
         ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [
-      confessionModel.senderId,
-      confessionModel.crushId,
-      confessionModel.confessionId,
+      confessionModel.sender_id,
+      confessionModel.crush_id,
+      confessionModel.confession_id,
       confessionModel.confession,
-      confessionModel.sendingTime,
+      confessionModel.sending_time,
       confessionModel.status,
-      confessionModel.senderAnonymousId,
+      confessionModel.sender_anonymous_id,
     ],
     {
       prepare: true,
     },
+  );
+  return confessionModel;
+};
+
+export const createTestReadConfession = async (
+  senderId: string,
+  crushId: string,
+): Promise<ConfessionModel> => {
+  const client = TestServiceContainers.getTestingCassandraClient();
+  const confessionModel: ConfessionModel = {
+    sender_id: senderId,
+    crush_id: crushId,
+    confession_id: types.TimeUuid.now().toString(),
+    confession: nanoid().toLowerCase(),
+    sending_time: new Date(),
+    status: 'READ',
+    crush_name: nanoid().toLowerCase(),
+    sender_anonymous_id: nanoid().toLowerCase(),
+    reading_time: new Date(),
+  };
+  await client.execute(
+    `INSERT INTO hi_database.${CassandraTableNames.sentConfessions}(
+        sender_id,
+        crush_id,
+        confession_id,
+        confession,
+        sending_time,
+        status,
+        crush_name,
+        reading_time,
+        reaction_time 
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      confessionModel.sender_id,
+      confessionModel.crush_id,
+      confessionModel.confession_id,
+      confessionModel.confession,
+      confessionModel.sending_time,
+      confessionModel.status,
+      confessionModel.crush_name,
+      confessionModel.reading_time,
+      null,
+    ],
+    {
+      prepare: true,
+    },
+  );
+  await client.execute(
+    `INSERT INTO hi_database.${CassandraTableNames.recievedReadConfessions}(
+        sender_id,
+        crush_id,
+        confession_id,
+        confession,
+        sending_time,
+        status,
+        anonymous_id,
+        reading_time,
+        reaction_time
+        ) VALUES (?,?,?,?,?,?,?,?,?)`,
+    [
+      confessionModel.sender_id,
+      confessionModel.crush_id,
+      confessionModel.confession_id,
+      confessionModel.confession,
+      confessionModel.sending_time,
+      confessionModel.status,
+      confessionModel.sender_anonymous_id,
+      confessionModel.reading_time,
+      null,
+    ],
   );
   return confessionModel;
 };

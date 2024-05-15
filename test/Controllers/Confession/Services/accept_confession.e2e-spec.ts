@@ -14,13 +14,16 @@ import { getTestingApp } from '../../../Helpers/get_testing_app';
 import { ConfessionModel } from '../../../../src/Models/confession';
 import { nanoid } from 'nanoid';
 import { CassandraTableNames } from '../../../../src/Constants/cassandra_constants';
-import { createTestConfession } from '../../../Helpers/create_test_confession';
+import {
+  createTestConfession,
+  createTestReadConfession,
+} from '../../../Helpers/create_test_confession';
 import {
   getSearchedConfession,
   getSearchedReadConfession,
 } from '../../../Helpers/search_confession';
 import { MessageType } from '../../../../src/Constants/messasge_type';
-describe('Send confession tests', () => {
+describe('Accept confession tests', () => {
   let redisClient: RedisClientType;
   let app: INestApplication;
   let confessionServices: ConfessionServices;
@@ -49,7 +52,7 @@ describe('Send confession tests', () => {
   it('When user is online', async () => {
     const senderId = nanoid().toLowerCase();
     const crushId = nanoid().toLowerCase();
-    const sendingObject: ConfessionModel = await createTestConfession(
+    const sendingObject: ConfessionModel = await createTestReadConfession(
       senderId,
       crushId,
     );
@@ -58,19 +61,19 @@ describe('Send confession tests', () => {
       socketId: socketId,
     });
     const updateTme = new Date();
-    await confessionServices.readConfession(
+    const chatModel = await confessionServices.acceptConfession(
       sendingObject.confession_id,
-      sendingObject.sender_id,
-      sendingObject.sender_anonymous_id,
-      sendingObject.crush_id,
-      sendingObject.confession,
       sendingObject.sending_time,
-      sendingObject.crush_name,
+      sendingObject.crush_id,
       updateTme,
+      sendingObject.reading_time!,
+      sendingObject.confession_id,
+      sendingObject.crush_name,
+      sendingObject.sender_anonymous_id,
     );
     const expectedOutput = {
-      confessionId: sendingObject.confession_id,
-      updatedStatus: 'READ',
+      chatModel: chatModel,
+      updatedStatus: 'ACCEPTED',
       updateTime: updateTme.toISOString(),
     };
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -81,26 +84,18 @@ describe('Send confession tests', () => {
       sendingObject.sending_time,
       CassandraTableNames.sentConfessions,
     );
-    expect(output.rows[0].get('status')).toBe('READ');
-    expect(output.rows[0].get(`reading_time`)).toStrictEqual(updateTme);
-    const recieverOutput = await getSearchedConfession(
-      sendingObject.confession_id,
-      sendingObject.sender_id,
-      sendingObject.sending_time,
-      CassandraTableNames.recievedUnreadConfessions,
-    );
-    expect(recieverOutput.rowLength).toBe(0);
+    expect(output.rows[0].get('status')).toBe('ACCEPTED');
+    expect(output.rows[0].get(`reaction_time`)).toStrictEqual(updateTme);
     const recieverReadOutput = await getSearchedReadConfession(
       sendingObject.confession_id,
       sendingObject.crush_id,
       updateTme,
     );
     expect(recieverReadOutput.rowLength).toBe(1);
-    expect(recieverReadOutput.rows[0].get('status')).toBe(`READ`);
-    expect(recieverReadOutput.rows[0].get(`reading_time`)).toStrictEqual(
+    expect(recieverReadOutput.rows[0].get('status')).toBe(`ACCEPTED`);
+    expect(recieverReadOutput.rows[0].get(`reaction_time`)).toStrictEqual(
       updateTme,
     );
-    expect(recieverReadOutput.rows[0].get(`reaction_time`)).toBe(null);
   });
   it('When user is offline', async () => {
     const senderId = nanoid().toLowerCase();
