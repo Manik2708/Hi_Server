@@ -17,16 +17,16 @@ import { ControllerPaths } from './Constants/contoller_paths';
 import { InjectionTokens } from './Constants/injection_tokens';
 import { casClient } from './service_containers';
 import { ChatsModule } from './Controllers/Chats/chats.module';
+import { RetrieveDataModule } from './Controllers/RetrieveData/retrieve_data.module';
 
 @Module({
-  providers: [
-    CassandraDatabaseQueries,
-    {
-      provide: InjectionTokens.CasClient,
-      useValue: casClient,
-    },
+  imports: [
+    ConfessionsModule,
+    OTPModule,
+    UserModule,
+    ChatsModule,
+    RetrieveDataModule,
   ],
-  imports: [ConfessionsModule, OTPModule, UserModule, ChatsModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

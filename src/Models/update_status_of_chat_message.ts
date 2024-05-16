@@ -8,6 +8,10 @@ export interface UpdateStatusOfChatMessageModel {
   sender_id: string;
 }
 
+export interface UpdateStatusOfChatMessageList {
+  updateStatusOfChatMessagesList: UpdateStatusOfChatMessageModel[];
+}
+
 export interface UpdateStatusOfChatMessages {
   crush_id: string;
   updated_status: number;

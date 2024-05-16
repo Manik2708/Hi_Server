@@ -534,18 +534,4 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       ],
     );
   };
-  getAllChatsForSenderByUserId = async (userId: string): Promise<ChatModel> => {
-    return new Promise<ChatModel>((resolve, reject) => {
-      const stream = this.client
-        .stream(
-          `SELECT * FROM ${CassandraTableNames.chatsForSender} WHERE sender_id = ?`,
-          [userId],
-          {
-            prepare: true,
-          },
-        )
-        .on(`readable`, (chats_row) => {})
-        .on(`end`, () => {});
-    });
-  };
 }
