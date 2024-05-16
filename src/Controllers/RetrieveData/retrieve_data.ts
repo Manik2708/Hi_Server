@@ -11,10 +11,14 @@ import { CassandraQueryHelper } from '../../Database/Cassandra/query_helper';
 import { InternalServerError } from '../../Errors/server_error';
 import { ConfessionModel } from '../../Models/confession';
 import { RetrieveConfessionsByCrushId } from '../../Models/retrieve_data';
+import { RetrieveDataServices } from './Services/retrieve_data_services';
 
 @Controller(ControllerPaths.RETRIEVE_DATA_CONTROLLER)
 export class RetrieveDataController {
-  constructor(private readonly cassandraObject: CassandraDatabaseQueries) {}
+  constructor(
+    private readonly cassandraObject: CassandraDatabaseQueries,
+    private readonly retrieveDataServices: RetrieveDataServices,
+  ) {}
 
   @Get(RetrieveDataRoutes.retrieveDataAfterLogin)
   async retrieveDataAfterLogin(
@@ -174,6 +178,19 @@ export class RetrieveDataController {
           return res.status(200).json(output_data);
         },
       );
+    } catch (error) {
+      throw new ThrowError(error, res);
+    }
+  }
+  @Get(RetrieveDataRoutes.retrieveDataForOfflineUser)
+  async retrieveDataForOfflineUser(
+    @Req() req: express.Request,
+    @Res() res: express.Response,
+  ) {
+    try {
+      const user_id = req.id;
+      await this.retrieveDataServices.retrieveDataForOfflineUsers(user_id!);
+      return res.status(200).json(true);
     } catch (error) {
       throw new ThrowError(error, res);
     }
