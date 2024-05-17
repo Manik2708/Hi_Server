@@ -27,7 +27,7 @@ export class ChatMessageForUserService {
     message: string,
     sendingTime: Date,
     status: string,
-    referredBy: types.TimeUuid,
+    referredBy?: types.TimeUuid,
     delieveryTime?: Date,
     readingTime?: Date,
   ) => {
@@ -65,18 +65,17 @@ export class ChatMessageForUserService {
       convertChatMessageToCommonMessage(chatMessageModelForReciever),
       () => {},
       async () => {
-        await this.cassandraObject.saveChatMessage(chatMessageModelForReciever);
         await this.cassandraObject.saveChatMessage(chatMessageModelForSender);
       },
     );
   };
   updateStatusOfChatMessages = async (
-    crushId: string,
+    sender_id: string, // This is not the id of sender of this request but the id of sender of message.
     updateStatusOfChatMessageModel: UpdateStatusOfChatMessageModel[],
     updatedStatus: number,
   ): Promise<boolean> => {
     await this.sendMessageToUserService.sendMessageToUser(
-      crushId,
+      sender_id,
       false,
       EventNames.updateStatusOfChatMesssages,
       updateStatusOfChatMessageModel,

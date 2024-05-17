@@ -132,7 +132,12 @@ export class ConfessionsController {
         crush_name,
         anonymous_id,
       );
-      return res.status(200).json(chat);
+      const { chat_id, ...chat_without_id } = chat;
+      const updated_chat = {
+        chat_id: chat_id.toString(),
+        ...chat_without_id,
+      };
+      return res.status(200).json(updated_chat);
     } catch (error) {
       throw new ThrowError(error, res);
     }

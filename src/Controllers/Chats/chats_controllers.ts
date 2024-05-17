@@ -76,10 +76,13 @@ export class ChatsController {
     @Res() res: express.Response,
   ) {
     try {
-      const { crush_id, update_status_of_chat_message_model, updated_status } =
-        req.body;
+      const {
+        reciever_id,
+        update_status_of_chat_message_model,
+        updated_status,
+      } = req.body;
       await this.chatMessageService.updateStatusOfChatMessages(
-        crush_id,
+        reciever_id,
         update_status_of_chat_message_model,
         updated_status,
       );
