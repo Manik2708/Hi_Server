@@ -22,7 +22,7 @@ export const getSearchedConfession = async (
 };
 export const getSearchedReadConfession = async (
   confessionId: string,
-  partitionKey: string,
+  crushId: string,
   time: Date,
 ): Promise<types.ResultSet> => {
   const result =
@@ -32,7 +32,7 @@ export const getSearchedReadConfession = async (
     reading_time = ? AND
     confession_id = ? ALLOW FILTERING
     `,
-      [partitionKey, time, confessionId],
+      [crushId, time, confessionId],
       { prepare: true },
     );
   return result;

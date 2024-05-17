@@ -7,7 +7,7 @@ import {
 import { ChatModelForCrush, ChatModelForSender } from '../../Models/chat_model';
 import { ChatMessageModel } from '../../Models/chat_message_model';
 import { ConfessionModel } from '../../Models/confession';
-
+type ParamsType = Date | string;
 export class CassandraQueryHelper {
   ifEveryMessageHaveSameChatId = (
     chatMessages: UpdateStatusOfChatMessageModel[] | DeleteMessageModel[],
@@ -19,7 +19,7 @@ export class CassandraQueryHelper {
     );
   };
   getMultipleUpdateQueriesForReadingMessages = (n: number): string => {
-    const query = `UPDATE ${CassandraTableNames.chatMessages} SET status = ?, reading_time WHERE owner_id = ? AND chat_id = ? AND sending_time = ? AND message_id=?`;
+    const query = `UPDATE ${CassandraTableNames.chatMessages} SET status = ?, reading_time = ? WHERE owner_id = ? AND chat_id = ? AND sending_time = ? AND message_id=?`;
     return query.repeat(n);
   };
   getMultipleQueriesForDeletingMessages = (n: number): string => {
@@ -27,19 +27,33 @@ export class CassandraQueryHelper {
     return query.repeat(n);
   };
   getMultipleUpdateQueriesForDelieveredMessages = (n: number): string => {
-    const query = `UPDATE ${CassandraTableNames.chatMessages} SET status = ?, delievery_time WHERE owner_id = ? AND chat_id = ? AND sending_time = ? AND message_id=?`;
+    const query = `UPDATE ${CassandraTableNames.chatMessages} SET status = ?, delievery_time =? WHERE owner_id = ? AND chat_id = ? AND sending_time = ? AND message_id=?`;
     return query.repeat(n);
   };
   getParametersForReadingMessages = (
     chatMessages: UpdateStatusOfChatMessageModel[],
-  ): string[] => {
-    const paramsArray: string[] = [];
-    chatMessages.filter((chatMessages) => () => {
+  ): ParamsType[] => {
+    const paramsArray: ParamsType[] = [];
+    chatMessages.forEach((chatMessages) => {
       paramsArray.push(chatMessages.status);
-      paramsArray.push(chatMessages.update_time.toString());
+      paramsArray.push(chatMessages.update_time);
       paramsArray.push(chatMessages.owner_id);
       paramsArray.push(chatMessages.chat_id);
-      paramsArray.push(chatMessages.sending_time.toString());
+      paramsArray.push(chatMessages.sending_time);
+      paramsArray.push(chatMessages.message_id);
+    });
+    return paramsArray;
+  };
+  getParametersForReadingMessagesForSender = (
+    chatMessages: UpdateStatusOfChatMessageModel[],
+  ): ParamsType[] => {
+    const paramsArray: ParamsType[] = [];
+    chatMessages.filter((chatMessages) => () => {
+      paramsArray.push(chatMessages.status);
+      paramsArray.push(chatMessages.update_time);
+      paramsArray.push(chatMessages.sender_id);
+      paramsArray.push(chatMessages.chat_id);
+      paramsArray.push(chatMessages.sending_time);
       paramsArray.push(chatMessages.message_id);
     });
     return paramsArray;

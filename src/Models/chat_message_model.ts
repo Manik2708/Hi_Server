@@ -10,6 +10,6 @@ export interface ChatMessageModel {
   delievery_time?: Date;
   reading_time?: Date;
   status: string;
-  referred_by: types.TimeUuid;
+  referred_by?: types.TimeUuid;
   owner_id: string;
 }

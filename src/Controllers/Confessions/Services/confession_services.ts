@@ -165,7 +165,7 @@ export class ConfessionServices {
       crush_id: crushId,
       user_id: senderId,
       anonymous_id: anonymousId,
-      last_update: new Date(),
+      last_update: time,
       confession_id: confessionId,
       messages: [],
     };

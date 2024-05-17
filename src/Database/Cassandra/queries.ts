@@ -375,7 +375,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         chatModel.crush_id,
         chatModel.user_id,
         chatModel.confession_id,
-        chatModel.last_update.toString(),
+        chatModel.last_update.toISOString(),
       ],
       {
         prepare: true,
@@ -389,7 +389,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         user_id,
         anonymous_id,
         confession_id,
-        last_update,
+        last_update
       ) VALUES(?,?,?,?,?,?)`,
       [
         chatModel.chat_id,
@@ -397,7 +397,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         chatModel.user_id,
         chatModel.anonymous_id,
         chatModel.confession_id,
-        chatModel.last_update.toString(),
+        chatModel.last_update.toISOString(),
       ],
       {
         prepare: true,
@@ -416,25 +416,56 @@ export class CassandraDatabaseQueries implements OnModuleInit {
         reciever_id,
         message,
         status,
-        deleted_by_sender,
-        owner_id,
-        VALUES(?,?,?,?,?,?,?,?,?,?)
-      )`,
+        owner_id
+        ) VALUES(?,?,?,?,?,?,?,?,?,?)`,
       [
         chatMessageModel.chat_id,
         chatMessageModel.message_id,
-        chatMessageModel.sending_time.toString(),
+        chatMessageModel.sending_time.toISOString(),
         chatMessageModel.delievery_time == null
           ? null
-          : chatMessageModel.delievery_time.toString(),
+          : chatMessageModel.delievery_time.toISOString(),
         chatMessageModel.reading_time == null
           ? null
-          : chatMessageModel.reading_time.toString(),
+          : chatMessageModel.reading_time.toISOString(),
         chatMessageModel.sender_id,
         chatMessageModel.reciever_id,
         chatMessageModel.message,
         chatMessageModel.status,
-        chatMessageModel.owner_id,
+        chatMessageModel.sender_id,
+      ],
+      {
+        prepare: true,
+      },
+    );
+    await this.client.execute(
+      `INSERT INTO ${CassandraTableNames.chatMessages} (
+        chat_id,
+        message_id,
+        sending_time,
+        delievery_time,
+        reading_time,
+        sender_id,
+        reciever_id,
+        message,
+        status,
+        owner_id
+        ) VALUES(?,?,?,?,?,?,?,?,?,?)`,
+      [
+        chatMessageModel.chat_id,
+        chatMessageModel.message_id,
+        chatMessageModel.sending_time.toISOString(),
+        chatMessageModel.delievery_time == null
+          ? null
+          : chatMessageModel.delievery_time.toISOString(),
+        chatMessageModel.reading_time == null
+          ? null
+          : chatMessageModel.reading_time.toISOString(),
+        chatMessageModel.sender_id,
+        chatMessageModel.reciever_id,
+        chatMessageModel.message,
+        chatMessageModel.status,
+        chatMessageModel.reciever_id,
       ],
       {
         prepare: true,
@@ -444,17 +475,27 @@ export class CassandraDatabaseQueries implements OnModuleInit {
   readMultipleChatMessages = async (
     updateStatusOfChatMessage: UpdateStatusOfChatMessageModel[],
   ) => {
+    // Here owner will be the requester and sender_id corresponds to id of sender of message.
     const helper = new CassandraQueryHelper();
     if (!helper.ifEveryMessageHaveSameChatId(updateStatusOfChatMessage)) {
       throw new ConflictError(
         ConflictErrorTypes.ALL_MESSAGES_SHOULD_HAVE_SAME_CHAT_ID,
       );
     }
+    await this.client.batch([]);
     await this.client.execute(
       `BEGIN BATCH
       ${helper.getMultipleUpdateQueriesForReadingMessages(updateStatusOfChatMessage.length)}
       APPLY BATCH`,
       helper.getParametersForReadingMessages(updateStatusOfChatMessage),
+    );
+    await this.client.execute(
+      `BEGIN BATCH
+      ${helper.getMultipleUpdateQueriesForReadingMessages(updateStatusOfChatMessage.length)}
+      APPLY BATCH`,
+      helper.getParametersForReadingMessagesForSender(
+        updateStatusOfChatMessage,
+      ),
     );
   };
   updateDelieveredMessage = async (
