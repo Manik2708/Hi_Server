@@ -20,6 +20,9 @@ export class ConflictError extends HttpException {
       case ConflictErrorTypes.NO_CONFESSION_FOUND:
         message = `No confession exists with this primary key`;
         break;
+      case ConflictErrorTypes.BATCH_LIMIT_EXCEED:
+        message = `Batch Limit exceed!!`;
+        break;
       default:
         message = 'Unknown Conflict Error';
         break;
@@ -39,4 +42,5 @@ export enum ConflictErrorTypes {
   ALL_MESSAGES_SHOULD_HAVE_SAME_CHAT_ID,
   UNREAD_CONFESSION_STATUS_CHANGE_REQUEST,
   NO_CONFESSION_FOUND,
+  BATCH_LIMIT_EXCEED,
 }

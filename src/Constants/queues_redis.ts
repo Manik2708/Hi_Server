@@ -16,4 +16,6 @@ export class RedisNames {
 
 export class QueueNames {
   static OfflineQueue: string = 'Offline';
+  static ReadChatMessageQueue = 'ReadChatMessageQueue';
+  static DeleteMessageForMeQueue = 'DeleteMessageForMeQueue';
 }

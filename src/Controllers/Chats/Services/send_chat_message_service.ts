@@ -13,12 +13,20 @@ import {
   UpdateStatusOfChatMessageModel,
 } from '../../../Models/update_status_of_chat_message';
 import { BadRequestError, BadRequestTypes } from '../../../Errors/bad_request';
+import { CreateQueue } from '../../../Queues/base';
+import { Inject } from '@nestjs/common';
+import { InjectionTokens } from '../../../Constants/injection_tokens';
+import { QueueNames } from '../../../Constants/queues_redis';
 
 export class ChatMessageForUserService {
+  private createQueue: CreateQueue;
   constructor(
     private readonly sendMessageToUserService: SendMessageToUserService,
     private readonly cassandraObject: CassandraDatabaseQueries,
-  ) {}
+    @Inject(InjectionTokens.CreateQueue) createQueue: CreateQueue,
+  ) {
+    this.createQueue = createQueue;
+  }
   sendChatMessage = async (
     messageId: types.TimeUuid,
     chatId: types.TimeUuid,
@@ -72,7 +80,7 @@ export class ChatMessageForUserService {
   updateStatusOfChatMessages = async (
     sender_id: string, // This is not the id of sender of this request but the id of sender of message.
     updateStatusOfChatMessageModel: UpdateStatusOfChatMessageModel[],
-    updatedStatus: number,
+    status: number,
   ): Promise<boolean> => {
     await this.sendMessageToUserService.sendMessageToUser(
       sender_id,
@@ -84,17 +92,18 @@ export class ChatMessageForUserService {
       ),
       () => {},
       async () => {
-        if (updatedStatus == 0) {
-          await this.cassandraObject.readMultipleChatMessages(
-            updateStatusOfChatMessageModel,
+        const object = {
+          sender_id: sender_id,
+          updateStatusOfChatMessageModel: updateStatusOfChatMessageModel,
+          status: status,
+        };
+        this.createQueue.createChannel((chnl) => {
+          chnl.assertQueue(QueueNames.ReadChatMessageQueue);
+          chnl.sendToQueue(
+            QueueNames.ReadChatMessageQueue,
+            Buffer.from(JSON.stringify(object)),
           );
-        } else if (updatedStatus == 1) {
-          await this.cassandraObject.updateMultipleDelieveredMessages(
-            updateStatusOfChatMessageModel,
-          );
-        } else {
-          throw new BadRequestError(BadRequestTypes.UNKOWN_UPDATE_STATUS);
-        }
+        });
       },
     );
     return true;
@@ -103,7 +112,13 @@ export class ChatMessageForUserService {
   deleteChatMessageForMe = async (
     deleteMessageModel: DeleteMessageModel[],
   ): Promise<boolean> => {
-    await this.cassandraObject.deleteChatMessageForMe(deleteMessageModel);
+    this.createQueue.createChannel((chnl) => {
+      chnl.assertQueue(QueueNames.DeleteMessageForMeQueue);
+      chnl.sendToQueue(
+        QueueNames.DeleteMessageForMeQueue,
+        Buffer.from(JSON.stringify(deleteMessageModel)),
+      );
+    });
     return true;
   };
 
