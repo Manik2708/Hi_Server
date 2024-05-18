@@ -16,6 +16,7 @@ import { consumeMessageFromQueue } from '../../../Helpers/consume_message_from_q
 import { types } from 'cassandra-driver';
 import { ChatMessageForUserService } from '../../../../src/Controllers/Chats/Services/send_chat_message_service';
 import { searchChatMessage } from '../../../Helpers/search_chat_message';
+import { CreateQueue } from '../../../../src/Queues/base';
 
 describe(`Send chat message tests`, () => {
   let redisClient: RedisClientType;
@@ -31,6 +32,7 @@ describe(`Send chat message tests`, () => {
     chatMessageForUserService = new ChatMessageForUserService(
       moduleRef.get<SendMessageToUserService>(SendMessageToUserService),
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
+      TestServiceContainers.getTestingRabbitClient(),
     );
     socket = await initClientSocket((socket) => {
       socketId = socket.id!;

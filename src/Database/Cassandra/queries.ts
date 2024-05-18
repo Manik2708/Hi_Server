@@ -549,7 +549,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
   };
   deleteChatMessageForEveryone = async (deleteMessage: DeleteMessageModel) => {
     await this.client.execute(
-      `DELETE ${CassandraTableNames.chatMessages} WHERE
+      `DELETE FROM ${CassandraTableNames.chatMessages} WHERE
       owner_id = ? AND
       chat_id = ? AND
       sending_time = ? AND
@@ -557,12 +557,12 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       [
         deleteMessage.requester_id,
         deleteMessage.chat_id,
-        deleteMessage.sending_time.toString(),
+        deleteMessage.sending_time,
         deleteMessage.message_id,
       ],
     );
     await this.client.execute(
-      `DELETE ${CassandraTableNames.chatMessages} WHERE
+      `DELETE FROM ${CassandraTableNames.chatMessages} WHERE
       owner_id = ? AND
       chat_id = ? AND
       sending_time = ? AND
@@ -570,7 +570,7 @@ export class CassandraDatabaseQueries implements OnModuleInit {
       [
         deleteMessage.reciever_id,
         deleteMessage.chat_id,
-        deleteMessage.sending_time.toString(),
+        deleteMessage.sending_time,
         deleteMessage.message_id,
       ],
     );

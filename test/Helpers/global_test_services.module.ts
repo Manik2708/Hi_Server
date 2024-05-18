@@ -33,6 +33,11 @@ export const getTestingGlobalServicesModule =
           useValue: rabbitClient,
         },
       ],
+      exports: [
+        InjectionTokens.RedisClient,
+        InjectionTokens.CreateQueue,
+        InjectionTokens.CasClient,
+      ],
     }).compile();
     return moduleRef;
   };

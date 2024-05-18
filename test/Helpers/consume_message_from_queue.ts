@@ -25,3 +25,28 @@ export const consumeMessageFromQueue = async (
     return JSON.parse(outputData.toString());
   }
 };
+
+export const consumeMessageFromAnyQueue = async (
+  queue_name: string,
+): Promise<any> => {
+  let outputData: any;
+  TestServiceContainers.getTestingRabbitClient().createChannel((chnl) => {
+    chnl.assertQueue(queue_name, {
+      durable: true,
+    });
+    chnl.consume(queue_name, (msg) => {
+      if (msg == null) {
+        outputData = null;
+      } else {
+        outputData = msg.content;
+        chnl.ack(msg);
+      }
+    });
+  });
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  if (outputData == null) {
+    throw Error('Error');
+  } else {
+    return JSON.parse(outputData.toString());
+  }
+};
