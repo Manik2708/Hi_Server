@@ -85,7 +85,7 @@ export class CassandraQueryHelper {
     return {
       chat_id: chats_row.get('chat_id'),
       anonymous_id: chats_row.get('anonymous_id'),
-      crush_id: chats_row.get('crush_name'),
+      crush_id: chats_row.get('crush_id'),
       user_id: chats_row.get('user_id'),
       last_update: chats_row.get('last_update'),
       confession_id: chats_row.get('confession_id'),
