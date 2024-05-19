@@ -5,7 +5,6 @@ import { CassandraDatabaseQueries } from '../../Database/Cassandra/queries';
 import { RetrieveDataRoutes } from '../../Constants/route_paths';
 import { ThrowError } from '../../Errors/throw_error';
 import { CassandraTableNames } from '../../Constants/cassandra_constants';
-import { types } from 'cassandra-driver';
 import { ChatModelForCrush, ChatModelForSender } from '../../Models/chat_model';
 import { CassandraQueryHelper } from '../../Database/Cassandra/query_helper';
 import { InternalServerError } from '../../Errors/server_error';
@@ -20,94 +19,22 @@ export class RetrieveDataController {
     private readonly retrieveDataServices: RetrieveDataServices,
   ) {}
 
-  @Get(RetrieveDataRoutes.retrieveDataAfterLogin)
+  @Get(RetrieveDataRoutes.RETRIEVE_DATA_AFTER_LOGIN)
   async retrieveDataAfterLogin(
     @Req() req: express.Request,
     @Res() res: express.Response,
   ) {
     try {
-      return new Promise((resolve, reject) => {
-        const user_id = req.id;
-        const queryHelper = new CassandraQueryHelper();
-        this.cassandraObject
-          .getClient()
-          .stream(
-            `SELECT * FROM ${CassandraTableNames.chatsForSender} WHERE sender_id = ?`,
-            [user_id],
-            {
-              prepare: true,
-            },
-          )
-          .on(`readable`, (chats_row: types.Row) => {
-            const chat_retrieved: ChatModelForSender =
-              queryHelper.parseChatForSenderFromCassandraRow(chats_row);
-            const chat_id = chats_row.get('chat_id');
-            this.cassandraObject
-              .getClient()
-              .stream(
-                `SELECT * FROM ${CassandraTableNames.chatMessages} WHERE owner_id = ? AND chat_id = ?`,
-                [user_id, chat_id],
-                {
-                  prepare: true,
-                },
-              )
-              .on(`readable`, (chat_message_row: types.Row) => {
-                chat_retrieved.messages.push(
-                  queryHelper.parseChatMessageFromCassandraRow(
-                    chat_message_row,
-                  ),
-                );
-              })
-              .on(`end`, () => {
-                res.write(chat_retrieved);
-              });
-          })
-          .on(`end`, () => {
-            this.cassandraObject
-              .getClient()
-              .stream(
-                `SELECT * FROM ${CassandraTableNames.chatsForCrush} WHERE crush_id = ?`,
-                [user_id],
-                {
-                  prepare: true,
-                },
-              )
-              .on(`readable`, (chats_row: types.Row) => {
-                const chat_retrieved: ChatModelForCrush =
-                  queryHelper.parseChatForCrushFromCassandraRow(chats_row);
-                const chat_id = chats_row.get('chat_id');
-                this.cassandraObject
-                  .getClient()
-                  .stream(
-                    `SELECT * FROM ${CassandraTableNames.chatMessages} WHERE owner_id = ? AND chat_id = ?`,
-                    [user_id, chat_id],
-                    {
-                      prepare: true,
-                    },
-                  )
-                  .on(`readable`, (chat_message_row: types.Row) => {
-                    chat_retrieved.messages.push(
-                      queryHelper.parseChatMessageFromCassandraRow(
-                        chat_message_row,
-                      ),
-                    );
-                  })
-                  .on(`end`, () => {
-                    res.write(chat_retrieved);
-                  });
-              })
-              .on(`end`, () => {
-                res.end();
-                resolve;
-              });
-          });
-      });
+      const user_id = req.id;
+      await this.senderStreamEnd(res, user_id!);
+      await this.crushStreamEnd(res, user_id!);
+      res.end();
     } catch (error) {
       throw new ThrowError(error, res);
     }
   }
 
-  @Get(RetrieveDataRoutes.getUnreadConfessionsByCrushId)
+  @Get(RetrieveDataRoutes.GET_CONFESSIONS_BY_CRUSH_ID)
   async getUnreadConfessionsByCrushId(
     @Req() req: express.Request,
     @Res() res: express.Response,
@@ -145,7 +72,7 @@ export class RetrieveDataController {
     }
   }
 
-  @Get(RetrieveDataRoutes.getReadConfessionsByCrushId)
+  @Get(RetrieveDataRoutes.GET_READ_CONFESSIONS_BY_CRUSH_ID)
   async getReadConfessionsByCrushId(
     @Req() req: express.Request,
     @Res() res: express.Response,
@@ -182,7 +109,7 @@ export class RetrieveDataController {
       throw new ThrowError(error, res);
     }
   }
-  @Get(RetrieveDataRoutes.retrieveDataForOfflineUser)
+  @Get(RetrieveDataRoutes.RETRIEVE_DATA_FOR_OFFLINE_USER)
   async retrieveDataForOfflineUser(
     @Req() req: express.Request,
     @Res() res: express.Response,
@@ -195,4 +122,112 @@ export class RetrieveDataController {
       throw new ThrowError(error, res);
     }
   }
+  private senderStreamEnd = async (res: express.Response, user_id: string) => {
+    return new Promise<void>((resolve) => {
+      const client = this.cassandraObject.getClient();
+      const queryHelper = new CassandraQueryHelper();
+
+      const senderStream = client.stream(
+        `SELECT * FROM ${CassandraTableNames.chatsForSender} WHERE user_id = ?`,
+        [user_id],
+        { prepare: true },
+      );
+      const promises: Promise<void>[] = [];
+      senderStream.on('readable', function () {
+        let chats_row;
+        while ((chats_row = this.read())) {
+          const chat_retrieved: ChatModelForSender =
+            queryHelper.parseChatForSenderFromCassandraRow(chats_row);
+          const chat_id = chats_row.get('chat_id');
+
+          const chatMessagesStream = client.stream(
+            `SELECT * FROM ${CassandraTableNames.chatMessages} WHERE owner_id = ? AND chat_id = ?`,
+            [user_id, chat_id],
+            { prepare: true },
+          );
+
+          const chatMessagesPromise = new Promise<void>(
+            (resolveChatMessages) => {
+              chatMessagesStream.on('readable', function () {
+                let chat_message_row;
+                while ((chat_message_row = this.read())) {
+                  chat_retrieved.messages.push(
+                    queryHelper.parseChatMessageFromCassandraRow(
+                      chat_message_row,
+                    ),
+                  );
+                }
+              });
+
+              chatMessagesStream.on('end', () => {
+                res.write(Buffer.from(JSON.stringify(chat_retrieved)));
+                resolveChatMessages();
+              });
+            },
+          );
+
+          promises.push(chatMessagesPromise);
+        }
+      });
+
+      senderStream.on('end', async function () {
+        await Promise.all(promises);
+        resolve();
+      });
+    });
+  };
+  private crushStreamEnd = async (res: express.Response, user_id: string) => {
+    return new Promise<void>((resolve) => {
+      const client = this.cassandraObject.getClient();
+      const queryHelper = new CassandraQueryHelper();
+
+      const senderStream = client.stream(
+        `SELECT * FROM ${CassandraTableNames.chatsForCrush} WHERE crush_id = ?`,
+        [user_id],
+        { prepare: true },
+      );
+
+      const promises: Promise<void>[] = [];
+      senderStream.on('readable', function () {
+        let chats_row;
+        while ((chats_row = this.read())) {
+          const chat_retrieved: ChatModelForCrush =
+            queryHelper.parseChatForCrushFromCassandraRow(chats_row);
+          const chat_id = chats_row.get('chat_id');
+
+          const chatMessagesStream = client.stream(
+            `SELECT * FROM ${CassandraTableNames.chatMessages} WHERE owner_id = ? AND chat_id = ?`,
+            [user_id, chat_id],
+            { prepare: true },
+          );
+          const chatMessagesPromise = new Promise<void>(
+            (resolveChatMessages) => {
+              chatMessagesStream.on('readable', function () {
+                let chat_message_row;
+                while ((chat_message_row = this.read())) {
+                  chat_retrieved.messages.push(
+                    queryHelper.parseChatMessageFromCassandraRow(
+                      chat_message_row,
+                    ),
+                  );
+                }
+              });
+
+              chatMessagesStream.on('end', () => {
+                res.write(Buffer.from(JSON.stringify(chat_retrieved)));
+                resolveChatMessages();
+              });
+            },
+          );
+
+          promises.push(chatMessagesPromise);
+        }
+      });
+
+      senderStream.on('end', async () => {
+        await Promise.all(promises);
+        resolve();
+      });
+    });
+  };
 }

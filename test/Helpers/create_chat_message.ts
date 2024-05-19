@@ -91,15 +91,17 @@ export const createSingleChatMessage = async (
 
 export const createTenChatMessages = async (
   status: string,
+  user_id?: string,
+  chat_id?: types.TimeUuid,
 ): Promise<ChatMessageModel[]> => {
   const chatModelList: ChatMessageModel[] = [];
-  const sender_id = nanoid().toLowerCase();
+  const sender_id = user_id == null ? nanoid().toLowerCase() : user_id;
   const reciever_id = nanoid().toLowerCase();
-  const chat_id = types.TimeUuid.now();
+  const chatId = chat_id == null ? types.TimeUuid.now() : chat_id;
   for (let i = 0; i < 10; i++) {
     const chatMessageModel: ChatMessageModel = {
       message_id: types.TimeUuid.now(),
-      chat_id: chat_id,
+      chat_id: chatId,
       sender_id: sender_id,
       reciever_id: reciever_id,
       message: nanoid().toLowerCase(),
