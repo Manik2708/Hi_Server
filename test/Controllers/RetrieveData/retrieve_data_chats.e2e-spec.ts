@@ -23,7 +23,7 @@ describe(`Retrieve data after login tests`, () => {
     '/' +
     ControllerPaths.RETRIEVE_DATA_CONTROLLER +
     '/' +
-    RetrieveDataRoutes.RETRIEVE_DATA_AFTER_LOGIN;
+    RetrieveDataRoutes.RETRIEVE_CHATS_FOR_SENDER;
   let mongooseInstance: typeof mongoose;
   beforeAll(async () => {
     mongooseInstance = await createMongoInstance();
@@ -55,14 +55,45 @@ describe(`Retrieve data after login tests`, () => {
   afterAll(async () => {
     await app.close();
   });
-  it('Test, whether data is able to get retrieved', async () => {
+  it('Test for retreiving chats for sender', async () => {
     const user = await createTestUser();
     const user_id = user._id._id.toString();
-    await createChatWithTenMessages(user_id, false);
-    await createChatWithTenMessages(user_id, true);
+    const chat = await createChatWithTenMessages(user_id, false);
+    const { anonymous_id, ...updatedChat } = chat;
     getResolvedTestModule(user);
     const response = await request(app.getHttpServer()).get(routeName);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log(response.text);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    let chatRetrieved = JSON.parse(response.text);
+    expect(updatedChat.chat_id.toString()).toStrictEqual(chatRetrieved.chat_id);
+    expect(updatedChat.user_id.toString()).toStrictEqual(chatRetrieved.user_id);
+    for (let i = 0; i < updatedChat.messages.length; i++) {
+      expect(updatedChat.messages[i].message_id.toString()).toBe(
+        chatRetrieved.messages[i].message_id,
+      );
+    }
+  });
+  it('Test for retreiving chats for crush', async () => {
+    const newRouteName =
+      '/' +
+      ControllerPaths.RETRIEVE_DATA_CONTROLLER +
+      '/' +
+      RetrieveDataRoutes.RETRIEVE_CHATS_FOR_CRUSH;
+    const user = await createTestUser();
+    const user_id = user._id._id.toString();
+    const chat = await createChatWithTenMessages(user_id, true);
+    const { anonymous_id, ...updatedChat } = chat;
+    getResolvedTestModule(user);
+    const response = await request(app.getHttpServer()).get(newRouteName);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    let chatRetrieved = JSON.parse(response.text);
+    expect(updatedChat.chat_id.toString()).toStrictEqual(chatRetrieved.chat_id);
+    expect(updatedChat.crush_id.toString()).toStrictEqual(
+      chatRetrieved.crush_id,
+    );
+    for (let i = 0; i < updatedChat.messages.length; i++) {
+      expect(updatedChat.messages[i].message_id.toString()).toBe(
+        chatRetrieved.messages[i].message_id,
+      );
+    }
   });
 });

@@ -73,8 +73,8 @@ export class CassandraQueryHelper {
   parseChatForSenderFromCassandraRow(chats_row: types.Row): ChatModelForSender {
     return {
       chat_id: chats_row.get('chat_id'),
-      crush_name: chats_row.get('chat_name'),
-      crush_id: chats_row.get('crush_name'),
+      crush_name: chats_row.get('crush_name'),
+      crush_id: chats_row.get('crush_id'),
       user_id: chats_row.get('user_id'),
       last_update: chats_row.get('last_update'),
       confession_id: chats_row.get('confession_id'),
@@ -96,7 +96,7 @@ export class CassandraQueryHelper {
     chat_message_row: types.Row,
   ): ChatMessageModel {
     return {
-      message_id: chat_message_row.get('messsage_id'),
+      message_id: chat_message_row.get('message_id'),
       chat_id: chat_message_row.get('chat_id'),
       sender_id: chat_message_row.get('sender_id'),
       reciever_id: chat_message_row.get('reciever_id'),
