@@ -9,7 +9,10 @@ import { ChatModelForCrush, ChatModelForSender } from '../../Models/chat_model';
 import { CassandraQueryHelper } from '../../Database/Cassandra/query_helper';
 import { InternalServerError } from '../../Errors/server_error';
 import { ConfessionModel } from '../../Models/confession';
-import { RetrieveConfessionsByCrushId } from '../../Models/retrieve_data';
+import {
+  RetrieveConfessionsByCrushId,
+  RetrieveDataAfterLoginModel,
+} from '../../Models/retrieve_data';
 import { RetrieveDataServices } from './Services/retrieve_data_services';
 
 @Controller(ControllerPaths.RETRIEVE_DATA_CONTROLLER)
@@ -19,14 +22,27 @@ export class RetrieveDataController {
     private readonly retrieveDataServices: RetrieveDataServices,
   ) {}
 
-  @Get(RetrieveDataRoutes.RETRIEVE_DATA_AFTER_LOGIN)
-  async retrieveDataAfterLogin(
+  @Get(RetrieveDataRoutes.RETRIEVE_CHATS_FOR_SENDER)
+  async retrieveChatsForSender(
     @Req() req: express.Request,
     @Res() res: express.Response,
   ) {
     try {
       const user_id = req.id;
       await this.senderStreamEnd(res, user_id!);
+      res.end();
+    } catch (error) {
+      throw new ThrowError(error, res);
+    }
+  }
+
+  @Get(RetrieveDataRoutes.RETRIEVE_CHATS_FOR_CRUSH)
+  async retrieveChatsForCrush(
+    @Req() req: express.Request,
+    @Res() res: express.Response,
+  ) {
+    try {
+      const user_id = req.id;
       await this.crushStreamEnd(res, user_id!);
       res.end();
     } catch (error) {
@@ -126,7 +142,6 @@ export class RetrieveDataController {
     return new Promise<void>((resolve) => {
       const client = this.cassandraObject.getClient();
       const queryHelper = new CassandraQueryHelper();
-
       const senderStream = client.stream(
         `SELECT * FROM ${CassandraTableNames.chatsForSender} WHERE user_id = ?`,
         [user_id],

@@ -28,7 +28,8 @@ export class ChatRoutes {
 }
 
 export class RetrieveDataRoutes {
-  static RETRIEVE_DATA_AFTER_LOGIN: string = 'retrieve-data-after-login';
+  static RETRIEVE_CHATS_FOR_SENDER: string = 'retrieve-chats-for-sender';
+  static RETRIEVE_CHATS_FOR_CRUSH: string = 'retrieve-chats-for-crush';
   static GET_CONFESSIONS_BY_CRUSH_ID: string = 'get-confessions-by-crush-id';
   static GET_READ_CONFESSIONS_BY_CRUSH_ID: string =
     'get-unread-confessions-by-crush-id';
