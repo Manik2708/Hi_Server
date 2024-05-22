@@ -1,4 +1,12 @@
-import { afterAll, beforeAll, describe, it, expect, jest } from '@jest/globals';
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  it,
+  expect,
+  jest,
+  afterEach,
+} from '@jest/globals';
 import { createMongoInstance, disconnect } from '../../Helpers/db_instance';
 import mongoose from 'mongoose';
 import { createTestUser } from '../../Helpers/create_test_user';
@@ -13,6 +21,7 @@ import { OTPModule } from '../../../src/Controllers/Otp/otp.module';
 import { ControllerPaths } from '../../../src/Constants/contoller_paths';
 import { OTPRoutes } from '../../../src/Constants/route_paths';
 import { verifyOtpObject } from '../../../src/Controllers/Otp/Services/otp_services';
+import { delay } from '../../Helpers/get_testing_app';
 describe('Verify OTP API test', () => {
   let mongooseInstance: typeof mongoose;
   let user: UserModel;
@@ -39,6 +48,10 @@ describe('Verify OTP API test', () => {
   afterAll(async () => {
     await disconnect(mongooseInstance);
     await app.close();
+  });
+  afterEach(async () => {
+    await app.close();
+    await delay();
   });
   it('No otp/token sent', async () => {
     const response = await request(app.getHttpServer())

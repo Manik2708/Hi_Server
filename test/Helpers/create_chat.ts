@@ -23,7 +23,7 @@ export const createChatWithTenMessages = async (
     messages: messages,
   };
   await client.execute(
-    `INSERT INTO hi_database.${CassandraTableNames.chatsForSender} (
+    `INSERT INTO ${CassandraTableNames.chatsForSender} (
           chat_id,
           crush_name,
           crush_id,
@@ -45,7 +45,7 @@ export const createChatWithTenMessages = async (
   );
 
   await client.execute(
-    `INSERT INTO hi_database.${CassandraTableNames.chatsForCrush} (
+    `INSERT INTO ${CassandraTableNames.chatsForCrush} (
           chat_id,
           crush_id,
           user_id,

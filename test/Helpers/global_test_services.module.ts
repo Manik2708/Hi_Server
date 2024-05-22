@@ -41,3 +41,39 @@ export const getTestingGlobalServicesModule =
     }).compile();
     return moduleRef;
   };
+
+export class TestServiceModule {
+  static getTestingModule = async (): Promise<TestingModule> => {
+    const redisClient =
+      await TestServiceContainers.getTestingRedisClient().connect();
+    const rabbitClient = TestServiceContainers.getTestingRabbitClient();
+    const cassandraClient = TestServiceContainers.getTestingCassandraClient();
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        WebSocketsGateWay,
+        WebSocketServices,
+        UserOnlineServices,
+        CassandraDatabaseQueries,
+        SendMessageToUserService,
+        {
+          provide: InjectionTokens.CasClient,
+          useValue: cassandraClient,
+        },
+        {
+          provide: InjectionTokens.RedisClient,
+          useValue: redisClient,
+        },
+        {
+          provide: InjectionTokens.CreateQueue,
+          useValue: rabbitClient,
+        },
+      ],
+      exports: [
+        InjectionTokens.RedisClient,
+        InjectionTokens.CreateQueue,
+        InjectionTokens.CasClient,
+      ],
+    }).compile();
+    return moduleRef;
+  };
+}

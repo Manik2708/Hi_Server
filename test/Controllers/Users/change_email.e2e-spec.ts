@@ -1,4 +1,12 @@
-import { afterAll, beforeAll, describe, it, expect, jest } from '@jest/globals';
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  it,
+  expect,
+  jest,
+  afterEach,
+} from '@jest/globals';
 import { createMongoInstance, disconnect } from '../../Helpers/db_instance';
 import mongoose from 'mongoose';
 import { createTestUser } from '../../Helpers/create_test_user';
@@ -15,6 +23,7 @@ import { UserRoutes } from '../../../src/Constants/route_paths';
 import { UserModule } from '../../../src/Controllers/Users/user.module';
 import { Test } from '@nestjs/testing';
 import { TestMiddlewareModule } from '../../Helpers/test_middleware.module';
+import { delay } from '../../Helpers/get_testing_app';
 
 describe('Change Email API test', () => {
   let mongooseInstance: typeof mongoose;
@@ -38,6 +47,10 @@ describe('Change Email API test', () => {
 
     app = moduleRef.createNestApplication();
     await app.init();
+  });
+  afterEach(async () => {
+    await app.close();
+    await delay();
   });
   it('No password sent', async () => {
     const mockRequest = {

@@ -21,7 +21,7 @@ export const createSingleChatMessage = async (
   };
   const client = TestServiceContainers.getTestingCassandraClient();
   await client.execute(
-    `INSERT INTO hi_database.${CassandraTableNames.chatMessages} (
+    `INSERT INTO ${CassandraTableNames.chatMessages} (
           chat_id,
           message_id,
           sending_time,
@@ -54,7 +54,7 @@ export const createSingleChatMessage = async (
     },
   );
   await client.execute(
-    `INSERT INTO hi_database.${CassandraTableNames.chatMessages} (
+    `INSERT INTO ${CassandraTableNames.chatMessages} (
           chat_id,
           message_id,
           sending_time,
@@ -111,7 +111,7 @@ export const createTenChatMessages = async (
     };
     const client = TestServiceContainers.getTestingCassandraClient();
     await client.execute(
-      `INSERT INTO hi_database.${CassandraTableNames.chatMessages} (
+      `INSERT INTO ${CassandraTableNames.chatMessages} (
               chat_id,
               message_id,
               sending_time,
@@ -144,7 +144,7 @@ export const createTenChatMessages = async (
       },
     );
     await client.execute(
-      `INSERT INTO hi_database.${CassandraTableNames.chatMessages} (
+      `INSERT INTO ${CassandraTableNames.chatMessages} (
               chat_id,
               message_id,
               sending_time,

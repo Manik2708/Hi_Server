@@ -9,7 +9,7 @@ import { INestApplication } from '@nestjs/common';
 import { Socket } from 'socket.io-client';
 import { getTestingGlobalServicesModule } from '../../../Helpers/global_test_services.module';
 import { TestServiceContainers } from '../../../Helpers/test_service_containers';
-import { getTestingApp } from '../../../Helpers/get_testing_app';
+import { delay, getTestingApp } from '../../../Helpers/get_testing_app';
 import { nanoid } from 'nanoid';
 import { MessageType } from '../../../../src/Constants/messasge_type';
 import { consumeMessageFromQueue } from '../../../Helpers/consume_message_from_queue';
@@ -18,6 +18,7 @@ import { ChatMessageForUserService } from '../../../../src/Controllers/Chats/Ser
 import { searchChatMessage } from '../../../Helpers/search_chat_message';
 import { DeleteMessageModel } from '../../../../src/Models/update_status_of_chat_message';
 import { createSingleChatMessage } from '../../../Helpers/create_chat_message';
+import { afterEach } from 'node:test';
 
 describe(`Send chat message tests`, () => {
   let redisClient: RedisClientType;
@@ -35,7 +36,7 @@ describe(`Send chat message tests`, () => {
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
       TestServiceContainers.getTestingRabbitClient(),
     );
-    socket = await initClientSocket((socket) => {
+    socket = await initClientSocket(app, (socket) => {
       socketId = socket.id!;
       socket.on(EventNames.deleteChatMessage, (data) => {
         outputData = data;
@@ -45,6 +46,11 @@ describe(`Send chat message tests`, () => {
   afterAll(async () => {
     await app.close();
     socket.disconnect();
+  });
+  afterEach(async () => {
+    await app.close();
+    socket.disconnect();
+    await delay();
   });
   it(`When user is online`, async () => {
     const senderId = nanoid().toLowerCase();

@@ -10,7 +10,7 @@ export const getSearchedConfession = async (
 ): Promise<types.ResultSet> => {
   const result =
     await TestServiceContainers.getTestingCassandraClient().execute(
-      `SELECT * FROM hi_database.${tableName} 
+      `SELECT * FROM ${tableName} 
     WHERE sender_id = ? AND
     sending_time = ? AND
     confession_id = ? ALLOW FILTERING
@@ -27,7 +27,7 @@ export const getSearchedReadConfession = async (
 ): Promise<types.ResultSet> => {
   const result =
     await TestServiceContainers.getTestingCassandraClient().execute(
-      `SELECT * FROM hi_database.${CassandraTableNames.recievedReadConfessions} 
+      `SELECT * FROM ${CassandraTableNames.recievedReadConfessions} 
     WHERE crush_id = ? AND
     reading_time = ? AND
     confession_id = ? ALLOW FILTERING

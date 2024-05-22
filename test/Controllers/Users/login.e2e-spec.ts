@@ -1,4 +1,12 @@
-import { afterAll, beforeAll, describe, it, expect, jest } from '@jest/globals';
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  it,
+  expect,
+  jest,
+  afterEach,
+} from '@jest/globals';
 import { createMongoInstance, disconnect } from '../../Helpers/db_instance';
 import mongoose from 'mongoose';
 import { createTestUser } from '../../Helpers/create_test_user';
@@ -12,6 +20,7 @@ import { ControllerPaths } from '../../../src/Constants/contoller_paths';
 import { UserRoutes } from '../../../src/Constants/route_paths';
 import { Test } from '@nestjs/testing';
 import { UserModule } from '../../../src/Controllers/Users/user.module';
+import { delay } from '../../Helpers/get_testing_app';
 describe('API test for login API', () => {
   let mongooseInstance: typeof mongoose;
   let user: UserModel;
@@ -30,6 +39,10 @@ describe('API test for login API', () => {
   afterAll(async () => {
     await disconnect(mongooseInstance);
     await app.close();
+  });
+  afterEach(async () => {
+    await app.close();
+    await delay();
   });
   it('Empty request', async () => {
     await request(app.getHttpServer()).post(routeName).send({}).expect(400);

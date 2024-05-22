@@ -36,6 +36,7 @@ import { CassandraDatabaseQueries } from '../Database/Cassandra/queries';
     WebSocketServices,
     InjectionTokens.CasClient,
     CassandraDatabaseQueries,
+    SendMessageToUserService,
   ],
 })
 export class GlobalServiceModule {}

@@ -10,7 +10,16 @@ import { UserModule } from '../../../src/Controllers/Users/user.module';
 import { INestApplication } from '@nestjs/common';
 import { ControllerPaths } from '../../../src/Constants/contoller_paths';
 import { UserRoutes } from '../../../src/Constants/route_paths';
-import { describe, it, expect, beforeAll, afterAll, jest } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  jest,
+  afterEach,
+} from '@jest/globals';
+import { delay } from '../../Helpers/get_testing_app';
 
 describe('API test for Creating New Account', () => {
   let mongooseInstance: typeof mongoose;
@@ -31,6 +40,10 @@ describe('API test for Creating New Account', () => {
   afterAll(async () => {
     await disconnect(mongooseInstance);
     await app.close();
+  });
+  afterEach(async () => {
+    await app.close();
+    await delay();
   });
   it('If user with same email address try to create account', async () => {
     const user = await createTestUser();
