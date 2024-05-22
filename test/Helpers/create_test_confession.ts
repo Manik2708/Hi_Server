@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { CassandraTableNames } from '../../src/Constants/cassandra_constants';
 import { TestServiceContainers } from './test_service_containers';
 import { types } from 'cassandra-driver';
-import { ConfessionModel } from 'src/Models/confession';
+import { ConfessionModel } from '../../src/Models/confession';
 
 export const createTestConfession = async (
   senderId: string,
@@ -20,7 +20,7 @@ export const createTestConfession = async (
     sender_anonymous_id: nanoid().toLowerCase(),
   };
   await client.execute(
-    `INSERT INTO hi_database.${CassandraTableNames.sentConfessions}(
+    `INSERT INTO ${CassandraTableNames.sentConfessions}(
         sender_id,
         crush_id,
         confession_id,
@@ -47,7 +47,7 @@ export const createTestConfession = async (
     },
   );
   await client.execute(
-    `INSERT INTO hi_database.${CassandraTableNames.recievedUnreadConfessions}(
+    `INSERT INTO ${CassandraTableNames.recievedUnreadConfessions}(
             sender_id,
             crush_id,
             confession_id,
@@ -89,7 +89,7 @@ export const createTestReadConfession = async (
     reading_time: new Date(),
   };
   await client.execute(
-    `INSERT INTO hi_database.${CassandraTableNames.sentConfessions}(
+    `INSERT INTO ${CassandraTableNames.sentConfessions}(
         sender_id,
         crush_id,
         confession_id,
@@ -116,7 +116,7 @@ export const createTestReadConfession = async (
     },
   );
   await client.execute(
-    `INSERT INTO hi_database.${CassandraTableNames.recievedReadConfessions}(
+    `INSERT INTO ${CassandraTableNames.recievedReadConfessions}(
         sender_id,
         crush_id,
         confession_id,

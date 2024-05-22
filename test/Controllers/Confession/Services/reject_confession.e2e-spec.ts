@@ -1,4 +1,11 @@
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  afterEach,
+} from '@jest/globals';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
 import { EventNames } from '../../../../src/Constants/event_names';
 import { RedisNames } from '../../../../src/Constants/queues_redis';
@@ -10,7 +17,7 @@ import { INestApplication } from '@nestjs/common';
 import { Socket } from 'socket.io-client';
 import { getTestingGlobalServicesModule } from '../../../Helpers/global_test_services.module';
 import { TestServiceContainers } from '../../../Helpers/test_service_containers';
-import { getTestingApp } from '../../../Helpers/get_testing_app';
+import { delay, getTestingApp } from '../../../Helpers/get_testing_app';
 import { ConfessionModel } from '../../../../src/Models/confession';
 import { nanoid } from 'nanoid';
 import { CassandraTableNames } from '../../../../src/Constants/cassandra_constants';
@@ -37,7 +44,7 @@ describe(`Reject confession tests`, () => {
       moduleRef.get<SendMessageToUserService>(SendMessageToUserService),
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
     );
-    socket = await initClientSocket((socket) => {
+    socket = await initClientSocket(app, (socket) => {
       socketId = socket.id!;
       socket.on(EventNames.updateConfssionStatus, (data) => {
         outputData = data;
@@ -47,6 +54,11 @@ describe(`Reject confession tests`, () => {
   afterAll(async () => {
     await app.close();
     socket.disconnect();
+  });
+  afterEach(async () => {
+    await app.close();
+    socket.disconnect();
+    await delay();
   });
   it(`When user is online`, async () => {
     const senderId = nanoid().toLowerCase();

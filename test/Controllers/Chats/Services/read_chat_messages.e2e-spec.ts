@@ -1,6 +1,14 @@
-import { describe, it, expect, beforeAll, afterAll, jest } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  jest,
+  afterEach,
+} from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
-import { getTestingApp } from '../../../Helpers/get_testing_app';
+import { delay, getTestingApp } from '../../../Helpers/get_testing_app';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
 import { CassandraDatabaseQueries } from '../../../../src/Database/Cassandra/queries';
 import { nanoid } from 'nanoid';
@@ -30,13 +38,12 @@ describe(`Update status of chat messages tests`, () => {
     redisClient = await TestServiceContainers.getTestingRedisClient().connect();
     const moduleRef = await getTestingGlobalServicesModule();
     app = await getTestingApp(moduleRef);
-    await app.init();
     chatMessageForUserService = new ChatMessageForUserService(
       moduleRef.get<SendMessageToUserService>(SendMessageToUserService),
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
       TestServiceContainers.getTestingRabbitClient(),
     );
-    socket = await initClientSocket((socket) => {
+    socket = await initClientSocket(app, (socket) => {
       socketId = socket.id!;
       socket.on(EventNames.updateStatusOfChatMesssages, (data) => {
         outputData = data;
@@ -46,6 +53,11 @@ describe(`Update status of chat messages tests`, () => {
   afterAll(async () => {
     await app.close();
     socket.disconnect();
+  });
+  afterEach(async () => {
+    await app.close();
+    socket.disconnect();
+    await delay();
   });
   it(`When user is online`, async () => {
     const senderId = nanoid().toLowerCase();

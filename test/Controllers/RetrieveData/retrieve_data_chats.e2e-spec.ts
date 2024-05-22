@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeAll, afterAll, jest } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  jest,
+  afterEach,
+} from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
 import { ControllerPaths } from '../../../src/Constants/contoller_paths';
 import { RetrieveDataRoutes } from '../../../src/Constants/route_paths';
@@ -17,6 +25,7 @@ import { TestServiceContainers } from '../../Helpers/test_service_containers';
 import { RetrieveDataController } from '../../../src/Controllers/RetrieveData/retrieve_data';
 import { CassandraDatabaseQueries } from '../../../src/Database/Cassandra/queries';
 import { TestMiddlewareModule } from '../../Helpers/test_middleware.module';
+import { delay } from '../../Helpers/get_testing_app';
 describe(`Retrieve data after login tests`, () => {
   let app: INestApplication;
   const routeName =
@@ -54,6 +63,10 @@ describe(`Retrieve data after login tests`, () => {
   });
   afterAll(async () => {
     await app.close();
+  });
+  afterEach(async () => {
+    await app.close();
+    await delay();
   });
   it('Test for retreiving chats for sender', async () => {
     const user = await createTestUser();

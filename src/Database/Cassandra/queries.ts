@@ -39,8 +39,8 @@ export class CassandraDatabaseQueries implements OnModuleInit {
     WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
     `);
 
-      // This method uses that keyspace to perform queries
-      await this.client.execute(`USE hi_database`);
+      // // This method uses that keyspace to perform queries
+      // await this.client.execute(`USE hi_database`);
 
       /**
        * Create Table for saving confession for sender in Database

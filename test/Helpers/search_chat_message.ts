@@ -10,7 +10,7 @@ export const searchChatMessage = async (
 ): Promise<types.ResultSet> => {
   const client = TestServiceContainers.getTestingCassandraClient();
   return client.execute(
-    `SELECT * FROM hi_database.${CassandraTableNames.chatMessages} WHERE 
+    `SELECT * FROM ${CassandraTableNames.chatMessages} WHERE 
     owner_id = ? AND 
     chat_id = ? AND 
     sending_time = ? AND

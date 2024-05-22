@@ -1,8 +1,13 @@
+import { INestApplication } from '@nestjs/common';
 import { io as IoClient, Socket as ClientSocket } from 'socket.io-client';
 
-export const initClientSocket = (callback: (socket: ClientSocket) => void) => {
+export const initClientSocket = async (
+  app: INestApplication,
+  callback: (socket: ClientSocket) => void,
+) => {
+  const url = await app.getUrl();
   return new Promise<ClientSocket>((resolve, reject) => {
-    const socket = IoClient(`http://localhost:3001`, {
+    const socket = IoClient(url, {
       reconnectionDelay: 0,
     });
 

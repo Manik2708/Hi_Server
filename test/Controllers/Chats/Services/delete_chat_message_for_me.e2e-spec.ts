@@ -1,31 +1,38 @@
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  afterEach,
+} from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
-import { getTestingApp } from '../../../Helpers/get_testing_app';
+import { delay, getTestingApp } from '../../../Helpers/get_testing_app';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
 import { CassandraDatabaseQueries } from '../../../../src/Database/Cassandra/queries';
 import { nanoid } from 'nanoid';
 import { createTenChatMessages } from '../../../Helpers/create_chat_message';
 import { DeleteMessageModel } from '../../../../src/Models/update_status_of_chat_message';
-import { getTestingGlobalServicesModule } from '../../../Helpers/global_test_services.module';
+import {
+  TestServiceModule,
+  getTestingGlobalServicesModule,
+} from '../../../Helpers/global_test_services.module';
 import { ChatMessageForUserService } from '../../../../src/Controllers/Chats/Services/send_chat_message_service';
 import { TestServiceContainers } from '../../../Helpers/test_service_containers';
 import { QueueNames } from '../../../../src/Constants/queues_redis';
 import { consumeMessageFromAnyQueue } from '../../../Helpers/consume_message_from_queue';
 describe(`Update status of chat messages tests`, () => {
-  let app: INestApplication;
   let chatMessageForUserService: ChatMessageForUserService;
   beforeAll(async () => {
-    const moduleRef = await getTestingGlobalServicesModule();
-    app = await getTestingApp(moduleRef);
-    await app.init();
+    const moduleRef = await TestServiceModule.getTestingModule();
     chatMessageForUserService = new ChatMessageForUserService(
       moduleRef.get<SendMessageToUserService>(SendMessageToUserService),
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
       TestServiceContainers.getTestingRabbitClient(),
     );
   });
-  afterAll(async () => {
-    await app.close();
+  afterEach(async () => {
+    await delay();
   });
   it(`Data sent to database queue`, async () => {
     const senderId = nanoid().toLowerCase();

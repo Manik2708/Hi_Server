@@ -1,10 +1,12 @@
 export class CassandraTableNames {
-  static sentConfessions: string = 'sent_confessions';
-  static recievedUnreadConfessions: string = 'recieved_unread_confessions';
-  static recievedReadConfessions: string = 'recieved_read_confessions';
-  static chatsForSender: string = 'chats_for_sender';
-  static chatsForCrush: string = 'chats_for_crush';
-  static chatMessages: string = 'chat_messages';
+  static sentConfessions: string = 'hi_database.sent_confessions';
+  static recievedUnreadConfessions: string =
+    'hi_database.recieved_unread_confessions';
+  static recievedReadConfessions: string =
+    'hi_database.recieved_read_confessions';
+  static chatsForSender: string = 'hi_database.chats_for_sender';
+  static chatsForCrush: string = 'hi_database.chats_for_crush';
+  static chatMessages: string = 'hi_database.chat_messages';
 }
 
 export interface CassandraKeys {

@@ -9,7 +9,7 @@ export const searchChatAmongSender = async (
 ): Promise<types.ResultSet> => {
   const client = TestServiceContainers.getTestingCassandraClient();
   return client.execute(
-    `SELECT * FROM hi_database.${CassandraTableNames.chatsForSender} WHERE user_id = ? AND last_update = ? AND chat_id=? ALLOW FILTERING`,
+    `SELECT * FROM ${CassandraTableNames.chatsForSender} WHERE user_id = ? AND last_update = ? AND chat_id=? ALLOW FILTERING`,
     [senderId, lastUpdate, chatId],
   );
 };
@@ -21,7 +21,7 @@ export const searchChatAmongCrush = async (
 ): Promise<types.ResultSet> => {
   const client = TestServiceContainers.getTestingCassandraClient();
   return client.execute(
-    `SELECT * FROM hi_database.${CassandraTableNames.chatsForCrush} WHERE crush_id = ? AND last_update = ? AND chat_id = ? ALLOW FILTERING`,
+    `SELECT * FROM ${CassandraTableNames.chatsForCrush} WHERE crush_id = ? AND last_update = ? AND chat_id = ? ALLOW FILTERING`,
     [crushId, lastUpdate, chatId],
   );
 };
