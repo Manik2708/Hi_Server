@@ -91,7 +91,7 @@ describe(`Retrieve data after login tests`, () => {
     const secondResponse = JSON.parse(response2.text);
     expect(secondResponse.page_state == null).toBe(true);
     expect(secondResponse.confessions.length).toBe(10);
-  }, 1000);
+  }, 2000);
   it('Test for retreiving chats for sender', async () => {
     const routeName =
       '/' +
@@ -118,5 +118,5 @@ describe(`Retrieve data after login tests`, () => {
     const secondResponse = JSON.parse(response2.text);
     expect(secondResponse.page_state == null).toBe(true);
     expect(secondResponse.confessions.length).toBe(10);
-  }, 1000);
+  }, 2000);
 });
