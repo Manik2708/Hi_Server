@@ -5,15 +5,34 @@ services:
     command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
     ports:
       - "6392:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 20s 
     container_name: client-testing
   rabbitmq-testing:
     image: rabbitmq
     ports:
       - "5673:5672"
       - "15673:15672"
-    container_name: rabbit-testing  
+    container_name: rabbit-testing
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 20s  
   cassandra-testing:
     image: cassandra:latest
     ports:
       - "9001:9042"
     container_name: cassandra-testing
+    healthcheck:
+      test: cqlsh
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 20s
+
