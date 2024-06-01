@@ -1,10 +1,9 @@
-piepline{
+pipeline{
+    agent any
     tools{
-        npm 'nodejs'
-        docker 'docker-tool'
+        nodejs 'nodejs'
     }
     stages{
-
         stage('Git checkout'){
             steps{
                 git branch: 'develop', changelog: false, poll: false, url: 'https://github.com/Manik2708/Hi_Server'
@@ -13,6 +12,7 @@ piepline{
         stage('Setup docker compose'){
             steps{
                 dir('scripts'){
+                   sh 'chmod +x docker_compose_up.sh'
                    sh './docker_compose_up.sh' 
                 }
             }
@@ -29,7 +29,9 @@ piepline{
            }
         }
         stage('Check Containers health'){
-            try{
+           steps{
+            script{
+             try{
                 dir('scripts'){
                     sh 'chmod +x container_heath_check.sh'
                     sh './container_heath_check.sh'
@@ -42,11 +44,21 @@ piepline{
                     sh './docker_compose_up.sh'
                 }
             }
+           }
+           }
         }
         stage('Run tests'){
             steps{
                 sh 'npm run test:e2e'
             }
         }        
+    }
+    post{
+       always{
+        dir('scripts'){
+                sh 'chmod +x docker_compose_down.sh'
+                sh './docker_compose_down.sh'
+            }
+       } 
     }
 }
