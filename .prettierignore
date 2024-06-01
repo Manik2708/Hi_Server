@@ -1,0 +1,6 @@
+dist/*.js
+docs/
+.vscode/settings.json
+tsconfig.build.json
+tsconfig.json
+typedoc.json

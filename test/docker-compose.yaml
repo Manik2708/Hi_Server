@@ -30,9 +30,9 @@ services:
       - "9001:9042"
     container_name: cassandra-testing
     healthcheck:
-      test: cqlsh
+      test: ["CMD","nodetool", "status"]
       interval: 10s
-      timeout: 3s
-      retries: 3
+      timeout: 10s
+      retries: 10
       start_period: 20s
 
