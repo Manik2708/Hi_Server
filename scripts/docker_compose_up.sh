@@ -1,6 +1,6 @@
 cd ../test
 
-docker compose up
+docker compose up -d --no-color --wait
 
 sleep 20s
 
