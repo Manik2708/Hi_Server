@@ -115,7 +115,7 @@ jobs:
         run: echo "RUNNING_ON_DOCKER=true" >> .env 
     
       - name: Create Docker network
-        run: docker network create hi-srvices
+        run: docker network create hi-services
 
       - name: Start Build services
         run: docker compose up -d --no-color --wait
