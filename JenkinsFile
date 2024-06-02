@@ -4,11 +4,6 @@ pipeline{
         nodejs 'nodejs'
     }
     stages{
-        stage('Git checkout'){
-            steps{
-                git branch: 'develop', changelog: false, poll: false, url: 'https://github.com/Manik2708/Hi_Server'
-            }
-        }
         stage('Setup docker compose'){
             steps{
                 dir('scripts'){
