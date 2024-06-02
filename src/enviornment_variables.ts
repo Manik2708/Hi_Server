@@ -14,15 +14,19 @@ const parseStringToNumber = (text: string | undefined): number | undefined => {
 };
 export const IfRunningOnDocker = process.env.RUNNING_ON_DOCKER!;
 export const DatabaseUrl: string =
-process.env.DATABASE_USERNAME || process.env.DATABASE_PASSWORD ==
-null||undefined||process.env.DATABASE_USERNAME!.length==0||process.env.DATABASE_PASSWORD.length==0?
-IfRunningOnDocker=='true'?'mongodb://localhost:27019':
-process.env.MONGO_TESTING_LINK!:
-'mongodb+srv://' +
-  encodeURIComponent(process.env.DATABASE_USERNAME!) +
-  ':' +
-  encodeURIComponent(process.env.DATABASE_PASSWORD!) +
-  '@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority';
+  process.env.DATABASE_USERNAME ||
+  process.env.DATABASE_PASSWORD == null ||
+  undefined ||
+  process.env.DATABASE_USERNAME!.length == 0 ||
+  process.env.DATABASE_PASSWORD.length == 0
+    ? IfRunningOnDocker == 'true'
+      ? 'mongodb://mongodb:27017'
+      : process.env.MONGO_TESTING_LINK!
+    : 'mongodb+srv://' +
+      encodeURIComponent(process.env.DATABASE_USERNAME!) +
+      ':' +
+      encodeURIComponent(process.env.DATABASE_PASSWORD!) +
+      '@cluster0.m5ofsm1.mongodb.net/?retryWrites=true&w=majority';
 export const IP: string = process.env.IP_ADDRESS!;
 export const FirebasePath: string = process.env.FIREBASE_PATH!;
 export const NodemailerSenderEmail: string =

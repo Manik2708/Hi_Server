@@ -1,48 +1,51 @@
 version: "3"
 services:
-  redis-testing:
+   redis:
     image: redis:alpine
     command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
-    ports:
-      - "6390:6379"
+    container_name: client
+    networks: 
+      - hi-services
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
       interval: 10s
       timeout: 3s
       retries: 3
       start_period: 20s 
-    container_name: client
-  rabbitmq:
+   rabbitmq:
     image: rabbitmq
-    ports:
-      - "5670:5672"
-      - "15673:15672"
     container_name: rabbit
+    networks: 
+      - hi-services
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 10s
       timeout: 3s
       retries: 3
       start_period: 20s  
-  cassandra:
+   cassandra:
     image: cassandra:latest
-    ports:
-      - "9000:9042"
     container_name: cassandra
+    networks: 
+      - hi-services
     healthcheck:
       test: ["CMD","nodetool", "status"]
       interval: 10s
       timeout: 10s
       retries: 10
       start_period: 20s
-  mongodb:
+   mongodb:
     image: mongo:latest
-    ports: 
-      - "27019:27017"
     container_name: mongodb
+    networks: 
+      - hi-services
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
       interval: 10s
       timeout: 10s
       retries: 10
       start_period: 20s
+networks:
+  hi-services:
+    external: true
+    

@@ -11,7 +11,7 @@ export class ConnectToServices {
 
     if (IfRunningOnDocker == 'true') {
       client = createClient({
-        url: 'redis://0.0.0.0:6390',
+        url: 'redis://client:6379',
       });
     } else {
       client = createClient({});
@@ -22,9 +22,9 @@ export class ConnectToServices {
     let casClient: CasClient;
     if (IfRunningOnDocker == 'true') {
       casClient = new CasClient({
-      contactPoints: ['localhost'],
-      localDataCenter: 'datacenter1',
-      protocolOptions: { port: 9000 },
+        contactPoints: ['cassandra'],
+        localDataCenter: 'datacenter1',
+        protocolOptions: { port: 9042 },
       });
     } else {
       casClient = new CasClient({
