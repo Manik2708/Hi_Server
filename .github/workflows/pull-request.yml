@@ -1,4 +1,4 @@
-name: Format Application
+name: Pull Request Workflow
 
 on:
   push:
@@ -8,39 +8,38 @@ on:
 
 jobs:
   CODE-QUALITY-CHECK:
-    name: Check for formatting and circular dependencies 
+    name: Check for formatting and circular dependencies
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [20.x]    
+        node-version: [20.x]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Restore node_modules from cache
-        id: cache-npm
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
             node_modules
-          key: ${{ runner.os }}-code-quality-checks-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-code-quality-checks-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-code-quality-checks-${{ env.cache-name }}-
             ${{ runner.os }}-code-quality-checks-
-            ${{ runner.os }}-
+
       - name: Install dependencies
         run: npm install
+
       - name: Sleep for 10s
-        uses: juliangruber/sleep-action@v2
-        with:
-          time: 10s
+        run: sleep 10
+
       - name: Check formatting
-        run: npm run format:check 
+        run: npm run format:check
+
       - name: Check Circular Dependencies
         run: npx madge --circular --extensions ts ./
+
   Check-Unauthorized-Changes:
     name: Checks if no unauthorized files are changed
     runs-on: ubuntu-latest
@@ -49,8 +48,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
-          persist-crendetials: true
-
+          persist-credentials: true
       
       - name: Get Changed Unauthorized files
         id: changed-unauth-files
@@ -72,17 +70,12 @@ jobs:
             vite.config.ts
             docker-compose.yaml
             src/main.ts
-
+      
       - name: List all changed unauthorized files
         if: steps.changed-unauth-files.outputs.any_changed == 'true' || steps.changed-unauth-files.outputs.any_deleted == 'true'
-        env: 
-          CHANGED_UNAUTH_FILES: ${{ steps.changed-unauth-files.outputs.all_changed_files }}
         run: |
-          for file in ${CHANGED_UNAUTH_FILES}; do
-            echo "$file is unauthorized to change/delete"
-          done
+          echo "${{ steps.changed-unauth-files.outputs.all_changed_files }} is unauthorized to change/delete"
           exit 1
-
 
   Test-Application:
     name: Run e2e tests
@@ -90,23 +83,27 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Create Testing Enviornment
+
+      - name: Create Testing Environment
         run: |
-          chmod +x docker_compose_up.sh
-          ./docker_compose_up.sh
+          chmod +x scripts/docker_compose_up.sh
+          scripts/docker_compose_up.sh
         working-directory: scripts
+
       - name: Install dependencies
         run: npm install
+
       - name: Sleep for 10s
-        uses: juliangruber/sleep-action@v2
-        with:
-          time: 10s
+        run: sleep 10
+
       - name: Run tests
         run: npm run test:e2e
-      - name: Remove Testing Enviornment
-      - run: |
-          chmod +x docker_compose_down.sh
-          ./docker_compose_down.sh
+
+      - name: Remove Testing Environment
+        run: |
+          chmod +x scripts/docker_compose_down.sh
+          scripts/docker_compose_down.sh
+        working-directory: scripts
 
   Build-Application:
     name: Build application
@@ -114,21 +111,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Create Build Enviornment
+
+      - name: Create Build Environment
         run: docker compose up -d --no-color --wait
         working-directory: scripts
+
       - name: Install dependencies
         run: npm install
+
       - name: Sleep for 10s
-        uses: juliangruber/sleep-action@v2
-        with:
-          time: 10s
+        run: sleep 10
+
       - name: Create .env file
         run: touch .env
+
       - name: Edit file for running on docker
         run: echo "RUNNING_ON_DOCKER=true" >> .env 
+
       - name: Build server
         run: npm run build
-      - name: Remove Build Enviornment
-      - run: docker compose down  
-      
+
+      - name: Remove Build Environment
+        run: docker compose down
