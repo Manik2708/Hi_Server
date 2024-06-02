@@ -124,7 +124,7 @@ jobs:
         run: docker build -t hi-server .
 
       - name: Run Docker server
-        run: docker --name hi-container --network hi-services run hi-server
+        run: docker run --name hi-container --network hi-services hi-server
 
       - name: Remove Build Services
         run: docker compose down
