@@ -113,12 +113,9 @@ jobs:
     
       - name: Edit file for running on docker
         run: echo "RUNNING_ON_DOCKER=true" >> .env 
-
-      - name: Login to Docker
-        run: echo "${{secrets.DOCKERPASSWORD}}" | docker login -u "${{secrets.DOCKERUSERNAME}}" --password-stdin
     
       - name: Create Docker network
-        run: docker create network hi-srvices
+        run: docker network create hi-srvices
 
       - name: Start Build services
         run: docker compose up -d --no-color --wait
