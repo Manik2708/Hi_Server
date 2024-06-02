@@ -85,10 +85,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create Testing Environment
-        run: |
-          chmod +x scripts/docker_compose_up.sh
-          scripts/docker_compose_up.sh
-        working-directory: scripts
+        run: docker compose up -d --no-color --wait
+        working-directory: test
 
       - name: Install dependencies
         run: npm install
@@ -100,10 +98,8 @@ jobs:
         run: npm run test:e2e
 
       - name: Remove Testing Environment
-        run: |
-          chmod +x scripts/docker_compose_down.sh
-          scripts/docker_compose_down.sh
-        working-directory: scripts
+        run: docker compose down
+        working-directory: test
 
   Build-Application:
     name: Build application
@@ -111,25 +107,33 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Create Build Environment
-        run: docker compose up -d --no-color --wait
-        working-directory: scripts
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Sleep for 10s
-        run: sleep 10
-
+      
       - name: Create .env file
         run: touch .env
-
+    
       - name: Edit file for running on docker
-        run: echo "RUNNING_ON_DOCKER=true" >> .env 
+        run: echo "RUNNING_ON_DOCKER=true" >> .env   
+    
+      - name: Create Docker network
+        run: docker create network hi-srvices
 
-      - name: Build server
-        run: npm run build
+      - name: Start Build services
+        run: docker compose up -d --no-color --wait
+      
+      - name: Build Docker image
+        run: docker build -t hi-server .
 
-      - name: Remove Build Environment
+      - name: Run Docker server
+        run: docker --name hi-container --network hi-services run hi-server
+
+      - name: Remove Build Services
         run: docker compose down
+
+      - name: Stop server
+        run: docker stop hi-container
+
+      - name: Remove Docker Container
+        run: docker rm hi-container
+
+      - name: Remove docker image
+        run: docker rmi hi-server
