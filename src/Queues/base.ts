@@ -14,7 +14,7 @@ export class CreateQueue {
         ? 'amqp://localhost:5673'
         : TestingRabbitLink
       : IfRunningOnDocker == 'true'
-        ? 'amqp://rabbit:5672'
+        ? 'amqp://localhost:5670'
         : 'amqp://rabbit';
     amqp.connect(
       rabbitMqConnectionString,

@@ -46,14 +46,34 @@ pipeline{
             steps{
                 sh 'npm run test:e2e'
             }
-        }        
+        }
+        stage('Close testing enviornment'){
+            steps{
+                dir('scripts'){
+                    sh 'chmod +x docker_compose_down.sh'
+                    sh './docker_compose_down.sh'
+                }
+            }
+        }
+        stage('Check for circular dependencies'){
+            sh 'npx madge --circular --extensions ts ./'
+        }
+        stage('Start docker compose for build'){
+            steps{
+                sh 'docker compose up -d --no-color --wait'
+            }
+        }
+        stage('Build server'){
+            steps{
+                sh 'chmod +rwx .env'
+                sh 'sed -i \'s/RUNNING_ON_DOCKER=false/RUNNING_ON_DOCKER=true/g\' .env'
+                sh 'npm run build'
+            }
+        }
     }
     post{
        always{
-        dir('scripts'){
-                sh 'chmod +x docker_compose_down.sh'
-                sh './docker_compose_down.sh'
-            }
+            sh 'docker compose down'
        } 
     }
 }
