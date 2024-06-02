@@ -12,9 +12,13 @@ const parseStringToNumber = (text: string | undefined): number | undefined => {
     return undefined;
   }
 };
-
+export const IfRunningOnDocker = process.env.RUNNING_ON_DOCKER!;
 export const DatabaseUrl: string =
-  'mongodb+srv://' +
+process.env.DATABASE_USERNAME || process.env.DATABASE_PASSWORD ==
+null||undefined||process.env.DATABASE_USERNAME!.length==0||process.env.DATABASE_PASSWORD.length==0?
+IfRunningOnDocker=='true'?'mongodb://localhost:27019':
+process.env.MONGO_TESTING_LINK!:
+'mongodb+srv://' +
   encodeURIComponent(process.env.DATABASE_USERNAME!) +
   ':' +
   encodeURIComponent(process.env.DATABASE_PASSWORD!) +
@@ -26,7 +30,6 @@ export const NodemailerSenderEmail: string =
 export const NodemailerSenderPassword: string =
   process.env.NODEMAILER_SENDER_PASSWORD!;
 export const NodemailerService: string = process.env.NODEMAILER_SPMTP_SERVICE!;
-export const IfRunningOnDocker = process.env.RUNNING_ON_DOCKER!;
 export const MongoTestingLink = 'mongodb://localhost:27018';
 export const RedisTestingLink: string | undefined =
   process.env.TESTING_REDIS_LINK;
