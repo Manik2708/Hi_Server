@@ -112,7 +112,10 @@ jobs:
         run: touch .env
     
       - name: Edit file for running on docker
-        run: echo "RUNNING_ON_DOCKER=true" >> .env   
+        run: echo "RUNNING_ON_DOCKER=true" >> .env 
+
+      - name: Login to Docker
+        run: echo "${secrets.DOCKERPASSWORD}" | docker login -u "${secrets.DOCKERUSERNAME}" --password-stdin
     
       - name: Create Docker network
         run: docker create network hi-srvices
