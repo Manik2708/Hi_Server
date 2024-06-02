@@ -1,4 +1,4 @@
-name: Test Application
+name: Format Application
 
 on:
   push:
