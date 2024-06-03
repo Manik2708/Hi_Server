@@ -100,7 +100,6 @@ jobs:
       - name: Remove Testing Environment
         run: docker compose down
         working-directory: test
-
   Build-Application:
     name: Build application
     runs-on: ubuntu-latest
@@ -119,21 +118,21 @@ jobs:
 
       - name: Start Build services
         run: docker compose up -d --no-color --wait
-      
-      - name: Build Docker image
-        run: docker build -t hi-server .
 
-      - name: Run Docker server
-        run: docker run --name hi-container --network hi-services hi-server
+      - name: Start Docker server
+        run: docker compose -f server-docker-compose.yaml up -d --no-color --wait 
+
+      - name: Check server health
+        run: |
+          chmod +x server-health.sh
+          ./server-health.sh
+        working-directory: scripts
 
       - name: Remove Build Services
         run: docker compose down
 
       - name: Stop server
-        run: docker stop hi-container
-
-      - name: Remove Docker Container
-        run: docker rm hi-container
-
+        run: docker compose -f server-docker-compose.yaml down
+        
       - name: Remove docker image
-        run: docker rmi hi-server
+        run: docker rmi hi_server-web
