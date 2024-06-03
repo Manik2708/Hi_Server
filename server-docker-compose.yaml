@@ -1,0 +1,21 @@
+version: "3"
+services: 
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    user: "node:node"
+    ports:
+      - "3000:3000"
+    networks: 
+      - hi-services
+    healthcheck:
+      test: curl --fail http://0.0.0.0:3000/health-check/container || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 20s
+    container_name: hi-container
+networks:
+  hi-services:
+    external: true

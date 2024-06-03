@@ -1,4 +1,5 @@
 FROM node:18-alpine
+RUN apk update && apk add curl
 RUN npm install -g @nestjs/cli
 WORKDIR /usr/src/app
 COPY . .

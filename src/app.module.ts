@@ -4,7 +4,6 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
-import { CassandraDatabaseQueries } from './Database/Cassandra/queries';
 import { ConfessionsModule } from './Controllers/Confessions/confession.module';
 import { OTPModule } from './Controllers/Otp/otp.module';
 import { UserModule } from './Controllers/Users/user.module';
@@ -14,10 +13,9 @@ import { OTPController } from './Controllers/Otp/otp_controllers';
 import { UserController } from './Controllers/Users/user_controller';
 import { UserRoutes } from './Constants/route_paths';
 import { ControllerPaths } from './Constants/contoller_paths';
-import { InjectionTokens } from './Constants/injection_tokens';
-import { casClient } from './service_containers';
 import { ChatsModule } from './Controllers/Chats/chats.module';
 import { RetrieveDataModule } from './Controllers/RetrieveData/retrieve_data.module';
+import { GlobalControllers } from './global_controller';
 
 @Module({
   imports: [
@@ -27,6 +25,7 @@ import { RetrieveDataModule } from './Controllers/RetrieveData/retrieve_data.mod
     ChatsModule,
     RetrieveDataModule,
   ],
+  controllers: [GlobalControllers],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -43,6 +42,10 @@ export class AppModule implements NestModule {
         {
           path: ControllerPaths.USER_CONTROLLER + '/' + UserRoutes.LOGIN,
           method: RequestMethod.POST,
+        },
+        {
+          path: '/health-check/container',
+          method: RequestMethod.GET,
         },
       )
       .forRoutes(ConfessionsController, OTPController, UserController);
