@@ -4,7 +4,6 @@ import {
   expect,
   beforeAll,
   afterAll,
-  jest,
   afterEach,
 } from '@jest/globals';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
@@ -24,7 +23,6 @@ import { consumeMessageFromQueue } from '../../../Helpers/consume_message_from_q
 import { types } from 'cassandra-driver';
 import { ChatMessageForUserService } from '../../../../src/Controllers/Chats/Services/send_chat_message_service';
 import { searchChatMessage } from '../../../Helpers/search_chat_message';
-import { CreateQueue } from '../../../../src/Queues/base';
 
 describe(`Send chat message tests`, () => {
   let redisClient: RedisClientType;
@@ -33,6 +31,7 @@ describe(`Send chat message tests`, () => {
   let socketId: string;
   let socket: Socket;
   let outputData: any;
+  const recieverId = nanoid().toLowerCase();
   beforeAll(async () => {
     redisClient = await TestServiceContainers.getTestingRedisClient().connect();
     const moduleRef = await getTestingGlobalServicesModule();
@@ -42,7 +41,7 @@ describe(`Send chat message tests`, () => {
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
       TestServiceContainers.getTestingRabbitClient(),
     );
-    socket = await initClientSocket(app, (socket) => {
+    socket = await initClientSocket(recieverId, (socket) => {
       socketId = socket.id!;
       socket.on(EventNames.recieveChatMessage, (data) => {
         outputData = data;
@@ -60,7 +59,6 @@ describe(`Send chat message tests`, () => {
   });
   it(`When user is online`, async () => {
     const senderId = nanoid().toLowerCase();
-    const recieverId = nanoid().toLowerCase();
     const chatId = types.TimeUuid.now();
     await redisClient.sAdd(RedisNames.OnlineUsers, recieverId);
     await redisClient.hSet(RedisNames.OnlineUserMap + recieverId, {

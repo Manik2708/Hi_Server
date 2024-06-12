@@ -3,11 +3,9 @@ import {
   it,
   expect,
   beforeAll,
-  afterAll,
   afterEach,
 } from '@jest/globals';
-import { INestApplication } from '@nestjs/common';
-import { delay, getTestingApp } from '../../../Helpers/get_testing_app';
+import { delay } from '../../../Helpers/get_testing_app';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
 import { CassandraDatabaseQueries } from '../../../../src/Database/Cassandra/queries';
 import { nanoid } from 'nanoid';

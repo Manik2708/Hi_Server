@@ -2,11 +2,7 @@ import { RedisClientType } from '../../src/Constants/constant_types';
 import { createClient } from 'redis';
 import { Client as CasClient } from 'cassandra-driver';
 import { CreateQueue } from '../../src/Queues/base';
-import {
-  RedisTestingLink,
-  TestingCassandraContactPoint,
-  TestingCassandraPort,
-} from '../../src/enviornment_variables';
+
 export class TestServiceContainers {
   static getTestingRedisClient = (): RedisClientType => {
     return createClient({

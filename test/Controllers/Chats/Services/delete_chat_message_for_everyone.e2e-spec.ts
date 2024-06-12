@@ -27,6 +27,7 @@ describe(`Send chat message tests`, () => {
   let socketId: string;
   let socket: Socket;
   let outputData: any;
+  const recieverId = nanoid().toLowerCase();
   beforeAll(async () => {
     redisClient = await TestServiceContainers.getTestingRedisClient().connect();
     const moduleRef = await getTestingGlobalServicesModule();
@@ -36,7 +37,7 @@ describe(`Send chat message tests`, () => {
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
       TestServiceContainers.getTestingRabbitClient(),
     );
-    socket = await initClientSocket(app, (socket) => {
+    socket = await initClientSocket(recieverId, (socket) => {
       socketId = socket.id!;
       socket.on(EventNames.deleteChatMessage, (data) => {
         outputData = data;
@@ -54,7 +55,6 @@ describe(`Send chat message tests`, () => {
   });
   it(`When user is online`, async () => {
     const senderId = nanoid().toLowerCase();
-    const recieverId = nanoid().toLowerCase();
     await redisClient.sAdd(RedisNames.OnlineUsers, recieverId);
     await redisClient.hSet(RedisNames.OnlineUserMap + recieverId, {
       socketId: socketId,

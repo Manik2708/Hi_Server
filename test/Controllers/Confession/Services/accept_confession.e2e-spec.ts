@@ -42,6 +42,7 @@ describe(`Accept confession tests`, () => {
   let socketId: string;
   let socket: Socket;
   let outputData: any;
+  const senderId = nanoid().toLowerCase();
   beforeAll(async () => {
     redisClient = await TestServiceContainers.getTestingRedisClient().connect();
     const moduleRef = await getTestingGlobalServicesModule();
@@ -50,7 +51,7 @@ describe(`Accept confession tests`, () => {
       moduleRef.get<SendMessageToUserService>(SendMessageToUserService),
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
     );
-    socket = await initClientSocket(app, (socket) => {
+    socket = await initClientSocket(senderId, (socket) => {
       socketId = socket.id!;
       socket.on(EventNames.acceptConfession, (data) => {
         outputData = data;
@@ -67,7 +68,6 @@ describe(`Accept confession tests`, () => {
     await delay();
   });
   it(`When user is online`, async () => {
-    const senderId = nanoid().toLowerCase();
     const crushId = nanoid().toLowerCase();
     const sendingObject: ConfessionModel = await createTestReadConfession(
       senderId,

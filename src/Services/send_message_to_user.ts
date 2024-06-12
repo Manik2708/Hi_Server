@@ -5,18 +5,15 @@ import amqp from 'amqplib/callback_api';
 import { CreateQueue } from '../Queues/base';
 import { InjectionTokens } from '../Constants/injection_tokens';
 import { Inject, Injectable, Scope, forwardRef } from '@nestjs/common';
-import { WebSocketServices } from './websocket_services';
 import { UserOnlineServices } from './user_online_services';
 import { InternalServerError } from '../Errors/server_error';
 import { WebSocketMessageError } from '../Errors/websocket_message_not_sent_error';
 @Injectable({ scope: Scope.DEFAULT })
 export class SendMessageToUserService {
-  private webSocketServices: WebSocketServices;
   private createQueue: CreateQueue;
   private client: RedisClientType;
   private userOnlineServices: UserOnlineServices;
   constructor(
-    webSocketServices: WebSocketServices,
     @Inject(InjectionTokens.CreateQueue) createQueue: CreateQueue,
     @Inject(InjectionTokens.RedisClient) client: RedisClientType,
     @Inject(forwardRef(() => UserOnlineServices))
@@ -24,7 +21,6 @@ export class SendMessageToUserService {
   ) {
     this.client = client;
     this.createQueue = createQueue;
-    this.webSocketServices = webSocketServices;
     this.userOnlineServices = userOnlineServices;
   }
 
@@ -44,11 +40,11 @@ export class SendMessageToUserService {
           RedisNames.OnlineUserMap + userId,
           RedisNames.SocketId,
         );
-        this.webSocketServices.addEvent({
+        await this.client.PUBLISH(userId, JSON.stringify({
           id: socketid!,
           name: userIsOnlineEvent,
           data: messageForOnlineUser,
-        });
+        }))
         if (afterAcknowledgement) {
           await afterAcknowledgement();
         }
