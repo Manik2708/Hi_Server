@@ -4,7 +4,6 @@ import {
   expect,
   beforeAll,
   afterAll,
-  jest,
   afterEach,
 } from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
@@ -34,6 +33,7 @@ describe(`Update status of chat messages tests`, () => {
   let socketId: string;
   let socket: Socket;
   let outputData: any;
+  const senderId = nanoid().toLowerCase();
   beforeAll(async () => {
     redisClient = await TestServiceContainers.getTestingRedisClient().connect();
     const moduleRef = await getTestingGlobalServicesModule();
@@ -43,7 +43,7 @@ describe(`Update status of chat messages tests`, () => {
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
       TestServiceContainers.getTestingRabbitClient(),
     );
-    socket = await initClientSocket(app, (socket) => {
+    socket = await initClientSocket(senderId, (socket) => {
       socketId = socket.id!;
       socket.on(EventNames.updateStatusOfChatMesssages, (data) => {
         outputData = data;
@@ -60,7 +60,6 @@ describe(`Update status of chat messages tests`, () => {
     await delay();
   });
   it(`When user is online`, async () => {
-    const senderId = nanoid().toLowerCase();
     const recieverId = nanoid().toLowerCase();
     await redisClient.sAdd(RedisNames.OnlineUsers, senderId);
     await redisClient.hSet(RedisNames.OnlineUserMap + senderId, {

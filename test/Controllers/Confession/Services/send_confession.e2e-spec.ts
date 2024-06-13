@@ -25,6 +25,7 @@ describe('Send confession tests', () => {
   let socket: Socket;
   let outputData: any;
   let cassandraClient: Client;
+  let crushId = nanoid().toLowerCase();
   beforeAll(async () => {
     redisClient = await TestServiceContainers.getTestingRedisClient().connect();
     const moduleRef = await getTestingGlobalServicesModule();
@@ -33,7 +34,7 @@ describe('Send confession tests', () => {
       moduleRef.get<SendMessageToUserService>(SendMessageToUserService),
       moduleRef.get<CassandraDatabaseQueries>(CassandraDatabaseQueries),
     );
-    socket = await initClientSocket(app, (socket) => {
+    socket = await initClientSocket(crushId, (socket) => {
       socketId = socket.id!;
       socket.on(EventNames.recieveConfession, (data) => {
         outputData = data;
@@ -57,7 +58,7 @@ describe('Send confession tests', () => {
       sender_id: nanoid().toLowerCase(),
       sender_anonymous_id: nanoid().toLowerCase(),
       confession_id: '',
-      crush_id: nanoid().toLowerCase(),
+      crush_id: crushId,
       confession: nanoid().toLowerCase(),
       sending_time: new Date(),
       status: nanoid().toLowerCase(),

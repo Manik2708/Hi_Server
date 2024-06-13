@@ -16,7 +16,6 @@ import { createTestUser } from '../../Helpers/create_test_user';
 import mongoose from 'mongoose';
 import { createMongoInstance } from '../../Helpers/db_instance';
 import { Test } from '@nestjs/testing';
-import { WebSocketServices } from '../../../src/Services/websocket_services';
 import { RetrieveDataServices } from '../../../src/Controllers/RetrieveData/Services/retrieve_data_services';
 import { InjectionTokens } from '../../../src/Constants/injection_tokens';
 import { TestServiceContainers } from '../../Helpers/test_service_containers';
@@ -42,7 +41,6 @@ describe(`Retrieve data after login tests`, () => {
     const moduleRef = await getTestingGlobalServicesModule();
     const test = await Test.createTestingModule({
       providers: [
-        WebSocketServices,
         RetrieveDataServices,
         CassandraDatabaseQueries,
         {

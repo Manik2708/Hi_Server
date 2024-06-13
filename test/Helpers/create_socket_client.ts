@@ -1,17 +1,18 @@
-import { INestApplication } from '@nestjs/common';
 import { io as IoClient, Socket as ClientSocket } from 'socket.io-client';
 
 export const initClientSocket = async (
-  app: INestApplication,
+  userId: string,
   callback: (socket: ClientSocket) => void,
 ) => {
-  const url = await app.getUrl();
   return new Promise<ClientSocket>((resolve, reject) => {
-    const socket = IoClient(url, {
+    const socket = IoClient('http://localhost:3500', {
       reconnectionDelay: 0,
     });
 
     socket.on('connect', () => {
+      socket.emit('subscribe', {
+        userId: userId,
+      });
       callback(socket);
       resolve(socket);
     });
