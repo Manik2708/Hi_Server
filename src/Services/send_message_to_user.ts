@@ -40,11 +40,14 @@ export class SendMessageToUserService {
           RedisNames.OnlineUserMap + userId,
           RedisNames.SocketId,
         );
-        await this.client.PUBLISH(userId, JSON.stringify({
-          id: socketid!,
-          name: userIsOnlineEvent,
-          data: messageForOnlineUser,
-        }))
+        await this.client.PUBLISH(
+          userId,
+          JSON.stringify({
+            id: socketid!,
+            name: userIsOnlineEvent,
+            data: messageForOnlineUser,
+          }),
+        );
         if (afterAcknowledgement) {
           await afterAcknowledgement();
         }

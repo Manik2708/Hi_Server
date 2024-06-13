@@ -36,7 +36,7 @@ export class RetrieveDataServices {
               socket_id!,
               ommited_message,
               user_id,
-              this.client
+              this.client,
             );
           switch (message.message_type) {
             case MessageType.CONFESSION_MESSAGE_TYPE:
@@ -44,7 +44,9 @@ export class RetrieveDataServices {
               chnl.ack(msg);
               break;
             case MessageType.UPDATE_CONFESSION_STATUS:
-              await message_sender.sendMessage(EventNames.updateConfssionStatus);
+              await message_sender.sendMessage(
+                EventNames.updateConfssionStatus,
+              );
               chnl.ack(msg);
               break;
             case MessageType.ACCEPT_CONFESSION_TYPE:
@@ -76,25 +78,28 @@ class SendMessageToWebsocketServices {
   private redis: RedisClientType;
   private socket_id: string;
   private message: any;
-  private user_id: string
+  private user_id: string;
 
   constructor(
     socket_id: string,
     message: any,
     user_id: string,
-    redis: RedisClientType
+    redis: RedisClientType,
   ) {
     this.socket_id = socket_id;
     this.message = message;
     this.redis = redis;
-    this.user_id = user_id
+    this.user_id = user_id;
   }
 
   sendMessage = async (name: string) => {
-    await this.redis.PUBLISH(this.user_id, JSON.stringify({
-      id: this.socket_id,
-      name: name,
-      data: this.message
-    }))
+    await this.redis.PUBLISH(
+      this.user_id,
+      JSON.stringify({
+        id: this.socket_id,
+        name: name,
+        data: this.message,
+      }),
+    );
   };
 }

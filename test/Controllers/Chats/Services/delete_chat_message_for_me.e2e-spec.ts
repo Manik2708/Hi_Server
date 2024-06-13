@@ -1,10 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeAll,
-  afterEach,
-} from '@jest/globals';
+import { describe, it, expect, beforeAll, afterEach } from '@jest/globals';
 import { delay } from '../../../Helpers/get_testing_app';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
 import { CassandraDatabaseQueries } from '../../../../src/Database/Cassandra/queries';

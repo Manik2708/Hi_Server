@@ -45,6 +45,13 @@ services:
       timeout: 10s
       retries: 10
       start_period: 20s
+   io-server:
+     image:  manik2708/hi-io-server:latest
+     environment:
+      REDIS_URL: redis://client:6379
+     container_name: hi-io-server
+     networks:
+      - hi-services 
 networks:
   hi-services:
     external: true

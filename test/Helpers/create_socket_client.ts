@@ -1,4 +1,3 @@
-import { INestApplication } from '@nestjs/common';
 import { io as IoClient, Socket as ClientSocket } from 'socket.io-client';
 
 export const initClientSocket = async (
@@ -12,8 +11,8 @@ export const initClientSocket = async (
 
     socket.on('connect', () => {
       socket.emit('subscribe', {
-        userId: userId
-      })
+        userId: userId,
+      });
       callback(socket);
       resolve(socket);
     });

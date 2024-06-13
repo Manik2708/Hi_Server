@@ -25,7 +25,7 @@ describe('Send confession tests', () => {
   let socket: Socket;
   let outputData: any;
   let cassandraClient: Client;
-  let crushId = nanoid().toLowerCase()
+  let crushId = nanoid().toLowerCase();
   beforeAll(async () => {
     redisClient = await TestServiceContainers.getTestingRedisClient().connect();
     const moduleRef = await getTestingGlobalServicesModule();
