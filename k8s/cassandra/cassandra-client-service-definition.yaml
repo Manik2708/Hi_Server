@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: hi-cassandra
+  name: cassandra-client
+  labels:
+    app: cassandra
+    type: LoadBalancer
+spec:
+  type: LoadBalancer
+  ports:
+   - name: cql
+     protocol: TCP
+     port: 9042
+     targetPort: 9042
+  selector:
+    app: cassandra

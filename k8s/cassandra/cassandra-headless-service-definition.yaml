@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: hi-cassandra
+  labels:
+    app: cassandra
+  name: cassandra-headless
+spec:
+  publishNotReadyAddresses: true
+  clusterIP: None
+  ports:
+  - port: 9042
+  selector:
+    app: cassandra
