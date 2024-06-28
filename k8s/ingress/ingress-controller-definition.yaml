@@ -1,0 +1,33 @@
+apiVersion: extensions/vibetal
+kind: Deployment
+metadata:
+  name: hi-ingress-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nginix-ingress
+  template:
+    metadata:
+      labels:
+        name: nginix-ingress
+    spec:
+      containers:
+        - name: nginix-ingress-controller
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+          args:
+            - /nginix-ingress-controller
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: PODE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https

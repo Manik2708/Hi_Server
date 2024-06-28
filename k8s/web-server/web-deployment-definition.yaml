@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hi-web-deployment
+  labels:
+    app: hi-web-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hi-web-server
+  template:
+    metadata:
+      labels:
+        app: hi-web-server
+    spec:
+      containers:
+      - name: hi-web-container
+        image: manik2708/hi-server:latest
+        ports:
+        - containerPort: 3000
+        env:
+          - name: NODE_ENV
+            valueFrom:
+              configMapKeyRef:
+                key: NODE_ENV
+                name: hi-web-configmap
