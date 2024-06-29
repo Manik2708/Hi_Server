@@ -5,3 +5,4 @@ dist
 test
 docs
 .vscode
+k8s/rabbitmq/rabbitmq-secrets.yaml
