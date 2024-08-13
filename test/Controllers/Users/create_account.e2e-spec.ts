@@ -8,8 +8,8 @@ import bcrypt from 'bcryptjs';
 import jsonwt from 'jwt-simple';
 import { UserModule } from '../../../src/Controllers/Users/user.module';
 import { INestApplication } from '@nestjs/common';
-import { ControllerPaths } from '../../../src/Constants/contoller_paths';
-import { UserRoutes } from '../../../src/Constants/route_paths';
+import { ControllerPaths } from '../../../package/constants/src/contoller_paths';
+import { UserRoutes } from '../../../package/constants/src/route_paths';
 import {
   describe,
   it,

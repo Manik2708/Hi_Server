@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { InjectionTokens } from '../Constants/injection_tokens';
+import { InjectionTokens } from '../../package/constants/src/injection_tokens';
 import { casClient, client, createQueue } from '../service_containers';
 import { SendMessageToUserService } from './send_message_to_user';
 import { UserOnlineServices } from './user_online_services';

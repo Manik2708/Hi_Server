@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestServiceContainers } from './test_service_containers';
 import { UserOnlineServices } from '../../src/Services/user_online_services';
-import { InjectionTokens } from '../../src/Constants/injection_tokens';
+import { InjectionTokens } from '../../package/constants/src/injection_tokens';
 import { CassandraDatabaseQueries } from '../../src/Database/Cassandra/queries';
 import { SendMessageToUserService } from '../../src/Services/send_message_to_user';
 

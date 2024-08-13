@@ -1,6 +1,6 @@
-import { QueueNames } from '../../src/Constants/queues_redis';
+import { QueueNames } from '../../package/constants/src/queues_redis';
 import { TestServiceContainers } from './test_service_containers';
-import { MessageHandler } from '../../src/Models/message_handler';
+import { MessageHandler } from '../../package/database/src/Models/message_handler';
 
 export const consumeMessageFromQueue = async (
   user_id: string,

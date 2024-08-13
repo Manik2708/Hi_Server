@@ -8,8 +8,8 @@ import {
   afterEach,
 } from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
-import { ControllerPaths } from '../../../src/Constants/contoller_paths';
-import { RetrieveDataRoutes } from '../../../src/Constants/route_paths';
+import { ControllerPaths } from '../../../package/constants/src/contoller_paths';
+import { RetrieveDataRoutes } from '../../../package/constants/src/route_paths';
 import { getTestingGlobalServicesModule } from '../../Helpers/global_test_services.module';
 import request from 'supertest';
 import { createTestUser } from '../../Helpers/create_test_user';
@@ -17,7 +17,7 @@ import mongoose from 'mongoose';
 import { createMongoInstance } from '../../Helpers/db_instance';
 import { Test } from '@nestjs/testing';
 import { RetrieveDataServices } from '../../../src/Controllers/RetrieveData/Services/retrieve_data_services';
-import { InjectionTokens } from '../../../src/Constants/injection_tokens';
+import { InjectionTokens } from '../../../package/constants/src/injection_tokens';
 import { TestServiceContainers } from '../../Helpers/test_service_containers';
 import { RetrieveDataController } from '../../../src/Controllers/RetrieveData/retrieve_data';
 import { CassandraDatabaseQueries } from '../../../src/Database/Cassandra/queries';
@@ -97,10 +97,10 @@ describe(`Retrieve data after login tests`, () => {
       '/' +
       RetrieveDataRoutes.GET_READ_CONFESSIONS_BY_CRUSH_ID;
     const user = await createTestUser();
-    const user_id = user._id._id.toString();
+    const user_id = user._id;
     const crush_id = nanoid().toLowerCase();
     for (let i = 0; i < 60; i++) {
-      await createTestReadConfession(user_id, crush_id);
+      await createTestReadConfession(user_id._id.toString(), crush_id);
     }
     jest.spyOn(express.request, 'header').mockImplementationOnce(() => {
       return crush_id;

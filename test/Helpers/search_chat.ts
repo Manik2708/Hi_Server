@@ -1,4 +1,4 @@
-import { CassandraTableNames } from '../../src/Constants/cassandra_constants';
+import { CassandraTableNames } from '../../package/constants/src/cassandra_constants';
 import { TestServiceContainers } from './test_service_containers';
 import { types } from 'cassandra-driver';
 

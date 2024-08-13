@@ -12,20 +12,20 @@ import { SendMessageToUserService } from '../../../../src/Services/send_message_
 import { CassandraDatabaseQueries } from '../../../../src/Database/Cassandra/queries';
 import { nanoid } from 'nanoid';
 import { createTenChatMessages } from '../../../Helpers/create_chat_message';
-import { UpdateStatusOfChatMessageModel } from '../../../../src/Models/update_status_of_chat_message';
+import { UpdateStatusOfChatMessageModel } from '../../../../package/database/src/Models/update_status_of_chat_message';
 import { getTestingGlobalServicesModule } from '../../../Helpers/global_test_services.module';
 import { ChatMessageForUserService } from '../../../../src/Controllers/Chats/Services/send_chat_message_service';
 import { Socket } from 'socket.io-client';
 import { RedisClientType } from '../../../../src/Constants/constant_types';
 import { initClientSocket } from '../../../Helpers/create_socket_client';
-import { EventNames } from '../../../../src/Constants/event_names';
+import { EventNames } from '../../../../package/constants/src/event_names';
 import { TestServiceContainers } from '../../../Helpers/test_service_containers';
-import { QueueNames, RedisNames } from '../../../../src/Constants/queues_redis';
+import { QueueNames, RedisNames } from '../../../../package/constants/src/queues_redis';
 import {
   consumeMessageFromAnyQueue,
   consumeMessageFromQueue,
 } from '../../../Helpers/consume_message_from_queue';
-import { MessageType } from '../../../../src/Constants/messasge_type';
+import { MessageType } from '../../../../package/constants/src/messasge_type';
 describe(`Update status of chat messages tests`, () => {
   let redisClient: RedisClientType;
   let app: INestApplication;

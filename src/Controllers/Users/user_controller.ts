@@ -4,8 +4,8 @@ import express from 'express';
 import { UserLoginService } from './Services/login';
 import { ChangeEmailService } from './Services/change_email';
 // import { SetUserOnline } from './Services/set_user_online';
-import { UserRoutes } from '../../Constants/route_paths';
-import { ControllerPaths } from '../../Constants/contoller_paths';
+import { UserRoutes } from '../../../package/constants/src/route_paths';
+import { ControllerPaths } from '../../../package/constants/src/contoller_paths';
 
 @Controller(ControllerPaths.USER_CONTROLLER)
 export class UserController {

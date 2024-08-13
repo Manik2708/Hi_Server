@@ -12,7 +12,7 @@ import mongoose from 'mongoose';
 import { createTestUser } from '../Helpers/create_test_user';
 import request from 'supertest';
 import jsonwt from 'jwt-simple';
-import { UserModel } from '../../src/Models/user';
+import { UserModel } from '../../package/database/src/Models/user';
 import express from 'express';
 import { Controller, Get, INestApplication, Req, Res } from '@nestjs/common';
 import { Test } from '@nestjs/testing';

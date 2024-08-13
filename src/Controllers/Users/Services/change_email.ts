@@ -1,8 +1,8 @@
 import express from 'express';
-import { User } from '../../../Database/Models/user';
+import { User } from './../../../../package/database/src/Schemas/user';
 import bcrypt from 'bcryptjs';
-import { BadRequestError, BadRequestTypes } from '../../../Errors/bad_request';
-import { InternalServerError } from '../../../Errors/server_error';
+import { BadRequestError, BadRequestTypes } from '../../../../package/errors/src/bad_request';
+import { InternalServerError } from '../../../../package/errors/src/server_error';
 
 export class ChangeEmailService {
   changeEmail = async (req: express.Request, res: express.Response) => {

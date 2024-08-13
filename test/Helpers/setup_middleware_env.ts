@@ -1,4 +1,4 @@
-import { UserModel } from '../../src/Models/user';
+import { UserModel } from '../../package/database/src/Models/user';
 import { jest } from '@jest/globals';
 import express from 'express';
 import jsonwt from 'jwt-simple';

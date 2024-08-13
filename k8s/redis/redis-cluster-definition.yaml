@@ -1,0 +1,6 @@
+apiVersion: "app.redislabs.com/v1"
+kind: "RedisEnterpriseCluster"
+metadata:
+  name: hi-redis-cluster
+spec:
+  nodes: 3

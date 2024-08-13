@@ -1,6 +1,6 @@
 import { types } from 'cassandra-driver';
 import { TestServiceContainers } from './test_service_containers';
-import { CassandraTableNames } from '../../src/Constants/cassandra_constants';
+import { CassandraTableNames } from '../../package/constants/src/cassandra_constants';
 
 export const searchChatMessage = async (
   owner_id: string,

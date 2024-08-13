@@ -1,22 +1,21 @@
-import { ChatMessageModel } from '../../../Models/chat_message_model';
+import { ChatMessageModel } from '../../../../package/database/src/Models/chat_message_model';
 import { CassandraDatabaseQueries } from '../../../Database/Cassandra/queries';
 import { SendMessageToUserService } from '../../../Services/send_message_to_user';
-import { EventNames } from '../../../Constants/event_names';
+import { EventNames } from '../../../../package/constants/src/event_names';
 import {
   convertChatMessageToCommonMessage,
   convertDeleteMessasgeToCommonMessage,
   convertUpdateStatusOfChatMessagesToCommonMessage,
-} from '../../../Models/message_handler';
+} from '../../../../package/database/src/Models/message_handler';
 import { types } from 'cassandra-driver';
 import {
   DeleteMessageModel,
   UpdateStatusOfChatMessageModel,
-} from '../../../Models/update_status_of_chat_message';
-import { BadRequestError, BadRequestTypes } from '../../../Errors/bad_request';
+} from '../../../../package/database/src/Models/update_status_of_chat_message';
 import { CreateQueue } from '../../../Queues/base';
 import { Inject } from '@nestjs/common';
-import { InjectionTokens } from '../../../Constants/injection_tokens';
-import { QueueNames } from '../../../Constants/queues_redis';
+import { InjectionTokens } from '../../../../package/constants/src/injection_tokens';
+import { QueueNames } from '../../../../package/constants/src/queues_redis';
 
 export class ChatMessageForUserService {
   private createQueue: CreateQueue;

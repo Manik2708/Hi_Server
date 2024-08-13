@@ -1,14 +1,13 @@
 import { Controller, Inject, Post, Req, Res } from '@nestjs/common';
 import express from 'express';
-import { ControllerPaths } from '../../Constants/contoller_paths';
+import { ControllerPaths } from '../../../package/constants/src/contoller_paths';
 import { ChatMessageForUserService } from './Services/send_chat_message_service';
-import { ChatRoutes } from '../../Constants/route_paths';
-import { ThrowError } from '../../Errors/throw_error';
+import { ChatRoutes } from '../../../package/constants/src/route_paths';
+import { ThrowError } from '../../../package/errors/src/throw_error';
 import { types } from 'cassandra-driver';
-import { InjectionTokens } from '../../Constants/injection_tokens';
+import { InjectionTokens } from '../../../package/constants/src/injection_tokens';
 import { CreateQueue } from '../../Queues/base';
-import { QueueNames } from '../../Constants/queues_redis';
-import { ConflictError, ConflictErrorTypes } from '../../Errors/conflict_error';
+import { ConflictError, ConflictErrorTypes } from '../../../package/errors/src/conflict_error';
 
 @Controller(ControllerPaths.CHATS_CONTROLLER)
 export class ChatsController {

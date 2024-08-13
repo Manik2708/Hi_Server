@@ -1,8 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { RedisClientType } from '../Constants/constant_types';
-import { InjectionTokens } from '../Constants/injection_tokens';
-import { RedisNames } from '../Constants/queues_redis';
-import { InternalServerError } from '../Errors/server_error';
+import { InjectionTokens } from '../../package/constants/src/injection_tokens';
+import { RedisNames } from '../../package/constants/src/queues_redis';
+import { InternalServerError } from '../../package/errors/src/server_error';
 
 export class UserOnlineServices {
   private client: RedisClientType;

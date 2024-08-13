@@ -10,14 +10,14 @@ import { SendMessageToUserService } from '../../../../src/Services/send_message_
 import { CassandraDatabaseQueries } from '../../../../src/Database/Cassandra/queries';
 import { nanoid } from 'nanoid';
 import { createTenChatMessages } from '../../../Helpers/create_chat_message';
-import { DeleteMessageModel } from '../../../../src/Models/update_status_of_chat_message';
+import { DeleteMessageModel } from '../../../../package/database/src/Models/update_status_of_chat_message';
 import {
   TestServiceModule,
   getTestingGlobalServicesModule,
 } from '../../../Helpers/global_test_services.module';
 import { ChatMessageForUserService } from '../../../../src/Controllers/Chats/Services/send_chat_message_service';
 import { TestServiceContainers } from '../../../Helpers/test_service_containers';
-import { QueueNames } from '../../../../src/Constants/queues_redis';
+import { QueueNames } from '../../../../package/constants/src/queues_redis';
 import { consumeMessageFromAnyQueue } from '../../../Helpers/consume_message_from_queue';
 describe(`Update status of chat messages tests`, () => {
   let chatMessageForUserService: ChatMessageForUserService;

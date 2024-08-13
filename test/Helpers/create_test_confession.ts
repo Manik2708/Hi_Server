@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
-import { CassandraTableNames } from '../../src/Constants/cassandra_constants';
+import { CassandraTableNames } from '../../package/constants/src/cassandra_constants';
 import { TestServiceContainers } from './test_service_containers';
 import { types } from 'cassandra-driver';
-import { ConfessionModel } from '../../src/Models/confession';
+import { ConfessionModel } from '../../package/database/src/Models/confession';
 
 export const createTestConfession = async (
   senderId: string,

@@ -1,18 +1,18 @@
 import { Controller, Get, Req, Res } from '@nestjs/common';
 import express from 'express';
-import { ControllerPaths } from '../../Constants/contoller_paths';
+import { ControllerPaths } from '../../../package/constants/src/contoller_paths';
 import { CassandraDatabaseQueries } from '../../Database/Cassandra/queries';
-import { RetrieveDataRoutes } from '../../Constants/route_paths';
-import { ThrowError } from '../../Errors/throw_error';
-import { CassandraTableNames } from '../../Constants/cassandra_constants';
-import { ChatModelForCrush, ChatModelForSender } from '../../Models/chat_model';
+import { RetrieveDataRoutes } from '../../../package/constants/src/route_paths';
+import { ThrowError } from '../../../package/errors/src/throw_error';
+import { CassandraTableNames } from '../../../package/constants/src/cassandra_constants';
+import { ChatModelForCrush, ChatModelForSender } from '../../../package/database/src/Models/chat_model';
 import { CassandraQueryHelper } from '../../Database/Cassandra/query_helper';
-import { InternalServerError } from '../../Errors/server_error';
-import { ConfessionModel } from '../../Models/confession';
+import { InternalServerError } from '../../../package/errors/src/server_error';
+import { ConfessionModel } from '../../../package/database/src/Models/confession';
 import {
   RetrieveConfessionsByCrushId,
   RetrieveDataAfterLoginModel,
-} from '../../Models/retrieve_data';
+} from '../../../package/database/src/Models/retrieve_data';
 import { RetrieveDataServices } from './Services/retrieve_data_services';
 
 @Controller(ControllerPaths.RETRIEVE_DATA_CONTROLLER)

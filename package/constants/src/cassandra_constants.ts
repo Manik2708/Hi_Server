@@ -7,6 +7,8 @@ export class CassandraTableNames {
   static chatsForSender: string = 'hi_database.chats_for_sender';
   static chatsForCrush: string = 'hi_database.chats_for_crush';
   static chatMessages: string = 'hi_database.chat_messages';
+  static comments: string = 'hi_database.comments';
+  static replies: string = 'hi_database.replies'
 }
 
 export interface CassandraKeys {

@@ -1,20 +1,20 @@
 import { SendMessageToUserService } from '../../../Services/send_message_to_user';
-import { ConfessionModel } from '../../../Models/confession';
+import { ConfessionModel } from '../../../../package/database/src/Models/confession';
 import { CassandraDatabaseQueries } from '../../../Database/Cassandra/queries';
 import { types } from 'cassandra-driver';
 import {
   UpdateConfessionStatus,
   UpdateConfessionStatusForSender,
-} from '../../../Models/update_status_of_confession';
-import { EventNames } from '../../../Constants/event_names';
+} from '../../../../package/database/src/Models/update_status_of_confession';
+import { EventNames } from '../../../../package/constants/src/event_names';
 import {
   convertAcceptConfessionStatusToCommonMessage,
   convertUpdateConfessionStatusToCommonMessage,
   covertConfessionToCommonMessage,
-} from '../../../Models/message_handler';
-import { InternalServerError } from '../../../Errors/server_error';
-import { ChatModel } from '../../../Models/chat_model';
-import { AcceptConfessionStatus } from '../../../Models/update_status_of_confession';
+} from '../../../../package/database/src/Models/message_handler';
+import { InternalServerError } from '../../../../package/errors/src/server_error';
+import { ChatModel } from '../../../../package/database/src/Models/chat_model';
+import { AcceptConfessionStatus } from '../../../../package/database/src/Models/update_status_of_confession';
 export class ConfessionServices {
   constructor(
     private readonly sendMessageToUserService: SendMessageToUserService,

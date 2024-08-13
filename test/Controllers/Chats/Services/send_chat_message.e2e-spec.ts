@@ -7,8 +7,8 @@ import {
   afterEach,
 } from '@jest/globals';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
-import { EventNames } from '../../../../src/Constants/event_names';
-import { RedisNames } from '../../../../src/Constants/queues_redis';
+import { EventNames } from '../../../../package/constants/src/event_names';
+import { RedisNames } from '../../../../package/constants/src/queues_redis';
 import { CassandraDatabaseQueries } from '../../../../src/Database/Cassandra/queries';
 import { initClientSocket } from '../../../Helpers/create_socket_client';
 import { RedisClientType } from '../../../../src/Constants/constant_types';
@@ -18,7 +18,7 @@ import { getTestingGlobalServicesModule } from '../../../Helpers/global_test_ser
 import { TestServiceContainers } from '../../../Helpers/test_service_containers';
 import { delay, getTestingApp } from '../../../Helpers/get_testing_app';
 import { nanoid } from 'nanoid';
-import { MessageType } from '../../../../src/Constants/messasge_type';
+import { MessageType } from '../../../../package/constants/src/messasge_type';
 import { consumeMessageFromQueue } from '../../../Helpers/consume_message_from_queue';
 import { types } from 'cassandra-driver';
 import { ChatMessageForUserService } from '../../../../src/Controllers/Chats/Services/send_chat_message_service';

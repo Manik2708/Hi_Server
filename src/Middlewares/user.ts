@@ -1,13 +1,13 @@
 import jwt from 'jwt-simple';
-import { User } from '../Database/Models/user';
+import { User } from '../../package/database/src/Schemas';
 import { NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { BadRequestError, BadRequestTypes } from '../Errors/bad_request';
-import { InternalServerError } from '../Errors/server_error';
+import { BadRequestError, BadRequestTypes } from '../../package/errors/src/bad_request';
+import { InternalServerError } from '../../package/errors/src/server_error';
 import {
   UnathorizedErrorTypes,
   UnathorizedRequestError,
-} from '../Errors/unauthorised_request';
+} from '../../package/errors/src/unauthorised_request';
 
 /**
  * @param header: token: A json webtoken, for authorization of the user!

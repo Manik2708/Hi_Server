@@ -1,10 +1,10 @@
 import { Controller, Post, Req, Res } from '@nestjs/common';
 import express from 'express';
 import { ConfessionServices } from './Services/confession_services';
-import { ControllerPaths } from '../../Constants/contoller_paths';
-import { ConfessionRoutes } from '../../Constants/route_paths';
-import { InternalServerError } from '../../Errors/server_error';
-import { ThrowError } from '../../Errors/throw_error';
+import { ControllerPaths } from '../../../package/constants/src/contoller_paths';
+import { ConfessionRoutes } from '../../../package/constants/src/route_paths';
+import { InternalServerError } from '../../../package/errors/src/server_error';
+import { ThrowError } from '../../../package/errors/src/throw_error';
 
 @Controller(ControllerPaths.CONFESSION_CONTROLLER)
 export class ConfessionsController {

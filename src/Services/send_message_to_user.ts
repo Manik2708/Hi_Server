@@ -1,13 +1,13 @@
-import { QueueNames, RedisNames } from '../Constants/queues_redis';
-import { MessageHandler } from '../Models/message_handler';
+import { QueueNames, RedisNames } from '../../package/constants/src/queues_redis';
+import { MessageHandler } from '../../package/database/src/Models/message_handler';
 import { RedisClientType } from '../Constants/constant_types';
 import amqp from 'amqplib/callback_api';
 import { CreateQueue } from '../Queues/base';
-import { InjectionTokens } from '../Constants/injection_tokens';
+import { InjectionTokens } from '../../package/constants/src/injection_tokens';
 import { Inject, Injectable, Scope, forwardRef } from '@nestjs/common';
 import { UserOnlineServices } from './user_online_services';
-import { InternalServerError } from '../Errors/server_error';
-import { WebSocketMessageError } from '../Errors/websocket_message_not_sent_error';
+import { InternalServerError } from '../../package/errors/src/server_error';
+import { WebSocketMessageError } from '../../package/errors/src/websocket_message_not_sent_error';
 @Injectable({ scope: Scope.DEFAULT })
 export class SendMessageToUserService {
   private createQueue: CreateQueue;

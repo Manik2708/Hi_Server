@@ -10,7 +10,7 @@ import {
 import { createMongoInstance, disconnect } from '../../Helpers/db_instance';
 import mongoose from 'mongoose';
 import { createTestUser } from '../../Helpers/create_test_user';
-import { UserModel } from '../../../src/Models/user';
+import { UserModel } from '../../../package/database/src/Models/user';
 import express from 'express';
 import jsonwt from 'jwt-simple';
 import request from 'supertest';
@@ -18,8 +18,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestMiddlewareModule } from '../../Helpers/test_middleware.module';
 import { OTPModule } from '../../../src/Controllers/Otp/otp.module';
-import { ControllerPaths } from '../../../src/Constants/contoller_paths';
-import { OTPRoutes } from '../../../src/Constants/route_paths';
+import { ControllerPaths } from '../../../package/constants/src/contoller_paths';
+import { OTPRoutes } from '../../../package/constants/src/route_paths';
 import { verifyOtpObject } from '../../../src/Controllers/Otp/Services/otp_services';
 import { delay } from '../../Helpers/get_testing_app';
 describe('Verify OTP API test', () => {

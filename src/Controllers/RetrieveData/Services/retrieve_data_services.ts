@@ -1,11 +1,11 @@
 import { Inject } from '@nestjs/common';
 import { CreateQueue } from '../../../Queues/base';
-import { InjectionTokens } from '../../../Constants/injection_tokens';
-import { QueueNames, RedisNames } from '../../../Constants/queues_redis';
-import { MessageHandler } from '../../../Models/message_handler';
-import { MessageType } from '../../../Constants/messasge_type';
+import { InjectionTokens } from '../../../../package/constants/src/injection_tokens';
+import { QueueNames, RedisNames } from '../../../../package/constants/src/queues_redis';
+import { MessageHandler } from '../../../../package/database/src/Models/message_handler';
+import { MessageType } from '../../../../package/constants/src/messasge_type';
 import { RedisClientType } from '../../../Constants/constant_types';
-import { EventNames } from '../../../Constants/event_names';
+import { EventNames } from '../../../../package/constants/src/event_names';
 
 export class RetrieveDataServices {
   private createQueue: CreateQueue;

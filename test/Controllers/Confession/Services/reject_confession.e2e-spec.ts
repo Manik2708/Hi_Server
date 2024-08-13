@@ -7,8 +7,8 @@ import {
   afterEach,
 } from '@jest/globals';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
-import { EventNames } from '../../../../src/Constants/event_names';
-import { RedisNames } from '../../../../src/Constants/queues_redis';
+import { EventNames } from '../../../../package/constants/src/event_names';
+import { RedisNames } from '../../../../package/constants/src/queues_redis';
 import { ConfessionServices } from '../../../../src/Controllers/Confessions/Services/confession_services';
 import { CassandraDatabaseQueries } from '../../../../src/Database/Cassandra/queries';
 import { initClientSocket } from '../../../Helpers/create_socket_client';
@@ -18,15 +18,15 @@ import { Socket } from 'socket.io-client';
 import { getTestingGlobalServicesModule } from '../../../Helpers/global_test_services.module';
 import { TestServiceContainers } from '../../../Helpers/test_service_containers';
 import { delay, getTestingApp } from '../../../Helpers/get_testing_app';
-import { ConfessionModel } from '../../../../src/Models/confession';
+import { ConfessionModel } from '../../../../package/database/src/Models/confession';
 import { nanoid } from 'nanoid';
-import { CassandraTableNames } from '../../../../src/Constants/cassandra_constants';
+import { CassandraTableNames } from '../../../../package/constants/src/cassandra_constants';
 import { createTestReadConfession } from '../../../Helpers/create_test_confession';
 import {
   getSearchedConfession,
   getSearchedReadConfession,
 } from '../../../Helpers/search_confession';
-import { MessageType } from '../../../../src/Constants/messasge_type';
+import { MessageType } from '../../../../package/constants/src/messasge_type';
 import { consumeMessageFromQueue } from '../../../Helpers/consume_message_from_queue';
 
 describe(`Reject confession tests`, () => {

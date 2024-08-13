@@ -1,4 +1,4 @@
-import { MessageType } from '../Constants/messasge_type';
+import { MessageType } from 'hi-constants';
 import { ChatMessageModel } from './chat_message_model';
 import { ChatModel } from './chat_model';
 import { ConfessionModel } from './confession';

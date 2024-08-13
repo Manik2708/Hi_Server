@@ -1,8 +1,8 @@
 import { types } from 'cassandra-driver';
-import { ChatMessageModel } from '../../src/Models/chat_message_model';
+import { ChatMessageModel } from '../../package/database/src/Models/chat_message_model';
 import { nanoid } from 'nanoid';
 import { TestServiceContainers } from './test_service_containers';
-import { CassandraTableNames } from '../../src/Constants/cassandra_constants';
+import { CassandraTableNames } from '../../package/constants/src/cassandra_constants';
 
 export const createSingleChatMessage = async (
   status: string,

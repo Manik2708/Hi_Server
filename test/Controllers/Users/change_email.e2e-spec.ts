@@ -10,16 +10,16 @@ import {
 import { createMongoInstance, disconnect } from '../../Helpers/db_instance';
 import mongoose from 'mongoose';
 import { createTestUser } from '../../Helpers/create_test_user';
-import { UserModel } from '../../../src/Models/user';
+import { UserModel } from '../../../package/database/src/Models/user';
 import express from 'express';
 import jsonwt from 'jwt-simple';
 import request from 'supertest';
 import { nanoid } from 'nanoid';
 import bcrypt from 'bcryptjs';
-import { User } from '../../../src/Database/Models/user';
+import { User } from '../../../package/database/src/Schemas/user';
 import { INestApplication } from '@nestjs/common';
-import { ControllerPaths } from '../../../src/Constants/contoller_paths';
-import { UserRoutes } from '../../../src/Constants/route_paths';
+import { ControllerPaths } from '../../../package/constants/src/contoller_paths';
+import { UserRoutes } from '../../../package/constants/src/route_paths';
 import { UserModule } from '../../../src/Controllers/Users/user.module';
 import { Test } from '@nestjs/testing';
 import { TestMiddlewareModule } from '../../Helpers/test_middleware.module';
@@ -38,7 +38,7 @@ describe('Change Email API test', () => {
     jest.spyOn(express.request, 'header').mockReturnValue(token);
     jest.spyOn(jsonwt, 'decode').mockImplementation((...args: any) => {
       return {
-        id: user._id._id.toString(),
+        id: user._id,
       };
     });
     const moduleRef = await Test.createTestingModule({

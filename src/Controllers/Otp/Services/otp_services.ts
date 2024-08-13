@@ -4,12 +4,12 @@ import {
   NodemailerSenderPassword,
   NodemailerService,
 } from '../../../enviornment_variables';
-import { User } from '../../../Database/Models/user';
+import { User } from '../../../../package/database/src/Schemas/user';
 import { generateOtp } from 'otp-generator-ts';
 import express from 'express';
-import { InternalServerError } from '../../../Errors/server_error';
+import { InternalServerError } from '../../../../package/errors/src/server_error';
 import { verifyOtp } from 'otp-generator-ts';
-import { BadRequestError, BadRequestTypes } from '../../../Errors/bad_request';
+import { BadRequestError, BadRequestTypes } from '../../../../package/errors/src/bad_request';
 
 export class OTPServices {
   sendOtp = async (req: express.Request, res: express.Response) => {
