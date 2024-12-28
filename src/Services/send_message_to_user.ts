@@ -94,6 +94,11 @@ export class SendMessageToUserService {
             QueueNames.OfflineQueue + userId,
             Buffer.from(JSON.stringify(commonMessage)),
           );
+          sendingChannelForOfflineUser.close((err)=>{
+            if(err){
+              console.log(err)
+            }
+          })
         },
       );
       if (wantTosendNotification) {

@@ -18,7 +18,6 @@ export const consumeMessageFromQueue = async (
       }
     });
   });
-  await new Promise((resolve) => setTimeout(resolve, 500));
   if (outputData == null) {
     throw Error('Error');
   } else {

@@ -106,7 +106,7 @@ export class RetrieveDataController {
           prepare: true,
           fetchSize: 50,
         },
-        (n, row) => {
+        (_, row) => {
           confessions.push(helper.parseConfessionFromCassandraRow(row));
         },
         (error, result) => {
