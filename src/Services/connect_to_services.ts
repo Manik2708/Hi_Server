@@ -34,7 +34,4 @@ export class ConnectToServices {
     }
     return casClient;
   };
-  static createIoServer = (server: http.Server): Server => {
-    return new Server(server);
-  };
 }

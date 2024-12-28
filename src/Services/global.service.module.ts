@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { InjectionTokens } from '../Constants/injection_tokens';
-import { casClient, client, createQueue } from '../service_containers';
+import { casClient, client, createQueue, GRPCClientAddress } from '../service_containers';
 import { SendMessageToUserService } from './send_message_to_user';
 import { UserOnlineServices } from './user_online_services';
 import { CassandraDatabaseQueries } from '../Database/Cassandra/queries';
@@ -22,13 +22,17 @@ import { CassandraDatabaseQueries } from '../Database/Cassandra/queries';
       },
     },
     {
+      provide: InjectionTokens.GRPClientAddress,
+      useValue: GRPCClientAddress,
+    },
+    {
       provide: InjectionTokens.CreateQueue,
       useValue: createQueue,
-    },
+    }
   ],
   exports: [
     InjectionTokens.RedisClient,
-    InjectionTokens.CreateQueue,
+    InjectionTokens.GRPClientAddress,
     InjectionTokens.CasClient,
     CassandraDatabaseQueries,
     SendMessageToUserService,

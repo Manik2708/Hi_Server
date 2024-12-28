@@ -28,6 +28,9 @@ export class CreateQueue {
               console.log(err);
             }
             callback(channel);
+            channel.close((err) => {
+              console.log(err);
+            })
           });
         } catch (e: any) {
           console.log(e.toString());

@@ -8,19 +8,20 @@ import { Inject, Injectable, Scope, forwardRef } from '@nestjs/common';
 import { UserOnlineServices } from './user_online_services';
 import { InternalServerError } from '../Errors/server_error';
 import { WebSocketMessageError } from '../Errors/websocket_message_not_sent_error';
+import { GRPCServices } from './grpc';
 @Injectable({ scope: Scope.DEFAULT })
 export class SendMessageToUserService {
-  private createQueue: CreateQueue;
+  private grpcAddress: string;
   private client: RedisClientType;
   private userOnlineServices: UserOnlineServices;
   constructor(
-    @Inject(InjectionTokens.CreateQueue) createQueue: CreateQueue,
+    @Inject(InjectionTokens.GRPClientAddress) grpcAddress: string,
     @Inject(InjectionTokens.RedisClient) client: RedisClientType,
     @Inject(forwardRef(() => UserOnlineServices))
     userOnlineServices: UserOnlineServices,
   ) {
     this.client = client;
-    this.createQueue = createQueue;
+    this.grpcAddress = grpcAddress;
     this.userOnlineServices = userOnlineServices;
   }
 
@@ -62,7 +63,7 @@ export class SendMessageToUserService {
       }
     } catch (e: any) {
       if (e instanceof WebSocketMessageError) {
-        this.sendMessageToOfflineUser(
+        await this.sendMessageToOfflineUser(
           userId,
           commonMessage,
           sendNotificationFunction,
@@ -84,23 +85,8 @@ export class SendMessageToUserService {
       if (afterAcknowledgement) {
         afterAcknowledgement();
       }
-      this.createQueue.createChannel(
-        (sendingChannelForOfflineUser: amqp.Channel) => {
-          sendingChannelForOfflineUser.assertQueue(
-            QueueNames.OfflineQueue + userId,
-            { durable: true },
-          );
-          sendingChannelForOfflineUser.sendToQueue(
-            QueueNames.OfflineQueue + userId,
-            Buffer.from(JSON.stringify(commonMessage)),
-          );
-          sendingChannelForOfflineUser.close((err)=>{
-            if(err){
-              console.log(err)
-            }
-          })
-        },
-      );
+      const grpcService = new GRPCServices(this.grpcAddress)
+      grpcService.saveMessageForOfflineUser(userId, commonMessage)
       if (wantTosendNotification) {
         sendNotificationFunction();
       }

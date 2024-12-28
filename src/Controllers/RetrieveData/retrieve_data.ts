@@ -126,14 +126,13 @@ export class RetrieveDataController {
     }
   }
   @Get(RetrieveDataRoutes.RETRIEVE_DATA_FOR_OFFLINE_USER)
-  async retrieveDataForOfflineUser(
+  retrieveDataForOfflineUser(
     @Req() req: express.Request,
     @Res() res: express.Response,
   ) {
     try {
       const user_id = req.id;
-      await this.retrieveDataServices.retrieveDataForOfflineUsers(user_id!);
-      return res.status(200).json(true);
+      this.retrieveDataServices.retrieveDataForOfflineUsers(user_id!).pipe(res);
     } catch (error) {
       throw new ThrowError(error, res);
     }
