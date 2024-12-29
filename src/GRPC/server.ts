@@ -5,7 +5,7 @@
 // source: server.proto
 
 /* eslint-disable */
-import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
 import {
   type CallOptions,
   ChannelCredentials,
@@ -19,9 +19,9 @@ import {
   Metadata,
   type ServiceError,
   type UntypedServiceImplementation,
-} from "@grpc/grpc-js";
+} from '@grpc/grpc-js';
 
-export const protobufPackage = "grpc";
+export const protobufPackage = 'grpc';
 
 export interface GetMessagesRequest {
   id: string;
@@ -42,19 +42,26 @@ export interface SaveMessageResponse {
 }
 
 function createBaseGetMessagesRequest(): GetMessagesRequest {
-  return { id: "" };
+  return { id: '' };
 }
 
 export const GetMessagesRequest: MessageFns<GetMessagesRequest> = {
-  encode(message: GetMessagesRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
+  encode(
+    message: GetMessagesRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.id !== '') {
       writer.uint32(10).string(message.id);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetMessagesRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): GetMessagesRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetMessagesRequest();
     while (reader.pos < end) {
@@ -78,34 +85,41 @@ export const GetMessagesRequest: MessageFns<GetMessagesRequest> = {
   },
 
   fromJSON(object: any): GetMessagesRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { id: isSet(object.id) ? globalThis.String(object.id) : '' };
   },
 
   toJSON(message: GetMessagesRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
+    if (message.id !== '') {
       obj.id = message.id;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetMessagesRequest>, I>>(base?: I): GetMessagesRequest {
+  create<I extends Exact<DeepPartial<GetMessagesRequest>, I>>(
+    base?: I,
+  ): GetMessagesRequest {
     return GetMessagesRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetMessagesRequest>, I>>(object: I): GetMessagesRequest {
+  fromPartial<I extends Exact<DeepPartial<GetMessagesRequest>, I>>(
+    object: I,
+  ): GetMessagesRequest {
     const message = createBaseGetMessagesRequest();
-    message.id = object.id ?? "";
+    message.id = object.id ?? '';
     return message;
   },
 };
 
 function createBaseGetMessagesResponse(): GetMessagesResponse {
-  return { id: "", content: new Uint8Array(0) };
+  return { id: '', content: new Uint8Array(0) };
 }
 
 export const GetMessagesResponse: MessageFns<GetMessagesResponse> = {
-  encode(message: GetMessagesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
+  encode(
+    message: GetMessagesResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.id !== '') {
       writer.uint32(10).string(message.id);
     }
     if (message.content.length !== 0) {
@@ -114,8 +128,12 @@ export const GetMessagesResponse: MessageFns<GetMessagesResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetMessagesResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): GetMessagesResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetMessagesResponse();
     while (reader.pos < end) {
@@ -148,14 +166,16 @@ export const GetMessagesResponse: MessageFns<GetMessagesResponse> = {
 
   fromJSON(object: any): GetMessagesResponse {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      content: isSet(object.content) ? bytesFromBase64(object.content) : new Uint8Array(0),
+      id: isSet(object.id) ? globalThis.String(object.id) : '',
+      content: isSet(object.content)
+        ? bytesFromBase64(object.content)
+        : new Uint8Array(0),
     };
   },
 
   toJSON(message: GetMessagesResponse): unknown {
     const obj: any = {};
-    if (message.id !== "") {
+    if (message.id !== '') {
       obj.id = message.id;
     }
     if (message.content.length !== 0) {
@@ -164,24 +184,31 @@ export const GetMessagesResponse: MessageFns<GetMessagesResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetMessagesResponse>, I>>(base?: I): GetMessagesResponse {
+  create<I extends Exact<DeepPartial<GetMessagesResponse>, I>>(
+    base?: I,
+  ): GetMessagesResponse {
     return GetMessagesResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetMessagesResponse>, I>>(object: I): GetMessagesResponse {
+  fromPartial<I extends Exact<DeepPartial<GetMessagesResponse>, I>>(
+    object: I,
+  ): GetMessagesResponse {
     const message = createBaseGetMessagesResponse();
-    message.id = object.id ?? "";
+    message.id = object.id ?? '';
     message.content = object.content ?? new Uint8Array(0);
     return message;
   },
 };
 
 function createBaseSaveMessageRequest(): SaveMessageRequest {
-  return { id: "", content: new Uint8Array(0) };
+  return { id: '', content: new Uint8Array(0) };
 }
 
 export const SaveMessageRequest: MessageFns<SaveMessageRequest> = {
-  encode(message: SaveMessageRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
+  encode(
+    message: SaveMessageRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.id !== '') {
       writer.uint32(10).string(message.id);
     }
     if (message.content.length !== 0) {
@@ -190,8 +217,12 @@ export const SaveMessageRequest: MessageFns<SaveMessageRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): SaveMessageRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): SaveMessageRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSaveMessageRequest();
     while (reader.pos < end) {
@@ -224,14 +255,16 @@ export const SaveMessageRequest: MessageFns<SaveMessageRequest> = {
 
   fromJSON(object: any): SaveMessageRequest {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      content: isSet(object.content) ? bytesFromBase64(object.content) : new Uint8Array(0),
+      id: isSet(object.id) ? globalThis.String(object.id) : '',
+      content: isSet(object.content)
+        ? bytesFromBase64(object.content)
+        : new Uint8Array(0),
     };
   },
 
   toJSON(message: SaveMessageRequest): unknown {
     const obj: any = {};
-    if (message.id !== "") {
+    if (message.id !== '') {
       obj.id = message.id;
     }
     if (message.content.length !== 0) {
@@ -240,12 +273,16 @@ export const SaveMessageRequest: MessageFns<SaveMessageRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<SaveMessageRequest>, I>>(base?: I): SaveMessageRequest {
+  create<I extends Exact<DeepPartial<SaveMessageRequest>, I>>(
+    base?: I,
+  ): SaveMessageRequest {
     return SaveMessageRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<SaveMessageRequest>, I>>(object: I): SaveMessageRequest {
+  fromPartial<I extends Exact<DeepPartial<SaveMessageRequest>, I>>(
+    object: I,
+  ): SaveMessageRequest {
     const message = createBaseSaveMessageRequest();
-    message.id = object.id ?? "";
+    message.id = object.id ?? '';
     message.content = object.content ?? new Uint8Array(0);
     return message;
   },
@@ -256,15 +293,22 @@ function createBaseSaveMessageResponse(): SaveMessageResponse {
 }
 
 export const SaveMessageResponse: MessageFns<SaveMessageResponse> = {
-  encode(message: SaveMessageResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: SaveMessageResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.success !== false) {
       writer.uint32(8).bool(message.success);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): SaveMessageResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): SaveMessageResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSaveMessageResponse();
     while (reader.pos < end) {
@@ -288,7 +332,11 @@ export const SaveMessageResponse: MessageFns<SaveMessageResponse> = {
   },
 
   fromJSON(object: any): SaveMessageResponse {
-    return { success: isSet(object.success) ? globalThis.Boolean(object.success) : false };
+    return {
+      success: isSet(object.success)
+        ? globalThis.Boolean(object.success)
+        : false,
+    };
   },
 
   toJSON(message: SaveMessageResponse): unknown {
@@ -299,10 +347,14 @@ export const SaveMessageResponse: MessageFns<SaveMessageResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<SaveMessageResponse>, I>>(base?: I): SaveMessageResponse {
+  create<I extends Exact<DeepPartial<SaveMessageResponse>, I>>(
+    base?: I,
+  ): SaveMessageResponse {
     return SaveMessageResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<SaveMessageResponse>, I>>(object: I): SaveMessageResponse {
+  fromPartial<I extends Exact<DeepPartial<SaveMessageResponse>, I>>(
+    object: I,
+  ): SaveMessageResponse {
     const message = createBaseSaveMessageResponse();
     message.success = object.success ?? false;
     return message;
@@ -312,42 +364,54 @@ export const SaveMessageResponse: MessageFns<SaveMessageResponse> = {
 export type QueueServiceService = typeof QueueServiceService;
 export const QueueServiceService = {
   getMessages: {
-    path: "/grpc.QueueService/GetMessages",
+    path: '/grpc.QueueService/GetMessages',
     requestStream: false,
     responseStream: true,
-    requestSerialize: (value: GetMessagesRequest) => Buffer.from(GetMessagesRequest.encode(value).finish()),
+    requestSerialize: (value: GetMessagesRequest) =>
+      Buffer.from(GetMessagesRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => GetMessagesRequest.decode(value),
-    responseSerialize: (value: GetMessagesResponse) => Buffer.from(GetMessagesResponse.encode(value).finish()),
+    responseSerialize: (value: GetMessagesResponse) =>
+      Buffer.from(GetMessagesResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetMessagesResponse.decode(value),
   },
   saveMessage: {
-    path: "/grpc.QueueService/SaveMessage",
+    path: '/grpc.QueueService/SaveMessage',
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: SaveMessageRequest) => Buffer.from(SaveMessageRequest.encode(value).finish()),
+    requestSerialize: (value: SaveMessageRequest) =>
+      Buffer.from(SaveMessageRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => SaveMessageRequest.decode(value),
-    responseSerialize: (value: SaveMessageResponse) => Buffer.from(SaveMessageResponse.encode(value).finish()),
+    responseSerialize: (value: SaveMessageResponse) =>
+      Buffer.from(SaveMessageResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => SaveMessageResponse.decode(value),
   },
   deleteMessagesById: {
-    path: "/grpc.QueueService/DeleteMessagesById",
+    path: '/grpc.QueueService/DeleteMessagesById',
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetMessagesRequest) => Buffer.from(GetMessagesRequest.encode(value).finish()),
+    requestSerialize: (value: GetMessagesRequest) =>
+      Buffer.from(GetMessagesRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer) => GetMessagesRequest.decode(value),
-    responseSerialize: (value: SaveMessageResponse) => Buffer.from(SaveMessageResponse.encode(value).finish()),
+    responseSerialize: (value: SaveMessageResponse) =>
+      Buffer.from(SaveMessageResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => SaveMessageResponse.decode(value),
   },
 } as const;
 
 export interface QueueServiceServer extends UntypedServiceImplementation {
-  getMessages: handleServerStreamingCall<GetMessagesRequest, GetMessagesResponse>;
+  getMessages: handleServerStreamingCall<
+    GetMessagesRequest,
+    GetMessagesResponse
+  >;
   saveMessage: handleUnaryCall<SaveMessageRequest, SaveMessageResponse>;
   deleteMessagesById: handleUnaryCall<GetMessagesRequest, SaveMessageResponse>;
 }
 
 export interface QueueServiceClient extends Client {
-  getMessages(request: GetMessagesRequest, options?: Partial<CallOptions>): ClientReadableStream<GetMessagesResponse>;
+  getMessages(
+    request: GetMessagesRequest,
+    options?: Partial<CallOptions>,
+  ): ClientReadableStream<GetMessagesResponse>;
   getMessages(
     request: GetMessagesRequest,
     metadata?: Metadata,
@@ -355,45 +419,70 @@ export interface QueueServiceClient extends Client {
   ): ClientReadableStream<GetMessagesResponse>;
   saveMessage(
     request: SaveMessageRequest,
-    callback: (error: ServiceError | null, response: SaveMessageResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: SaveMessageResponse,
+    ) => void,
   ): ClientUnaryCall;
   saveMessage(
     request: SaveMessageRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: SaveMessageResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: SaveMessageResponse,
+    ) => void,
   ): ClientUnaryCall;
   saveMessage(
     request: SaveMessageRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: SaveMessageResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: SaveMessageResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteMessagesById(
     request: GetMessagesRequest,
-    callback: (error: ServiceError | null, response: SaveMessageResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: SaveMessageResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteMessagesById(
     request: GetMessagesRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: SaveMessageResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: SaveMessageResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteMessagesById(
     request: GetMessagesRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: SaveMessageResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: SaveMessageResponse,
+    ) => void,
   ): ClientUnaryCall;
 }
 
-export const QueueServiceClient = makeGenericClientConstructor(QueueServiceService, "grpc.QueueService") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): QueueServiceClient;
+export const QueueServiceClient = makeGenericClientConstructor(
+  QueueServiceService,
+  'grpc.QueueService',
+) as unknown as {
+  new (
+    address: string,
+    credentials: ChannelCredentials,
+    options?: Partial<ClientOptions>,
+  ): QueueServiceClient;
   service: typeof QueueServiceService;
   serviceName: string;
 };
 
 function bytesFromBase64(b64: string): Uint8Array {
   if ((globalThis as any).Buffer) {
-    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+    return Uint8Array.from(globalThis.Buffer.from(b64, 'base64'));
   } else {
     const bin = globalThis.atob(b64);
     const arr = new Uint8Array(bin.length);
@@ -406,27 +495,41 @@ function bytesFromBase64(b64: string): Uint8Array {
 
 function base64FromBytes(arr: Uint8Array): string {
   if ((globalThis as any).Buffer) {
-    return globalThis.Buffer.from(arr).toString("base64");
+    return globalThis.Buffer.from(arr).toString('base64');
   } else {
     const bin: string[] = [];
     arr.forEach((byte) => {
       bin.push(globalThis.String.fromCharCode(byte));
     });
-    return globalThis.btoa(bin.join(""));
+    return globalThis.btoa(bin.join(''));
   }
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

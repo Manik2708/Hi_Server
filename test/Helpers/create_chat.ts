@@ -5,22 +5,21 @@ import { createTenChatMessages } from './create_chat_message';
 import { TestServiceContainers } from './test_service_containers';
 import { CassandraTableNames } from '../../src/Constants/cassandra_constants';
 
-export const createChatWithTenMessages = async (
+export const createChat = async (
   user_id: string,
   isCrush: boolean,
 ): Promise<ChatModel> => {
   const chat_id = types.TimeUuid.now();
   const client = TestServiceContainers.getTestingCassandraClient();
-  const messages = await createTenChatMessages('SENT', user_id, chat_id);
   const chatModel: ChatModel = {
     chat_id: chat_id,
     crush_name: nanoid().toLowerCase(),
-    crush_id: isCrush == true ? user_id : nanoid().toLowerCase(),
-    user_id: isCrush == false ? user_id : nanoid().toLowerCase(),
+    crush_id: isCrush ? user_id : nanoid().toLowerCase(),
+    user_id: !isCrush ? user_id : nanoid().toLowerCase(),
     anonymous_id: nanoid().toLowerCase(),
     last_update: new Date(),
     confession_id: types.TimeUuid.now().toString(),
-    messages: messages,
+    messages: [],
   };
   await client.execute(
     `INSERT INTO ${CassandraTableNames.chatsForSender} (

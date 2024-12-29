@@ -12,9 +12,7 @@ import { ConflictError, ConflictErrorTypes } from '../../Errors/conflict_error';
 
 @Controller(ControllerPaths.CHATS_CONTROLLER)
 export class ChatsController {
-  constructor(
-    private readonly chatMessageService: ChatMessageForUserService,
-  ) {}
+  constructor(private readonly chatMessageService: ChatMessageForUserService) {}
 
   @Post(ChatRoutes.SEND_CHAT_MESSAGE)
   async sendChatMessage(

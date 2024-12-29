@@ -4,6 +4,7 @@ import { UserOnlineServices } from '../../src/Services/user_online_services';
 import { InjectionTokens } from '../../src/Constants/injection_tokens';
 import { CassandraDatabaseQueries } from '../../src/Database/Cassandra/queries';
 import { SendMessageToUserService } from '../../src/Services/send_message_to_user';
+import { GRPCClientAddress } from '../../src/service_containers';
 
 export const getTestingGlobalServicesModule =
   async (): Promise<TestingModule> => {
@@ -27,6 +28,10 @@ export const getTestingGlobalServicesModule =
         {
           provide: InjectionTokens.CreateQueue,
           useValue: rabbitClient,
+        },
+        {
+          provide: InjectionTokens.GRPClientAddress,
+          useValue: GRPCClientAddress,
         },
       ],
       exports: [

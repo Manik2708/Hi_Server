@@ -85,8 +85,8 @@ export class SendMessageToUserService {
       if (afterAcknowledgement) {
         afterAcknowledgement();
       }
-      const grpcService = new GRPCServices(this.grpcAddress)
-      grpcService.saveMessageForOfflineUser(userId, commonMessage)
+      const grpcService = new GRPCServices(this.grpcAddress);
+      grpcService.saveMessageForOfflineUser(userId, commonMessage);
       if (wantTosendNotification) {
         sendNotificationFunction();
       }

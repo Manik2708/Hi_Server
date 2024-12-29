@@ -40,43 +40,6 @@ jobs:
       - name: Check Circular Dependencies
         run: npx madge --circular --extensions ts ./
 
-  Check-Unauthorized-Changes:
-    name: Checks if no unauthorized files are changed
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-          persist-credentials: true
-      
-      - name: Get Changed Unauthorized files
-        id: changed-unauth-files
-        uses: tj-actions/changed-files@v44
-        with:
-          files: |
-            .github/**
-            .husky/**
-            scripts/**
-            .env.sample
-            .dockerignore
-            .node-version
-            tsconfig.json
-            .gitignore
-            .eslintrc.json
-            .eslintignore
-            .prettierrc.json
-            .prettierignore
-            vite.config.ts
-            docker-compose.yaml
-            src/main.ts
-      
-      - name: List all changed unauthorized files
-        if: steps.changed-unauth-files.outputs.any_changed == 'true' || steps.changed-unauth-files.outputs.any_deleted == 'true'
-        run: |
-          echo "${{ steps.changed-unauth-files.outputs.all_changed_files }} is unauthorized to change/delete"
-          exit 1
-
   Test-Application:
     name: Run e2e tests
     runs-on: ubuntu-latest

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, jest } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { SendMessageToUserService } from '../../../../src/Services/send_message_to_user';
 import { EventNames } from '../../../../src/Constants/event_names';
 import { RedisNames } from '../../../../src/Constants/queues_redis';

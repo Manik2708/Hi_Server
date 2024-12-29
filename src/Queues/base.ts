@@ -30,7 +30,7 @@ export class CreateQueue {
             callback(channel);
             channel.close((err) => {
               console.log(err);
-            })
+            });
           });
         } catch (e: any) {
           console.log(e.toString());

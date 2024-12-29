@@ -4,4 +4,4 @@ import { ConnectToServices } from './Services/connect_to_services';
 export const createQueue: CreateQueue = new CreateQueue();
 export const client = ConnectToServices.createRedisClient();
 export const casClient = ConnectToServices.createCassandra();
-export const GRPCClientAddress = "localhost:50051";
+export const GRPCClientAddress = 'localhost:50051';
